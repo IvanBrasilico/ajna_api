@@ -10,7 +10,6 @@ from flask_jwt_extended import (
     get_jwt_identity, get_raw_jwt
 )
 
-from ajna_commons.flask.conf import SECRET
 from ajna_commons.flask.log import logger
 from ajna_commons.flask.login import authenticate
 from ajna_commons.flask.user import DBUser
@@ -25,7 +24,7 @@ def configure(app: Flask):
 
     """
     api = Blueprint('/api', __name__)
-    app.config['JWT_SECRET_KEY'] = SECRET
+    app.config['JWT_SECRET_KEY'] = app.secret_key
     app.config['JWT_BLACKLIST_ENABLED'] = True
     jwt = JWTManager(app)
 

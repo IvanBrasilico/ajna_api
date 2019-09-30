@@ -10,38 +10,18 @@ from flask_wtf.csrf import CSRFProtect
 from pymongo import MongoClient
 
 import ajna_commons.flask.login as login
-from ajna_commons.flask.conf import MONGODB_URI
-
+from ajna_commons.flask.user import DBUser
+from app.config import Testing
+from app import create_app
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
-        app = Flask(__name__)
-        self.app = app
-        CSRFProtect(app)
-        Bootstrap(app)
-        nav = Nav(app)
-
-        app.secret_key = 'DUMMY'
-
-        @app.route('/')
-        def index():
-            if current_user.is_authenticated:
-                return 'OK'
-            else:
-                return redirect(url_for('commons.login'))
-
-        @nav.navigation()
-        def mynavbar():
-            """Menu da aplicação."""
-            items = [View('Home', 'index')]
-            return Navbar('teste', *items)
-
+        app = create_app(Testing)
         app.testing = True
         self.client = app.test_client()
-        self.db = MongoClient(host=MONGODB_URI).unit_test
-        login.configure(app)
-        login.DBUser.dbsession = self.db
-        login.DBUser.add('ajna', 'ajna')
+        self.db = app.config['mongodb']
+        DBUser.dbsession = self.db
+        DBUser.add('ajna', 'ajna')
 
     def tearDown(self):
         self.db.drop_collection('users')
@@ -79,18 +59,18 @@ class FlaskTestCase(unittest.TestCase):
     def test_login(self):
         rv = self.login('ajna', 'ajna')
         assert rv is not None
-        assert b'OK' in rv.data
+        assert b'autenticado' in rv.data
 
     def test_DBuser(self):
-        auser = login.DBUser.get('ajna')
+        auser = DBUser.get('ajna')
         assert auser.name == 'ajna'
-        auser2 = login.DBUser.get('ajna', 'ajna')
+        auser2 = DBUser.get('ajna', 'ajna')
         assert auser2.name == 'ajna'
         # Testa mundança de senha
-        login.DBUser.add('ajna', '1234')
-        auser3 = login.DBUser.get('ajna', 'ajna')
+        DBUser.add('ajna', '1234')
+        auser3 = DBUser.get('ajna', 'ajna')
         assert auser3 is None
-        auser4 = login.DBUser.get('ajna', '1234')
+        auser4 = DBUser.get('ajna', '1234')
         assert auser4.name == 'ajna'
 
     def test_404(self):

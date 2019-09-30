@@ -2,25 +2,24 @@
 import json
 import unittest
 
-import ajna_commons.flask.user as user_ajna
-from ajna_commons.flask import api_login
-from ajna_commons.flask.conf import MONGODB_URI
 from flask import Flask
 from pymongo import MongoClient
 
+from ajna_commons.flask.user import DBUser
+from ajna_commons.flask import api_login
+from ajna_commons.flask.conf import MONGODB_URI
+from app.config import Testing
+from app import create_app
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
-        app = Flask(__name__)
+        app = create_app(Testing)
         self.app = app
-        app.secret_key = 'DUMMY'
         app.testing = True
         self.client = app.test_client()
-        self.db = MongoClient(host=MONGODB_URI).unit_test
-        user_ajna.DBUser.dbsession = self.db
-        user_ajna.DBUser.add('ajna', 'ajna')
-        conn = MongoClient(host=MONGODB_URI)
-        api_login.configure(app)
+        self.db = app.config['mongodb']
+        DBUser.dbsession = self.db
+        DBUser.add('ajna', 'ajna')
 
     def tearDown(self):
         # self.db.drop_collection('users')
@@ -87,12 +86,13 @@ class FlaskTestCase(unittest.TestCase):
         rv = self.client.get('api/test', headers=headers)
         assert rv.status_code == 200
 
-
     def test_logout_unauthorized(self):
         rv = self.client.post(
-            'api/login',
+            '/api/login',
             data=json.dumps({'username': 'ajna', 'password': 'ajna'}),
             content_type='application/json')
+        print(rv)
+        print(rv.data)
         token = rv.json.get('access_token')
         headers = {'Authorization': 'Bearer ' + token}
         rv = self.client.get('api/test', headers=headers)

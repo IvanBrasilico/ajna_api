@@ -8,21 +8,21 @@ from werkzeug.utils import redirect
 
 from ajna_commons.flask import api_login, login
 from app.endpoints import api
-from .config import Config
+from .config import Production
 
 
-def create_app(config_class=Config):
+def create_app(config_class=Production):
     app = Flask(__name__)
     Bootstrap(app)
     nav = Nav(app)
-    csrf = CSRFProtect(app)
+    CSRFProtect(app)
     @nav.navigation()
     def mynavbar():
         """Menu da aplicação."""
         items = [View('Home', 'index')]
         if current_user.is_authenticated:
             items.append(View('Sair', 'commons.logout'))
-        return Navbar(*items)
+        return Navbar('teste', *items)
 
     @app.route('/')
     def index():

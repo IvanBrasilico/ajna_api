@@ -8,7 +8,12 @@ from ajna_commons.flask.conf import MONGODB_URI, SECRET
 from pymongo import MongoClient
 
 
-class Config:
+class Production:
     TESTING = False
     SECRET = SECRET
     db = MongoClient(host=MONGODB_URI).test
+
+class Testing:
+    TESTING = True
+    SECRET = 'fraco'
+    db = MongoClient(host=MONGODB_URI).unit_test
