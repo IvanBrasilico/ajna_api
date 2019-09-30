@@ -1,4 +1,4 @@
-from config import Config
+from .config import Config
 from flask import Flask
 from ajna_commons.flask import api_login
 

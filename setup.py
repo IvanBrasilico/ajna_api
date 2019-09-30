@@ -14,8 +14,12 @@ setup(
         'Flask',
         'flask_login',
         'flask_jwt_extended',
+        'flask_wtf',
+        'gunicorn',
         'PyMongo',
-        'redis'
+        'python-jose[cryptography]',
+        'redis',
+        "requests",
 
     ],
     setup_requires=['pytest-runner'],

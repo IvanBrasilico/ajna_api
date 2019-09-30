@@ -3,5 +3,5 @@
 ajna_api.egg-info/*
 api-venv/*
 /SECRET
-/app/access.log
-/app/error.log
+*access.log
+*error.log

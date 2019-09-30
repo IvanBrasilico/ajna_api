@@ -1,15 +1,12 @@
-import json
-import os
-import sys
+# import sys
 
-COMMONS_PATH = os.path.join('..', 'ajna_docs', 'commons')
+# COMMONS_PATH = os.path.join('..', 'ajna_docs', 'commons')
 
-sys.path.insert(0, COMMONS_PATH)
+# sys.path.insert(0, COMMONS_PATH)
 
-from ajna_commons.flask import api_login
 from ajna_commons.flask.conf import MONGODB_URI, SECRET
-from flask import Flask
 from pymongo import MongoClient
+
 
 class Config:
     TESTING = False
