@@ -35,10 +35,13 @@ def configure(app: Flask):
     def login():
         """View para efetuar login."""
         message = request.args.get('message')
+        print('ENTROU')
         if request.method == 'POST':
             username = mongo_sanitizar(request.form.get('username'))
+            print(username)
             # Não aceitar senha vazia!!
             password = mongo_sanitizar(request.form.get('senha', '*'))
+            print(username)
             registered_user = authenticate(username, password)
             if registered_user is not None:
                 flash('Usuário autenticado.')

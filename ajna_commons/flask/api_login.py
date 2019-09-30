@@ -23,7 +23,7 @@ def configure(app: Flask):
     em uma aplicação Flask.
 
     """
-    api = Blueprint('/api', __name__)
+    api = Blueprint('loginapi', __name__)
     app.config['JWT_SECRET_KEY'] = app.secret_key
     app.config['JWT_BLACKLIST_ENABLED'] = True
     jwt = JWTManager(app)

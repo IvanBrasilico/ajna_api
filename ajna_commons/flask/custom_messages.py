@@ -20,10 +20,10 @@ def configure(blueprint):
     """
     @blueprint.app_errorhandler(CSRFError)
     def handle_csrf_error(e):
-        """Mensagem de erro quando CSRF for encontrado."""
-        return render_template('CSRF.html', reason=e.description), 400
+        """Mensagem de erro quando CSRF não for encontrado."""
+        return render_template('CSRF.html', reason=e.description), 401
 
     @blueprint.app_errorhandler(404)
     def page_not_found(e):
-        """Mensagem de erro quando CSRF for encontrado."""
-        return render_template('404.html', reason=e.description), 400
+        """Mensagem de erro quando página não for encontrado."""
+        return render_template('404.html', reason=e.description), 404

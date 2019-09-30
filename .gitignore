@@ -6,3 +6,4 @@ api-venv/*
 *access.log
 *error.log
 /.coverage
+*checkpoint.ipynb

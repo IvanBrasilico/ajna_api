@@ -9,12 +9,12 @@ from ajna_commons.utils.images import mongo_image
 from ajna_commons.utils.sanitiza import mongo_sanitizar
 from integracao import due_mongo
 
-api = Blueprint('api', __name__)
+ajna_api = Blueprint('ajna_api', __name__)
 
 
-@api.route('/api/grid_data', methods=['POST', 'GET'])
+@ajna_api.route('/api/grid_data', methods=['POST', 'GET'])
 @jwt_required
-def grid_data():
+def api_grid_data():
     """Executa uma consulta no banco.
 
     Monta um dicionário de consulta a partir dos argumentos do get.
@@ -86,7 +86,7 @@ def grid_data():
     return jsonify(result), status_code
 
 
-@api.route('/api/dues/update', methods=['POST'])
+@ajna_api.route('/api/dues/update', methods=['POST'])
 @jwt_required
 def dues_update():
     """Recebe um JSON no formato [{_id1: due1}, ..., {_idn: duen}] e grava
@@ -102,9 +102,9 @@ def dues_update():
         return jsonify({'msg': 'Erro inesperado: %s ' % str(err)}), 400
 
 
-@api.route('/api/summary_aniita/<ce_mercante>', methods=['POST', 'GET'])
+@ajna_api.route('/api/summary_aniita/<ce_mercante>', methods=['POST', 'GET'])
 @jwt_required
-def grid_data(ce_mercante):
+def api_summary(ce_mercante):
     db = current_app.config['mongodb']
     ce_mercante = mongo_sanitizar(ce_mercante)
     cursor = db.fs.files.find({'metadata.carga.conhecimento.conhecimento': ce_mercante}, {'metadata.carga': 1})
@@ -121,9 +121,9 @@ def grid_data(ce_mercante):
     return jsonify(summary), status_code
 
 
-@api.route('/api/image/<_id>', methods=['POST', 'GET'])
+@ajna_api.route('/api/image/<_id>', methods=['POST', 'GET'])
 @jwt_required
-def grid_data(_id):
+def api_image(_id):
     db = current_app.config['mongodb']
     _id = mongo_sanitizar(_id)
     image = mongo_image(db, _id)
