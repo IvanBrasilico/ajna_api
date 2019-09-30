@@ -3,18 +3,18 @@
 Funções e classes para gerenciar login e tokens (Flask jwt)
 
 """
-from ajna_commons.flask.conf import SECRET
-from ajna_commons.flask.log import logger
-from ajna_commons.flask.login import authenticate
-from ajna_commons.utils.sanitiza import mongo_sanitizar
-from flask import Blueprint, Flask, jsonify
+from flask import Blueprint
 from flask import Flask, jsonify, request
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity, get_raw_jwt
 )
 
-from flask.user import DBUser
+from ajna_commons.flask.conf import SECRET
+from ajna_commons.flask.log import logger
+from ajna_commons.flask.login import authenticate
+from ajna_commons.flask.user import DBUser
+from ajna_commons.utils.sanitiza import mongo_sanitizar
 
 
 def configure(app: Flask):
@@ -56,7 +56,7 @@ def configure(app: Flask):
         return jsonify(access_token=access_token), 200
 
     @api.route('/api/login_certificado')
-    def login():
+    def login_certificado():
         """Endpoint para efetuar login (obter token).
 
         Este endpoint apenas verifica se CN do Certificado (CPF)
@@ -73,7 +73,6 @@ def configure(app: Flask):
             access_token = create_access_token(identity=user.id)
             return jsonify(access_token=access_token), 200
         return jsonify({'msg': 'Certificado inválido ou não fornecido'}), 401
-
 
     @api.route('/api/logout', methods=['DELETE'])
     @jwt_required
@@ -107,7 +106,7 @@ def configure(app: Flask):
                 current_user = 'no user'
         finally:
             app.logger.info('API LOG url: %s %s IP:%s User: %s' %
-                        (path, method, ip, current_user))
+                            (path, method, ip, current_user))
             return response
 
     def verify_password(username, password):
