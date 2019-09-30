@@ -5,3 +5,4 @@ api-venv/*
 /SECRET
 *access.log
 *error.log
+/.coverage
