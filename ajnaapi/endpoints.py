@@ -107,13 +107,19 @@ def dues_update():
 def api_summary(ce_mercante):
     db = current_app.config['mongodb']
     ce_mercante = mongo_sanitizar(ce_mercante)
+    print('Consultando CE-Mercante %s' % ce_mercante)
     cursor = db.fs.files.find({'metadata.carga.conhecimento.conhecimento': ce_mercante}, {'metadata.carga': 1})
     summary = []
+    print('Consultou!!!')
     for linha in cursor:
         registro = {}
         registro['_id'] = linha['_id']
-        registro['Numero Contêiner'] = linha['metadata.carga.container.numero']
+        registro['Numero Container'] = linha['metadata.numeroinformado']
+        registro['Data Escaneamento'] = linha['metadata.dataescaneamento']
         registro['Peso estimado imagem'] = linha['metadata.predictions.peso']
+        registro['Manifesto Mercante'] = linha['metadata.carga.manifesto.manifesto']
+        registro['NIC CE Mercante'] = linha['metadata.carga.conhecimento.conhecimento']
+        registro['Manifesto Mercante'] = linha['metadata.carga.manifesto.manifesto']
         summary.append(registro)
     status_code = 404
     if len(summary) > 0:
