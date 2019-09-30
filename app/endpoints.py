@@ -1,8 +1,11 @@
 import datetime
+
 from flask import (
     Blueprint, request, current_app, jsonify
 )
 from flask_jwt_extended import jwt_required
+
+from ajna_commons.utils.images import mongo_image
 from ajna_commons.utils.sanitiza import mongo_sanitizar
 from integracao import due_mongo
 
@@ -89,7 +92,41 @@ def dues_update():
     """Recebe um JSON no formato [{_id1: due1}, ..., {_idn: duen}] e grava
 
     """
+    # FIXME: Sanitizar esta entrada tbm
     db = current_app.config['mongodb']
-    if request.method == 'POST':
-        due_mongo.update_due(db, request.json)
-    return jsonify({'status': 'DUEs inseridas/atualizadas'}), 201
+    try:
+        if request.method == 'POST':
+            due_mongo.update_due(db, request.json)
+        return jsonify({'msg': 'DUEs inseridas/atualizadas'}), 201
+    except Exception as err:
+        return jsonify({'msg': 'Erro inesperado: %s ' % str(err)}), 400
+
+
+@api.route('/api/summary_aniita/<ce_mercante>', methods=['POST', 'GET'])
+@jwt_required
+def grid_data(ce_mercante):
+    db = current_app.config['mongodb']
+    ce_mercante = mongo_sanitizar(ce_mercante)
+    cursor = db.fs.files.find({'metadata.carga.conhecimento.conhecimento': ce_mercante}, {'metadata.carga': 1})
+    summary = []
+    for linha in cursor:
+        registro = {}
+        registro['_id'] = linha['_id']
+        registro['Numero Contêiner'] = linha['metadata.carga.container.numero']
+        registro['Peso estimado imagem'] = linha['metadata.predictions.peso']
+        summary.append(registro)
+    status_code = 404
+    if len(summary) > 0:
+        status_code = 200
+    return jsonify(summary), status_code
+
+
+@api.route('/api/image/<_id>', methods=['POST', 'GET'])
+@jwt_required
+def grid_data(_id):
+    db = current_app.config['mongodb']
+    _id = mongo_sanitizar(_id)
+    image = mongo_image(db, _id)
+    if image:
+        return jsonify(response=image, mimetype='image/jpeg'), 200
+    return jsonify({}), 404
