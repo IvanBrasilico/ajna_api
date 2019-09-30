@@ -15,7 +15,7 @@ def create_app(config_class=Production):
     app = Flask(__name__)
     Bootstrap(app)
     nav = Nav(app)
-    CSRFProtect(app)
+    csrf = CSRFProtect(app)
     @nav.navigation()
     def mynavbar():
         """Menu da aplicação."""
@@ -34,7 +34,8 @@ def create_app(config_class=Production):
     # app.config['SERVER_NAME'] = 'ajna.api'
     app.secret_key = config_class.SECRET
     app.config['mongodb'] = config_class.db
-    api_login.configure(app)
+    api = api_login.configure(app)
     login.configure(app)
     app.register_blueprint(api)
+    csrf.exempt(api)
     return app
