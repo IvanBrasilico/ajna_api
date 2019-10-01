@@ -8,8 +8,8 @@ from pymongo import MongoClient
 from ajna_commons.flask.user import DBUser
 from ajna_commons.flask import api_login
 from ajna_commons.flask.conf import MONGODB_URI
-from app.config import Testing
-from app import create_app
+from ajnaapi.config import Testing
+from ajnaapi import create_app
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):

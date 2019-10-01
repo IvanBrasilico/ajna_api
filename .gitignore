@@ -7,3 +7,5 @@ api-venv/*
 *error.log
 /.coverage
 *checkpoint.ipynb
+.tox
+htmlcov

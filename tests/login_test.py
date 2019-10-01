@@ -11,8 +11,8 @@ from pymongo import MongoClient
 
 import ajna_commons.flask.login as login
 from ajna_commons.flask.user import DBUser
-from app.config import Testing
-from app import create_app
+from ajnaapi.config import Testing
+from ajnaapi import create_app
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
