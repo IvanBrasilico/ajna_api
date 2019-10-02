@@ -11,7 +11,7 @@ from ajna_commons.utils.images import mongo_image
 from ajna_commons.utils.sanitiza import mongo_sanitizar
 from integracao import due_mongo
 
-ajna_api = Blueprint('ajna_api', __name__)
+ajna_api = Blueprint('ajnaapi', __name__)
 
 
 @ajna_api.route('/api/grid_data', methods=['POST', 'GET'])
@@ -26,6 +26,7 @@ def api_grid_data():
     """
     # TODO: Refatorar conversões de/para MongoDB - dict - JSON (Ver Bhadrasana, tem algo feito nesse sentido)
     db = current_app.config['mongodb']
+    result = []
     try:
         if request.method == 'POST':
             print(request.json)
@@ -47,9 +48,10 @@ def api_grid_data():
                         query_processed[key] = datetime.strptime(value, '%Y-%m-%d  %H:%M:%S')
                     except:
                         query_processed[key] = mongo_sanitizar(value)
-
+            current_app.logger.warning(query)
+            current_app.logger.warning(query_processed)
+            current_app.logger.warning(projection)
             linhas = db['fs.files'].find(query_processed, projection).limit(100)
-            result = []
             for linha in linhas:
                 dict_linha = {}
                 for key, value in linha.items():
@@ -67,22 +69,23 @@ def api_grid_data():
                         except:
                             dict_linha[key] = str(value)
                 result.append(dict_linha)
-
         else:
+            current_app.logger.warning('Filtro %s' % {key:value
+                      for key, value in request.args.items()})
             filtro = {mongo_sanitizar(key): mongo_sanitizar(value)
                       for key, value in request.args.items()}
-            # logger.warning(filtro)
+            current_app.logger.warning('Filtro %s' % filtro)
             linhas = db['fs.files'].find(filtro).limit(100)
-            result = [{'_id': str(linha['_id']),
-                       'contentType': str(linha['metadata'].get('contentType'))
-                       }
-                      for linha in linhas]
-        status_code = 404
+            for linha in linhas:
+                result.append({'_id': str(linha['_id']),
+                               'contentType': str(linha['metadata'].get('contentType'))
+                               })
         if len(result) > 0:
-            status_code = 200
-        return jsonify(result), status_code
+            return jsonify(result), 200
+        return jsonify({}), 404
     except Exception as err:
-        return jsonify({'msg': 'Erro: %s' % str(err)}), 400
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': 'Erro: %s' % err}), 400
 
 
 @ajna_api.route('/api/dues/update', methods=['POST'])
@@ -98,7 +101,8 @@ def dues_update():
             due_mongo.update_due(db, request.json)
         return jsonify({'msg': 'DUEs inseridas/atualizadas'}), 201
     except Exception as err:
-        return jsonify({'msg': 'Erro inesperado: %s ' % str(err)}), 400
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': 'Erro inesperado: %s ' % err}), 400
 
 
 @ajna_api.route('/api/summary_aniita/<ce_mercante>', methods=['POST', 'GET'])
@@ -110,13 +114,33 @@ def api_summary(ce_mercante):
     try:
         cursor = db.fs.files.find({'metadata.carga.conhecimento.conhecimento': ce_mercante})
         summary = []
+        registro_pai = OrderedDict()
         print('Consultou!!!')
+        ind = 0
         for linha in cursor:
-            registro = OrderedDict()
-            registro['imagem'] = str(linha['_id'])
             metadata = linha.get('metadata')
             carga = metadata.get('carga')
             predictions = metadata.get('predictions')
+            if ind == 0:
+                manifesto = carga.get('manifesto')
+                if isinstance(manifesto, list):
+                    manifesto = manifesto[0]
+                registro_pai['Manifesto Mercante'] = manifesto.get('manifesto')
+                registro_pai['Tipo Manifesto'] = manifesto.get('tipomanifesto')
+                conhecimento = carga.get('conhecimento')
+                if isinstance(conhecimento, list):
+                    conhecimento = conhecimento[0]
+                registro_pai['NIC CE Mercante'] = conhecimento.get('conhecimento')
+                registro_pai['Tipo CE Mercante'] = conhecimento.get('tipo')
+                registro_pai['Descricao mercadoria CE Mercante'] = \
+                    conhecimento.get('descricaomercadoria')
+                if manifesto.get('tipomanifesto') != 'lce':
+                    registro_pai['Consignatario carga'] = \
+                        '%s - %s ' % (conhecimento.get('cpfcnpjconsignatario'),
+                                      conhecimento.get('nomeconsignatario'))
+                ind = 1
+            registro = OrderedDict()
+            registro['imagem'] = str(linha['_id'])
             registro['Numero Container'] = metadata.get('numeroinformado')
             registro['Data Escaneamento'] = datetime.datetime.strftime(
                 metadata.get('dataescaneamento'), '%d/%m/%Y %H:%M')
@@ -138,42 +162,30 @@ def api_summary(ce_mercante):
             registro['Volume declarado'] = volume
             registro['NCM'] = ' '.join(set([ncm.get('ncm')
                                             for ncm in carga.get('ncm')]))
-            manifesto = carga.get('manifesto')
-            if isinstance(manifesto, list):
-                manifesto = manifesto[0]
-            registro['Manifesto Mercante'] = manifesto.get('manifesto')
-            registro['Tipo Manifesto'] = manifesto.get('tipomanifesto')
-            conhecimento = carga.get('conhecimento')
-            if isinstance(conhecimento, list):
-                conhecimento = conhecimento[0]
-            registro['NIC CE Mercante'] = conhecimento.get('conhecimento')
-            registro['Tipo CE Mercante'] = conhecimento.get('tipo')
-            registro['Descricao mercadoria CE Mercante'] = \
-                conhecimento.get('descricaomercadoria')
-            if manifesto.get('tipomanifesto') != 'lce':
-                registro['Consignatario carga'] = \
-                    '%s - %s ' % (conhecimento.get('cpfcnpjconsignatario'),
-                                  conhecimento.get('nomeconsignatario'))
             summary.append(registro)
-        status_code = 404
+        status_code = 204
         if len(summary) > 0:
             status_code = 200
-        return jsonify(summary), status_code
+            registro_pai['Containers'] = summary
+        return jsonify(registro_pai), status_code
     except Exception as err:
-        raise (err)
-        current_app.logger.error(err)
+        current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
 
 
-@ajna_api.route('/api/image/<_id>', methods=['POST', 'GET'])
+@ajna_api.route('/api/image/<_id>', methods=['GET'])
 @jwt_required
 def api_image(_id):
     db = current_app.config['mongodb']
     _id = mongo_sanitizar(_id)
-    image = mongo_image(db, _id)
-    if image:
-        return jsonify(dict(
-            content=b64encode(image).decode(),
-            mimetype='image/jpeg'
-        )), 200
-    return jsonify({}), 404
+    try:
+        image = mongo_image(db, _id)
+        if image:
+            return jsonify(dict(
+                content=b64encode(image).decode(),
+                mimetype='image/jpeg'
+            )), 200
+        return jsonify({}), 204
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400

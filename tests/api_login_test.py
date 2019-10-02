@@ -19,11 +19,11 @@ class ApiLoginTestCase(ApiTestCase):
                    status_code=400,
                    msg='Parametro password requerido')
 
-    def test_login_ok(self):
+    def test_login_invalido(self):
         self._case(pjson={'username': 'ivan', 'password': 'ivan'},
                    status_code=401)
 
-    def test_login_invalido(self):
+    def test_login_ok(self):
         self._case(pjson={'username': 'ajna', 'password': 'ajna'},
                    status_code=200)
 

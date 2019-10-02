@@ -2,6 +2,8 @@
 import json
 import unittest
 
+from werkzeug.exceptions import BadRequest
+
 from ajna_commons.flask.user import DBUser
 from ajnaapi import create_app
 from ajnaapi.config import Testing
@@ -18,32 +20,81 @@ class ApiTestCase(unittest.TestCase):
         DBUser.add('ajna', 'ajna')
 
     def tearDown(self):
-        # self.db.drop_collection('users')
-        pass
+        self.db.drop_collection('users')
+        self.db.drop_collection('fs.files')
 
-    def app_test(self, method, url, pjson):
+    def app_test(self, method, url, pjson, headers={}):
+        print('################', pjson)
         if method == 'POST':
             return self.client.post(
                 url,
                 data=json.dumps(pjson),
-                content_type='application/json')
-        else:
-            return self.client.get(url)
+                content_type='application/json',
+                headers=headers
+            )
+        elif method == 'GET':
+            return self.client.get(
+                url,
+                data=json.dumps(pjson),
+                content_type='application/json',
+                headers=headers
+            )
+        elif method == 'PUT':
+            return self.client.put(
+                url,
+                data=json.dumps(pjson),
+                content_type='application/json',
+                headers=headers
+            )
+        elif method == 'DELETE':
+            return self.client.delete(
+                url,
+                data=json.dumps(pjson),
+                content_type='application/json',
+                headers=headers
+            )
 
     def _case(self, method='POST',
               url='api/login',
               pjson=None,
               status_code=200,
-              msg=''):
+              msg='',
+              headers={}):
+        r = self.app_test(method, url, pjson, headers)
+        print(r.status_code)
+        print(r.data)
+        assert r.status_code == status_code
         try:
-            r = self.app_test(method, url, pjson)
-            print(r.status_code)
-            print(r.data)
-            print(r.json)
-            assert r.status_code == status_code
-            if r.json and msg:
-                assert r.json.get('msg') == msg
+            ljson = r.json
+            print(ljson)
+            if ljson and msg:
+                assert ljson.get('msg') == msg
         except json.JSONDecodeError as err:
             print(err)
             assert False
+        except BadRequest as err:
+            print(err)
 
+    def login(self, username='ajna', password='ajna'):
+        rv = self.client.post(
+            'api/login',
+            data=json.dumps({'username': username, 'password': password}),
+            content_type='application/json')
+        token = rv.json.get('access_token')
+        self.headers = {'Authorization': 'Bearer %s' % token}
+
+    def unauthorized(self, url: str, method='GET'):
+        self._case(method, url,
+                   status_code=401,
+                   msg='Missing Authorization Header')
+
+    def invalid_login(self, url: str, method='GET'):
+        self.login(username='banana')
+        self._case(method, url,
+                   status_code=422,
+                   headers=self.headers)
+
+    def not_allowed(self, url: str, methods=['PUT', 'DELETE']):
+        for method in methods:
+            self._case(method, url,
+                       status_code=405, )
