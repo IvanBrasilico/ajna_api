@@ -105,7 +105,7 @@ def dues_update():
         return jsonify({'msg': 'Erro inesperado: %s ' % err}), 400
 
 
-@ajna_api.route('/api/summary_aniita/<ce_mercante>', methods=['POST', 'GET'])
+@ajna_api.route('/api/summary_aniita/<ce_mercante>', methods=['GET'])
 @jwt_required
 def api_summary(ce_mercante):
     db = current_app.config['mongodb']
@@ -163,7 +163,7 @@ def api_summary(ce_mercante):
             registro['NCM'] = ' '.join(set([ncm.get('ncm')
                                             for ncm in carga.get('ncm')]))
             summary.append(registro)
-        status_code = 204
+        status_code = 404
         if len(summary) > 0:
             status_code = 200
             registro_pai['Containers'] = summary
@@ -179,13 +179,14 @@ def api_image(_id):
     db = current_app.config['mongodb']
     _id = mongo_sanitizar(_id)
     try:
+        current_app.logger.warning(_id)
         image = mongo_image(db, _id)
         if image:
             return jsonify(dict(
                 content=b64encode(image).decode(),
                 mimetype='image/jpeg'
             )), 200
-        return jsonify({}), 204
+        return jsonify({}), 404
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400

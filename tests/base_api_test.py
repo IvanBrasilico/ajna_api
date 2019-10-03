@@ -23,49 +23,50 @@ class ApiTestCase(unittest.TestCase):
         self.db.drop_collection('users')
         self.db.drop_collection('fs.files')
 
-    def app_test(self, method, url, pjson, headers={}):
-        print('################', pjson)
+    def app_test(self, method, url, query_dict, headers={}):
+        print('################', query_dict)
         if method == 'POST':
             return self.client.post(
                 url,
-                data=json.dumps(pjson),
+                data=json.dumps(query_dict),
                 content_type='application/json',
                 headers=headers
             )
         elif method == 'GET':
             return self.client.get(
                 url,
-                data=json.dumps(pjson),
-                content_type='application/json',
+                query_string=query_dict,
                 headers=headers
             )
         elif method == 'PUT':
             return self.client.put(
                 url,
-                data=json.dumps(pjson),
+                data=json.dumps(query_dict),
                 content_type='application/json',
                 headers=headers
             )
         elif method == 'DELETE':
             return self.client.delete(
                 url,
-                data=json.dumps(pjson),
+                data=json.dumps(query_dict),
                 content_type='application/json',
                 headers=headers
             )
 
     def _case(self, method='POST',
               url='api/login',
-              pjson=None,
+              query_dict=None,
               status_code=200,
               msg='',
               headers={}):
-        r = self.app_test(method, url, pjson, headers)
+        r = self.app_test(method, url, query_dict, headers)
         print(r.status_code)
         print(r.data)
         assert r.status_code == status_code
         try:
             ljson = r.json
+            if not msg:
+                return ljson
             print(ljson)
             if ljson and msg:
                 assert ljson.get('msg') == msg

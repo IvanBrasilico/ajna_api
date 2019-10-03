@@ -10,21 +10,21 @@ class ApiLoginTestCase(ApiTestCase):
         self._case(status_code=400, msg='JSON requerido')
 
     def test_usuario_obrigatorio(self):
-        self._case(pjson={'dummy': 'dummy'},
+        self._case(query_dict={'dummy': 'dummy'},
                    status_code=400,
                    msg='Parametro username requerido')
 
     def test_password_obrigatorio(self):
-        self._case(pjson={'username': 'ivan'},
+        self._case(query_dict={'username': 'ivan'},
                    status_code=400,
                    msg='Parametro password requerido')
 
     def test_login_invalido(self):
-        self._case(pjson={'username': 'ivan', 'password': 'ivan'},
+        self._case(query_dict={'username': 'ivan', 'password': 'ivan'},
                    status_code=401)
 
     def test_login_ok(self):
-        self._case(pjson={'username': 'ajna', 'password': 'ajna'},
+        self._case(query_dict={'username': 'ajna', 'password': 'ajna'},
                    status_code=200)
 
     def test_unauthorized(self):
