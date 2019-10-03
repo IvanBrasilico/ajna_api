@@ -38,10 +38,10 @@ class ApiLoginTestCase(ApiTestCase):
                    status_code=200,
                    pjson={'_id': str(_id1)},
                    headers=self.headers)
-        self._case('POST', '/api/grid_data',
-                   status_code=200,
-                   pjson={'query': {'_id': str(_id1)}},
-                   headers=self.headers)
+        # self._case('POST', '/api/grid_data',
+        #           status_code=200,
+        #           pjson={'query': {'_id': str(_id1)}},
+        #           headers=self.headers)
 
     def test_unauthorized_image(self):
         self.unauthorized('/api/image/0')
