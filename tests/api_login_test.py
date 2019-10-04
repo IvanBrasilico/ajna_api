@@ -1,75 +1,30 @@
 # Tescases for virasana.app.py
 import json
-import unittest
 
-from flask import Flask
-from pymongo import MongoClient
+from tests.base_api_test import ApiTestCase
 
-from ajna_commons.flask.user import DBUser
-from ajna_commons.flask import api_login
-from ajna_commons.flask.conf import MONGODB_URI
-from ajnaapi.config import Testing
-from ajnaapi import create_app
 
-class FlaskTestCase(unittest.TestCase):
-    def setUp(self):
-        app = create_app(Testing)
-        self.app = app
-        app.testing = True
-        self.client = app.test_client()
-        self.db = app.config['mongodb']
-        DBUser.dbsession = self.db
-        DBUser.add('ajna', 'ajna')
-
-    def tearDown(self):
-        # self.db.drop_collection('users')
-        pass
-
-    def app_test(self, method, url, pjson):
-        if method == 'POST':
-            return self.client.post(
-                url,
-                data=json.dumps(pjson),
-                content_type='application/json')
-        else:
-            return self.client.get(url)
-
-    def _case(self, method='POST',
-              url='api/login',
-              pjson=None,
-              status_code=200,
-              msg=''):
-        try:
-            r = self.app_test(method, url, pjson)
-            print(r.status_code)
-            print(r.data)
-            print(r.json)
-            assert r.status_code == status_code
-            if r.json and msg:
-                assert r.json.get('msg') == msg
-        except json.JSONDecodeError as err:
-            print(err)
-            assert False
+class ApiLoginTestCase(ApiTestCase):
 
     def test_json_requerido(self):
         self._case(status_code=400, msg='JSON requerido')
 
     def test_usuario_obrigatorio(self):
-        self._case(pjson={'dummy': 'dummy'},
+        self._case(query_dict={'dummy': 'dummy'},
                    status_code=400,
                    msg='Parametro username requerido')
 
     def test_password_obrigatorio(self):
-        self._case(pjson={'username': 'ivan'},
+        self._case(query_dict={'username': 'ivan'},
                    status_code=400,
                    msg='Parametro password requerido')
 
-    def test_login_ok(self):
-        self._case(pjson={'username': 'ivan', 'password': 'ivan'},
+    def test_login_invalido(self):
+        self._case(query_dict={'username': 'ivan', 'password': 'ivan'},
                    status_code=401)
 
-    def test_login_invalido(self):
-        self._case(pjson={'username': 'ajna', 'password': 'ajna'},
+    def test_login_ok(self):
+        self._case(query_dict={'username': 'ajna', 'password': 'ajna'},
                    status_code=200)
 
     def test_unauthorized(self):

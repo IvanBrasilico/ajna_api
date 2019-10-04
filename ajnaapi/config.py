@@ -4,8 +4,9 @@
 
 # sys.path.insert(0, COMMONS_PATH)
 
-from ajna_commons.flask.conf import MONGODB_URI, SECRET
 from pymongo import MongoClient
+
+from ajna_commons.flask.conf import MONGODB_URI, SECRET
 
 
 class Production:
@@ -13,7 +14,8 @@ class Production:
     SECRET = SECRET
     db = MongoClient(host=MONGODB_URI).test
 
+
 class Testing:
     TESTING = True
-    SECRET = 'fraco'
+    SECRET = 'fraco'  # nosec
     db = MongoClient(host=MONGODB_URI).unit_test

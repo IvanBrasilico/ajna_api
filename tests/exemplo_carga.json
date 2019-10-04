@@ -1,0 +1,28 @@
+{
+  "metadata": {
+    "carga": {
+      "conhecimento": {
+        "conhecimento": "2",
+        "consignatario": "A",
+        "tipo": "BL"
+      },
+      "manifesto": {
+        "manifesto": "1",
+        "tipomanifesto": "lce"
+      },
+      "container": [
+        {
+          "numero": "ABCD1234567",
+          "pesobrutoitem": "15245,12",
+          "taracontainer": "4000,00",
+          "volumeitem": "15,35"
+        }
+      ],
+      "ncm": [
+        {
+          "ncm": "6767"
+        }
+      ]
+    }
+  }
+}
