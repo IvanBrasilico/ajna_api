@@ -7,6 +7,7 @@ from flask_jwt_extended import jwt_required
 
 from ajna_commons.utils.images import mongo_image
 from ajna_commons.utils.sanitiza import mongo_sanitizar
+from carga_mongo import CargaLoader
 from integracao import due_mongo
 
 ajna_api = Blueprint('ajnaapi', __name__)
@@ -123,14 +124,14 @@ def api_summary(ce_mercante):
         ind = 0
         for linha in cursor:
             metadata = linha.get('metadata')
+            loader = CargaLoader()
+            carga_load = loader.load_from_gridfs(metadata)
             carga = metadata.get('carga')
             predictions = metadata.get('predictions')
             if ind == 0:
-                manifesto = carga.get('manifesto')
-                if isinstance(manifesto, list):
-                    manifesto = manifesto[0]
-                registro_pai['Manifesto Mercante'] = manifesto.get('manifesto')
-                registro_pai['Tipo Manifesto'] = manifesto.get('tipomanifesto')
+                manifesto = carga_load.manifestos[0]
+                registro_pai['Manifesto Mercante'] = manifesto.manifesto
+                registro_pai['Tipo Manifesto'] = manifesto.tipomanifesto
                 conhecimento = carga.get('conhecimento')
                 if isinstance(conhecimento, list):
                     conhecimento = conhecimento[0]
@@ -138,7 +139,7 @@ def api_summary(ce_mercante):
                 registro_pai['Tipo CE Mercante'] = conhecimento.get('tipo')
                 registro_pai['Descricao mercadoria CE Mercante'] = \
                     conhecimento.get('descricaomercadoria')
-                if manifesto.get('tipomanifesto') != 'lce':
+                if manifesto.tipomanifesto != 'lce':
                     registro_pai['Consignatario carga'] = \
                         '%s - %s ' % (conhecimento.get('cpfcnpjconsignatario'),
                                       conhecimento.get('nomeconsignatario'))

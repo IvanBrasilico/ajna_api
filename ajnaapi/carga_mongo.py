@@ -24,7 +24,7 @@ class RegistroCarga:
 class CargaLoader:
     """Alimenta as classes de dados."""
 
-    def load_from_gridfs(self, grid_data: dict) -> list:
+    def load_from_gridfs(self, grid_data: dict) -> RegistroCarga:
         lista_manifestos = []
         metadata = grid_data.get('metadata')
         carga = metadata.get('carga')
