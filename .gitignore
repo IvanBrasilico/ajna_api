@@ -9,3 +9,4 @@ api-venv/*
 *checkpoint.ipynb
 .tox
 htmlcov
+/notebooks/mercante/*
