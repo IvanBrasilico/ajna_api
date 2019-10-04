@@ -12,10 +12,13 @@ setup(
     install_requires=[
         'dominate',
         'Flask',
+        'flask_bootstrap',
+        'flask_nav',
         'flask_login',
         'flask_jwt_extended',
         'flask_wtf',
         'gunicorn',
+        'Pillow',
         'PyMongo',
         'python-jose[cryptography]',
         'redis',

@@ -7,8 +7,9 @@ from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import redirect
 
 from ajna_commons.flask import api_login, login
-from .config import Production
 from ajnaapi.endpoints import ajna_api
+
+from .config import Production
 
 
 def create_app(config_class=Production):
@@ -16,6 +17,7 @@ def create_app(config_class=Production):
     Bootstrap(app)
     nav = Nav(app)
     csrf = CSRFProtect(app)
+
     @nav.navigation()
     def mynavbar():
         """Menu da aplicação."""

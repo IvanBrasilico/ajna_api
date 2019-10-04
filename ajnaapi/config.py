@@ -17,5 +17,5 @@ class Production:
 
 class Testing:
     TESTING = True
-    SECRET = 'fraco'
+    SECRET = 'fraco'  # nosec
     db = MongoClient(host=MONGODB_URI).unit_test

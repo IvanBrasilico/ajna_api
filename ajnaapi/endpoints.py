@@ -2,9 +2,7 @@ import datetime
 from base64 import b64encode
 from collections import OrderedDict
 
-from flask import (
-    Blueprint, request, current_app, jsonify
-)
+from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 
 from ajna_commons.utils.images import mongo_image
@@ -24,7 +22,8 @@ def api_grid_data():
     o arquivo (campo content) fica em fs.chunks e é recuperado pela view
     image_id.
     """
-    # TODO: Refatorar conversões de/para MongoDB - dict - JSON (Ver Bhadrasana, tem algo feito nesse sentido)
+    # TODO: Refatorar conversões de/para MongoDB - dict - JSON
+    #  (Ver Bhadrasana, tem algo feito nesse sentido)
     db = current_app.config['mongodb']
     result = []
     try:
@@ -39,14 +38,16 @@ def api_grid_data():
                     value_processed = {}
                     for key2, value2 in value.items():
                         try:
-                            value_processed[key2] = datetime.strptime(value2, '%Y-%m-%d  %H:%M:%S')
-                        except:
+                            value_processed[key2] = \
+                                datetime.strptime(value2, '%Y-%m-%d  %H:%M:%S')
+                        except Exception:  # TODO: See specific exception
                             value_processed[key2] = mongo_sanitizar(value2)
                     query_processed[key] = value_processed
                 else:
                     try:
-                        query_processed[key] = datetime.strptime(value, '%Y-%m-%d  %H:%M:%S')
-                    except:
+                        query_processed[key] = \
+                            datetime.strptime(value, '%Y-%m-%d  %H:%M:%S')
+                    except Exception:
                         query_processed[key] = mongo_sanitizar(value)
             current_app.logger.warning(query)
             current_app.logger.warning(query_processed)
@@ -59,19 +60,22 @@ def api_grid_data():
                         value_processed = {}
                         for key2, value2 in value.items():
                             try:
-                                value_processed[key2] = datetime.strptime(value2, '%Y-%m-%d  %H:%M:%S')
-                            except:
+                                value_processed[key2] = \
+                                    datetime.strptime(value2, '%Y-%m-%d  %H:%M:%S')
+                            except Exception:
                                 value_processed[key2] = str(value2)
                         dict_linha[key] = value_processed
                     else:
                         try:
-                            dict_linha[key] = datetime.strptime(value, '%Y-%m-%d  %H:%M:%S')
-                        except:
+                            dict_linha[key] = \
+                                datetime.strptime(value, '%Y-%m-%d  %H:%M:%S')
+                        except Exception:
                             dict_linha[key] = str(value)
                 result.append(dict_linha)
         else:
-            current_app.logger.warning('Filtro %s' % {key:value
-                      for key, value in request.args.items()})
+            current_app.logger.warning(
+                'Filtro %s' % {key: value
+                               for key, value in request.args.items()})
             filtro = {mongo_sanitizar(key): mongo_sanitizar(value)
                       for key, value in request.args.items()}
             current_app.logger.warning('Filtro %s' % filtro)
@@ -91,9 +95,7 @@ def api_grid_data():
 @ajna_api.route('/api/dues/update', methods=['POST'])
 @jwt_required
 def dues_update():
-    """Recebe um JSON no formato [{_id1: due1}, ..., {_idn: duen}] e grava
-
-    """
+    """Recebe um JSON no formato [{_id1: due1}, ..., {_idn: duen}] e grava."""
     # FIXME: Sanitizar esta entrada tbm
     db = current_app.config['mongodb']
     try:
@@ -112,7 +114,9 @@ def api_summary(ce_mercante):
     ce_mercante = mongo_sanitizar(ce_mercante)
     print('Consultando CE-Mercante %s' % ce_mercante)
     try:
-        cursor = db.fs.files.find({'metadata.carga.conhecimento.conhecimento': ce_mercante})
+        cursor = db.fs.files.find(
+            {'metadata.carga.conhecimento.conhecimento': ce_mercante}
+        )
         summary = []
         registro_pai = OrderedDict()
         print('Consultou!!!')
@@ -142,8 +146,12 @@ def api_summary(ce_mercante):
             registro = OrderedDict()
             registro['imagem'] = str(linha['_id'])
             registro['Numero Container'] = metadata.get('numeroinformado')
-            registro['Data Escaneamento'] = datetime.datetime.strftime(
-                metadata.get('dataescaneamento'), '%d/%m/%Y %H:%M')
+            try:
+                registro['Data Escaneamento'] = datetime.datetime.strftime(
+                    metadata.get('dataescaneamento'), '%d/%m/%Y %H:%M')
+            except Exception as err:
+                current_app.logger.error(err, exc_info=True)
+                registro['Data Escaneamento'] = str(err)
             if predictions:
                 peso = predictions[0].get('peso')
                 if peso and isinstance(peso, float):
@@ -151,15 +159,13 @@ def api_summary(ce_mercante):
             conteiner = carga.get('container')
             if isinstance(conteiner, list):
                 conteiner = conteiner[0]
-            tara = conteiner.get('taracontainer', '0')
-            tara = float(tara.replace(',', '.'))
-            peso = conteiner.get('pesobrutoitem', '0')
-            peso = float(peso.replace(',', '.'))
-            volume = conteiner.get('volumeitem')
-            volume = float(volume.replace(',', '.'))
-            registro['Peso bruto declarado'] = peso
-            registro['Tara declarada'] = tara
-            registro['Volume declarado'] = volume
+            for campo in ['taracontainer', 'pesobrutoitem', 'volumeitem']:
+                try:
+                    valor_str = conteiner.get(campo, '0')
+                    registro[campo] = float(valor_str.replace(',', '.'))
+                except Exception as err:
+                    current_app.logger.error(err, exc_info=True)
+                    registro[campo] = str(err)
             registro['NCM'] = ' '.join(set([ncm.get('ncm')
                                             for ncm in carga.get('ncm')]))
             summary.append(registro)

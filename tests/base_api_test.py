@@ -75,6 +75,7 @@ class ApiTestCase(unittest.TestCase):
             assert False
         except BadRequest as err:
             print(err)
+        return r
 
     def login(self, username='ajna', password='ajna'):
         rv = self.client.post(

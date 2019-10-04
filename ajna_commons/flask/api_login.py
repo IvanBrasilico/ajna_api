@@ -64,11 +64,13 @@ def configure(app: Flask):
 
         """
         s_dn = request.environ.get('HTTP_SSL_CLIENT_S_DN')
+        logger.error('s_dn %s' % s_dn)
         if s_dn:
             name = dict([x.split('=') for x in s_dn.split('/')[1:]])['CN']
+            logger.error(name)
             user = DBUser.get(name)
             if not user:
-                return jsonify({'msg': 'Usuário não cadastrado'}), 403
+                return jsonify({'msg': 'Usuário não cadastrado %s' % name}), 403
             access_token = create_access_token(identity=user.id)
             return jsonify(access_token=access_token), 200
         return jsonify({'msg': 'Certificado inválido ou não fornecido'}), 401

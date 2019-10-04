@@ -33,19 +33,19 @@ class ApiLoginTestCase(ApiTestCase):
                    query_dict={},
                    headers=self.headers)
         _id1 = self.db.fs.files.insert_one({'teste': '1',
-                                            'metadata' : {'contentType': 'text/text'}}).inserted_id
+                                            'metadata': {'contentType': 'text/text'}}).inserted_id
         _id2 = self.db.fs.files.insert_one({'teste': '2',
                                             'metadata': {'contentType': 'text/xml'}}).inserted_id
         r = self._case('GET', '/api/grid_data',
-                   status_code=200,
-                   query_dict={'teste': '1'},
-                   headers=self.headers)
+                       status_code=200,
+                       query_dict={'teste': '1'},
+                       headers=self.headers)
         assert len(r) == 1
         assert r[0]['_id'] == str(_id1)
         r = self._case('POST', '/api/grid_data',
-                   status_code=200,
-                   query_dict={'query': {'teste': '2'}},
-                   headers=self.headers)
+                       status_code=200,
+                       query_dict={'query': {'teste': '2'}},
+                       headers=self.headers)
         assert len(r) == 1
         assert r[0]['_id'] == str(_id2)
 
@@ -73,8 +73,8 @@ class ApiLoginTestCase(ApiTestCase):
         _id = fs.put(b'Teste', filename='teste.txt')
         print('/api/image/%s' % _id)
         r = self._case('GET', '/api/image/%s' % _id,
-                   status_code=200,
-                   headers=self.headers)
+                       status_code=200,
+                       headers=self.headers)
 
     def test_unauthorized_due(self):
         self.unauthorized('/api/dues/update', 'POST')
@@ -91,9 +91,9 @@ class ApiLoginTestCase(ApiTestCase):
         fs = GridFS(self.db)
         _id = fs.put(b'Teste', filename='teste.txt')
         r = self._case('POST', '/api/dues/update',
-                   status_code=201,
-                   query_dict={str(_id): []},
-                   headers=self.headers)
+                       status_code=201,
+                       query_dict={str(_id): []},
+                       headers=self.headers)
 
     def test_unauthorized_summary_aniita(self):
         self.unauthorized('/api/summary_aniita/0', 'GET')
@@ -108,17 +108,33 @@ class ApiLoginTestCase(ApiTestCase):
     def test_summary_aniita(self):
         self.login()
         self.db.fs.files.insert_one(
-            {'metadata' :
+            {'metadata':
                  {'carga':
-                      {'conhecimento':
+                      {
+                        'conhecimento':
                            {'conhecimento': '1',
                             'consignatario': 'A'
-                           }
-                       }
+                            },
+                        'manifesto':
+                            {'manifesto': 1
+                            },
+                        'ncm': []
+                      }
                   }
              }
         )
         r = self._case('GET', '/api/summary_aniita/1',
-                   status_code=400,
-                   headers=self.headers)
+                       status_code=200,
+                       headers=self.headers)
 
+    def test_campos_summary_aniita(self):
+        self.login()
+        with open('tests/exemplo_carga.json', 'r') as exemplo_in:
+            exemplo = json.load(exemplo_in)
+        self.db.fs.files.insert_one(exemplo)
+        r = self._case('GET', '/api/summary_aniita/2',
+                       status_code=200,
+                       headers=self.headers)
+        print(r)
+        assert r.get('NIC CE Mercante') == \
+               exemplo.get('metadata').get('carga').get('conhecimento').get('conhecimento')
