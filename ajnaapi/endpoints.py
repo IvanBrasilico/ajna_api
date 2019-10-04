@@ -7,7 +7,7 @@ from flask_jwt_extended import jwt_required
 
 from ajna_commons.utils.images import mongo_image
 from ajna_commons.utils.sanitiza import mongo_sanitizar
-from carga_mongo import CargaLoader
+from ajnaapi.carga_mongo import CargaLoader
 from integracao import due_mongo
 
 ajna_api = Blueprint('ajnaapi', __name__)
@@ -112,6 +112,7 @@ def dues_update():
 @jwt_required
 def api_summary(ce_mercante):
     db = current_app.config['mongodb']
+    loader = CargaLoader()
     ce_mercante = mongo_sanitizar(ce_mercante)
     print('Consultando CE-Mercante %s' % ce_mercante)
     try:
@@ -124,10 +125,9 @@ def api_summary(ce_mercante):
         ind = 0
         for linha in cursor:
             metadata = linha.get('metadata')
-            loader = CargaLoader()
-            carga_load = loader.load_from_gridfs(metadata)
             carga = metadata.get('carga')
             predictions = metadata.get('predictions')
+            carga_load = loader.load_from_gridfs(linha)
             if ind == 0:
                 manifesto = carga_load.manifestos[0]
                 registro_pai['Manifesto Mercante'] = manifesto.manifesto
