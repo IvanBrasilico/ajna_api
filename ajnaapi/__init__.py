@@ -7,6 +7,8 @@ from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import redirect
 
 from ajna_commons.flask import api_login, login
+from ajna_commons.flask.user import DBUser
+
 from ajnaapi.endpoints import ajna_api
 
 from .config import Production
@@ -35,9 +37,11 @@ def create_app(config_class=Production):
 
     # app.config['SERVER_NAME'] = 'ajna.api'
     app.secret_key = config_class.SECRET
+    app.config['SECRET_KEY'] = config_class.SECRET
     app.config['mongodb'] = config_class.db
     api = api_login.configure(app)
     login.configure(app)
+    DBUser.dbsession = config_class.db
     app.register_blueprint(ajna_api)
     csrf.exempt(api)
     csrf.exempt(ajna_api)
