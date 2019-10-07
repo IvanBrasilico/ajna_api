@@ -10,3 +10,4 @@ api-venv/*
 .tox
 htmlcov
 /notebooks/mercante/*
+/mercante/*

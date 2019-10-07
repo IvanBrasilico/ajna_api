@@ -3,10 +3,7 @@ from xml.etree.ElementTree import Element
 from ajna_commons.flask.log import logger
 
 # TODO: Tratar lista de Escalas (manifestosCarga)
-# TODO: Tratar lista de vazios  (manifestosCarga)
 # TODO: Tratar lista de lacres  (itensCarga)
-# TODO: Confirmar que não há lista de NCMs (itensCarga)
-# TODO: Ver como guardar informações adicionais de NCM
 # TODO: Ver se precisa e como guardar informações adicionais
 #  de Embarcador e Consignatario
 
@@ -44,8 +41,9 @@ class ParseXML:
 
 
 class Embarcador(ParseXML):
-    cnpjShipper: str = ''
-    idEmbarcador: str = ''
+    def __init__(self):
+        self.cnpjShipper: str = ''
+        self.idEmbarcador: str = ''
 
     def __repr__(self):
         if self.cnpjShipper:
@@ -54,10 +52,11 @@ class Embarcador(ParseXML):
 
 
 class Consignatario(ParseXML):
-    tipoConsignatario: str = ''
-    cnpjConsignatario: str = ''
-    nomeConsignatarioEstrangeiro: str = ''
-    dadosComplementaresConsignatario: str = ''
+    def __init__(self):
+        self.tipoConsignatario: str = ''
+        self.cnpjConsignatario: str = ''
+        self.nomeConsignatarioEstrangeiro: str = ''
+        self.dadosComplementaresConsignatario: str = ''
 
     def __repr__(self):
         if (self.cnpjConsignatario is not None and
@@ -68,7 +67,8 @@ class Consignatario(ParseXML):
 
 
 class ManifestoCE(ParseXML):
-    numeroManifesto: str = ''
+    def __init__(self):
+        self.numeroManifesto: str = ''
 
     def __repr__(self):
         return self.numeroManifesto
@@ -97,7 +97,7 @@ class Conhecimento(ParseXML):
         self.codigoEmpresaNavegacao: str = ''
 
     @property
-    def embarcador(self)-> str:
+    def embarcador(self) -> str:
         return self._embarcador
 
     @embarcador.setter
@@ -106,7 +106,7 @@ class Conhecimento(ParseXML):
         self._embarcador._parse_node(node)
 
     @property
-    def consignatario(self)-> str:
+    def consignatario(self) -> str:
         return self._consignatario
 
     @consignatario.setter
@@ -115,7 +115,7 @@ class Conhecimento(ParseXML):
         self._consignatario._parse_node(node)
 
     @property
-    def manifestoCE(self)-> str:
+    def manifestoCE(self) -> str:
         return self._manifestoCE
 
     @manifestoCE.setter
@@ -155,12 +155,6 @@ class Lacre(ParseXML):
 class NCM(ParseXML):
     def __init__(self):
         self.identificacaoNCM: str = ''
-        self.numeroIdentificacao: str = ''
-        self.marcaMercadoria: str = ''
-        self.qtdeVolumes: str = ''
-        self.codigoTipoEmbalagem: str = ''
-        self.itemEmbaladoMadeira: str = ''
-        self.descritivo: str = ''
 
     def __repr__(self):
         return self.identificacaoNCM
@@ -174,17 +168,23 @@ class ItemCarga(ParseXML):
         self.numeroCEmercante: str = ''
         self.tipoItemCarga: str = ''
         self.numeroSequencialItemCarga: str = ''
+        self.cubagemM3: str = ''
+        self._NCM: Element = None
+        # Campos do conteiner
         self.pesoBruto: str = ''
         self.codigoConteiner: str = ''
         self.isoCode: str = ''
         self.tara: str = ''
         self.indicadorUsoParcial: str = ''
-        self.cubagemM3: str = ''
         self._lacre: Element = None
-        self._NCM: Element = None
+        # Campos da carga solta
+        self.codigoTipoEmbalagem: str = ''
+        self.qtdeItens: str = ''
+        self.marca: str = ''
+        self.contraMarca: str = ''
 
     @property
-    def lacre(self)-> str:
+    def lacre(self) -> str:
         return self._lacre
 
     @lacre.setter
@@ -193,7 +193,7 @@ class ItemCarga(ParseXML):
         self._lacre._parse_node(node)
 
     @property
-    def NCM(self)-> str:
+    def NCM(self) -> str:
         return self._NCM
 
     @NCM.setter
@@ -209,7 +209,45 @@ class ExclusaoEscala(ParseXML):
         self.dataExclusao: str = ''
         self.horaExclusao: str = ''
 
+
+# Entidades que ficam em listas dentro de outra Entidade no XML
+# Tratamento tem que se diferente na varredura de nodes do XML
+
+class ConteinerVazio(ParseXML):
+    tag = 'conteinersVazio'
+
+    def __init__(self, manifesto: Manifesto):
+        self.tipoMovimento = manifesto.tipoMovimento
+        self.manifesto = manifesto.numero
+        self.idConteinerVazio: str = ''
+        self.isoConteinerVazio: str = ''
+        self.taraConteinerVazio: str = ''
+
+
+class NCMItemCarga(ParseXML):
+    tag = 'NCM'
+
+    def __init__(self, itemcarga: ItemCarga):
+        self.tipoMovimento = itemcarga.tipoMovimento
+        self.numeroCEMercante = itemcarga.numeroCEmercante
+        self.numeroSequencialItemCarga = itemcarga.numeroSequencialItemCarga
+        self.codigoConteiner = itemcarga.codigoConteiner
+        self.identificacaoNCM: str = ''
+        self.numeroIdentificacao: str = ''
+        self.marcaMercadoria: str = ''
+        self.qtdeVolumes: str = ''
+        self.codigoTipoEmbalagem: str = ''
+        self.itemEmbaladoMadeira: str = ''
+        self.descritivo: str = ''
+
+    def __repr__(self):
+        return self.identificacaoNCM
+
+
 classes = {'conhecimentosEmbarque': Conhecimento,
            'manifestosCarga': Manifesto,
            'itensCarga': ItemCarga,
            'exclusoesEscala': ExclusaoEscala}
+
+classes_em_lista = {'manifestosCarga': ConteinerVazio,
+                    'itensCarga': NCMItemCarga}
