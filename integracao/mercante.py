@@ -214,7 +214,7 @@ class ExclusaoEscala(ParseXML):
 # Tratamento tem que se diferente na varredura de nodes do XML
 
 class ConteinerVazio(ParseXML):
-    tag = 'conteinersVazio'
+    _tag = 'conteinersVazio'
 
     def __init__(self, manifesto: Manifesto):
         self.tipoMovimento = manifesto.tipoMovimento
@@ -225,7 +225,7 @@ class ConteinerVazio(ParseXML):
 
 
 class NCMItemCarga(ParseXML):
-    tag = 'NCM'
+    _tag = 'NCM'
 
     def __init__(self, itemcarga: ItemCarga):
         self.tipoMovimento = itemcarga.tipoMovimento

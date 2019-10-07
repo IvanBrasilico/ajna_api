@@ -49,17 +49,15 @@ def processa_classes_em_lista(engine, lista_arquivos):
         for node in xroot:
             classe = mercante.classes_em_lista.get(node.tag)
             if classe:
-                last_class_name = classe
                 classe_pai = mercante.classes.get(node.tag)
                 objeto_pai = classe_pai()
                 objeto_pai._parse_node(node)
-                tag_classe = classe.tag
+                tag_classe = classe._tag
                 for subnode in node.findall(tag_classe):
                     count_objetos[classe] += 1
                     objeto = classe(objeto_pai)
                     objeto._parse_node(subnode)
                     objetos.append(objeto._to_dict())
-                classe = mercante.classes_em_lista.get(node.tag)
         if objetos and len(objetos) > 0:
             df = pd.DataFrame(objetos)
             classname = objeto.__class__.__name__
