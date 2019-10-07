@@ -18,7 +18,7 @@ class RegistroCarga:
     """Estrutura de um documento do CARGA."""
 
     def __init__(self):
-        self.manifestos: list[Manifesto] = []
+        self.manifestos = []
 
 
 class CargaLoader:
