@@ -202,6 +202,14 @@ class ItemCarga(ParseXML):
         self._NCM._parse_node(node)
 
 
+class ExclusaoEscala(ParseXML):
+    def __init__(self):
+        self.tipoMovimento: str = ''
+        self.numeroEscalaMercante: str = ''
+        self.dataExclusao: str = ''
+        self.horaExclusao: str = ''
+
 classes = {'conhecimentosEmbarque': Conhecimento,
            'manifestosCarga': Manifesto,
-           'itensCarga': ItemCarga}
+           'itensCarga': ItemCarga,
+           'exclusoesEscala': ExclusaoEscala}
