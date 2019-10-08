@@ -2,6 +2,7 @@ from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 from sqlalchemy.sql import select
 from sqlalchemy.engine.result import RowProxy
+from sqlalchemy.sql.expression import and_
 from integracao.mercantealchemy import (engine, conhecimentos,
                                         t_conhecimentosEmbarque)
 from dateutil import parser
@@ -87,12 +88,17 @@ def t_conhecimento_new(datainicio):
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
 
 
-@mercanteapi.route('/api/conhecimentosEmbarque/list', methods=['POST'])
+@mercanteapi.route('/api/conhecimentosEmbarque', methods=['GET', 'POST'])
 # @jwt_required
 def t_conhecimento_list():
     try:
         with engine.begin() as conn:
-            s = select([t_conhecimentosEmbarque]).where(request.form)
+            uri_query = request.values
+            print(uri_query)
+            lista_condicoes = [t_conhecimentosEmbarque.c[campo] == valor
+                               for campo, valor in uri_query.items()]
+            print(lista_condicoes)
+            s = select([t_conhecimentosEmbarque]).where(and_(*lista_condicoes))
             result = conn.execute(s)
             if result:
                 resultados = [dump_rowproxy(conhecimento) for conhecimento in result]
@@ -130,6 +136,28 @@ def conhecimento_new(datamodificacao):
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
+
+
+@mercanteapi.route('/api/conhecimentos', methods=['GET', 'POST'])
+# @jwt_required
+def conhecimentos_list():
+    try:
+        with engine.begin() as conn:
+            uri_query = request.values
+            print(uri_query)
+            lista_condicoes = [conhecimentos.c[campo] == valor
+                               for campo, valor in uri_query.items()]
+            s = select([conhecimentos]).where(and_(*lista_condicoes))
+            result = conn.execute(s)
+            if result:
+                resultados = [dump_rowproxy(conhecimento) for conhecimento in result]
+                return jsonify(resultados), 200
+            else:
+                return jsonify({'msg': 'Conhecimento não encontrado'}), 404
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
+
 
 
 @mercanteapi.route('/api/jwt', methods=['GET'])
