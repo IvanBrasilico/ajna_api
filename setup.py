@@ -20,9 +20,11 @@ setup(
         'gunicorn',
         'Pillow',
         'PyMongo',
+        'pymysql',
         'python-jose[cryptography]',
         'redis',
         'requests',
+        'sqlalchemy'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],

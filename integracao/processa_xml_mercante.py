@@ -6,6 +6,7 @@ programado para rodar via crontab, conforme exempo em /periodic_updates.sh
 """
 import logging
 import os
+import time
 import pandas as pd
 import sqlalchemy
 
@@ -65,30 +66,44 @@ def processa_classes_em_lista(engine, lista_arquivos):
                 df.to_sql(classname, engine, if_exists='append')
             except Exception as err:
                 logger.error('Erro ocorrido no arquivo %s. %s' % (arquivo, err))
-            lista_erros.append(arquivo)
+                lista_erros.append(arquivo)
     return count_objetos, lista_erros
 
 
 def mercante_updates(engine):
-    print('Iniciando atualizações...')
+    logger.info('Iniciando atualizações da base Mercante...')
     lista_arquivos = \
         [f for f in os.listdir(mercante.MERCANTE_DIR)
          if os.path.isfile(os.path.join(mercante.MERCANTE_DIR, f))]
-    print(lista_arquivos)
+    # print(lista_arquivos)
+    t0 = time.time()
     count_objetos, lista_erros = processa_classes(engine, lista_arquivos)
-    logger.info('%d arquivos processados com %d objetos' %
-                (len(lista_arquivos), sum(count_objetos.values())))
-    count_objetos_lista, lista_erros_lista = processa_classes(engine,
+    t = time.time()
+    logger.info('%d arquivos processados com %d objetos em %0.2f s' %
+                (len(lista_arquivos), sum(count_objetos.values()), t - t0)
+                )
+    logger.info(str(count_objetos.most_common()))
+    t0 = time.time()
+    count_objetos_lista, lista_erros_lista = processa_classes_em_lista(engine,
                                                               lista_arquivos)
-    logger.info('%d arquivos processados com %d listas de objetos' %
-                (len(lista_arquivos), sum(count_objetos_lista.values())))
+    t = time.time()
+    logger.info('%d arquivos processados com %d lista de objetos em %0.2f s' %
+                (len(lista_arquivos), sum(count_objetos_lista.values()), t - t0)
+                )
+    logger.info(str(count_objetos_lista.most_common()))
     arquivoscomerro = set([*lista_erros, *lista_erros_lista])
+    logger.info('Arquivos com erro sendo copiados para diretório erro ' +
+                ', '.join(arquivoscomerro)
+                )
     for arquivo in arquivoscomerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),
                   os.path.join(mercante.MERCANTE_DIR, 'erros', arquivo))
     lista_arquivos_semerro = \
         [f for f in os.listdir(mercante.MERCANTE_DIR)
          if os.path.isfile(os.path.join(mercante.MERCANTE_DIR, f))]
+    logger.info('Arquivos SEM erro sendo copiados para diretório processados ' +
+                ', '.join(lista_arquivos_semerro)
+                )
     for arquivo in lista_arquivos_semerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),
                   os.path.join(mercante.MERCANTE_DIR, 'processados', arquivo))

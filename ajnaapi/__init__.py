@@ -10,7 +10,7 @@ from ajna_commons.flask import api_login, login
 from ajna_commons.flask.user import DBUser
 
 from ajnaapi.endpoints import ajna_api
-
+from ajnaapi.mercanteapi import mercanteapi
 from .config import Production
 
 
@@ -43,6 +43,8 @@ def create_app(config_class=Production):
     login.configure(app)
     DBUser.dbsession = config_class.db
     app.register_blueprint(ajna_api)
+    app.register_blueprint(mercanteapi)
     csrf.exempt(api)
     csrf.exempt(ajna_api)
+    csrf.exempt(mercanteapi)
     return app
