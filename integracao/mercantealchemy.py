@@ -148,5 +148,9 @@ conhecimentos = Table(
 )
 
 if __name__ == '__main__':
-    # metadata.drop_all(engine)
-    # metadata.create_all(engine)
+    confirma = input('Recriar todas as tabelas ** APAGA TODOS OS DADOS ** (S/N)')
+    if confirma != 'S':
+        exit('Saindo... (só recrio se digitar "S", digitou %s)' % confirma)
+    print('Recriando tabelas, aguarde...')
+    metadata.drop_all(engine)
+    metadata.create_all(engine)
