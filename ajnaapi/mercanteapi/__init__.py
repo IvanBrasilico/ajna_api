@@ -158,7 +158,6 @@ def conhecimentos_list():
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
 
 
-
 @mercanteapi.route('/api/jwt', methods=['GET'])
 @jwt_required
 def conhecimento_jwt():
