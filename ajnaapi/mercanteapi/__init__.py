@@ -58,9 +58,11 @@ def select_many_from_class(table, campo, valor):
 
 
 def return_many_from_resultproxy(result):
-    print(result.rowcount)
-    if result and result.rowcount > 0:
+    resultados = None
+    if result:
         resultados = [dump_rowproxy(row) for row in result]
+    if resultados and len(resultados) > 0:
+        print(len(resultados))
         return jsonify(resultados), 200
     else:
         return jsonify({'msg': 'Não encontrado'}), 404
@@ -156,9 +158,3 @@ def conhecimentos_list():
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
-
-
-@mercanteapi.route('/api/jwt', methods=['GET'])
-@jwt_required
-def conhecimento_jwt():
-    pass

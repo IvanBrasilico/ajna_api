@@ -1,6 +1,6 @@
 # Tescases for mercanteapi blueprint
 import json
-from sqlalchemy import create_engine
+from dateutil import parser
 from integracao.mercantealchemy import metadata
 from integracao.mercantealchemy import conhecimentos, t_conhecimentosEmbarque
 
@@ -51,23 +51,22 @@ class MercanteApiTestCase(ApiTestCase):
                    headers=self.headers)
         conn = self.sql.connect()
         ins = t_conhecimentosEmbarque.insert()
+        create_date = '2019-01-01 00:00:00'
+        rp = conn.execute(ins, **{'numeroCEmercante': '000',
+                                  'last_modified': parser.parse(create_date)})
         rp = conn.execute(ins, **{'numeroCEmercante': '000'})
-        print(rp, rp.rowcount)
-        sel = t_conhecimentosEmbarque.select(
-            ).where(t_conhecimentosEmbarque.c.numeroCEmercante == '000')
-        rp = conn.execute(sel)
-        rp.fetchall()
-        for row in rp:
-            print(row)
-            print(row[0])
-            print(row['numeroCEmercante'])
-        print(rp, rp.rowcount)
-
         r = self._case('GET', '/api/conhecimentosEmbarque/000',
                        status_code=200,
                        query_dict={},
                        headers=self.headers)
-
+        r = self._case('GET', '/api/conhecimentosEmbarque',
+                       status_code=200,
+                       query_dict={'numeroCEmercante': '000'},
+                       headers=self.headers)
+        r = self._case('GET', '/api/conhecimentosEmbarque/new/%s' % create_date,
+                       status_code=200,
+                       query_dict={},
+                       headers=self.headers)
 
     def test_conhecimentos_get(self):
         self.login()
@@ -78,8 +77,19 @@ class MercanteApiTestCase(ApiTestCase):
                    headers=self.headers)
         conn = self.sql.connect()
         ins = conhecimentos.insert()
-        rp = conn.execute(ins, **{'numeroCEmercante': '000', 'ID': 1})
+        last_modified = '2019-01-01 00:00:00'
+        rp = conn.execute(ins, **{'numeroCEmercante': '000',
+                                  'ID': 1,
+                                  'last_modified': parser.parse(last_modified)})
         r = self._case('GET', '/api/conhecimentos/000',
+                       status_code=200,
+                       query_dict={},
+                       headers=self.headers)
+        r = self._case('GET', '/api/conhecimentos',
+                       status_code=200,
+                       query_dict={'numeroCEmercante': '000'},
+                       headers=self.headers)
+        r = self._case('GET', '/api/conhecimentos/new/%s' % last_modified,
                        status_code=200,
                        query_dict={},
                        headers=self.headers)
