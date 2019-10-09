@@ -10,7 +10,7 @@ class MercanteApiTestCase(ApiTestCase):
 
     def setUp(self):
         super().setUp()
-        self.engine = create_engine('sqlite:///memory/')
+        self.engine = create_engine('sqlite:///:memory:/')
 
     def login(self, username='ajna', password='ajna'):
         rv = self.client.post(
