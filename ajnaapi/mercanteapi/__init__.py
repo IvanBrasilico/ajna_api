@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.sql import select
 from sqlalchemy.engine.result import RowProxy
 from sqlalchemy.sql.expression import and_
-from integracao.mercantealchemy import (engine, conhecimentos,
+from integracao.mercantealchemy import (conhecimentos,
                                         t_conhecimentosEmbarque)
 from dateutil import parser
 
@@ -20,6 +20,7 @@ def dump_rowproxy(rowproxy: RowProxy, exclude: list = None):
 
 
 def select_one_from_class(table, campo, valor):
+    engine = current_app.config['sql']
     try:
         with engine.begin() as conn:
             s = select([table]).where(
@@ -35,6 +36,7 @@ def select_one_from_class(table, campo, valor):
 
 
 def select_many_from_class(table, campo, valor):
+    engine = current_app.config['sql']
     try:
         with engine.begin() as conn:
             s = select([table]).where(
@@ -61,7 +63,7 @@ def return_many_from_resultproxy(result):
 
 
 @mercanteapi.route('/api/conhecimentosEmbarque/<numeroCEmercante>', methods=['GET'])
-# @jwt_required
+@jwt_required
 def t_conhecimento(numeroCEmercante):
     return select_many_from_class(t_conhecimentosEmbarque,
                                   t_conhecimentosEmbarque.c.numeroCEmercante,
@@ -69,8 +71,9 @@ def t_conhecimento(numeroCEmercante):
 
 
 @mercanteapi.route('/api/conhecimentosEmbarque/new/<datainicio>', methods=['GET'])
-# @jwt_required
+@jwt_required
 def t_conhecimento_new(datainicio):
+    engine = current_app.config['sql']
     try:
         datainicio = parser.parse(datainicio)
         print(datainicio)
@@ -89,29 +92,24 @@ def t_conhecimento_new(datainicio):
 
 
 @mercanteapi.route('/api/conhecimentosEmbarque', methods=['GET', 'POST'])
-# @jwt_required
+@jwt_required
 def t_conhecimento_list():
+    engine = current_app.config['sql']
     try:
         with engine.begin() as conn:
             uri_query = request.values
-            print(uri_query)
             lista_condicoes = [t_conhecimentosEmbarque.c[campo] == valor
                                for campo, valor in uri_query.items()]
-            print(lista_condicoes)
             s = select([t_conhecimentosEmbarque]).where(and_(*lista_condicoes))
             result = conn.execute(s)
-            if result:
-                resultados = [dump_rowproxy(conhecimento) for conhecimento in result]
-                return jsonify(resultados), 200
-            else:
-                return jsonify({'msg': 'Conhecimento não encontrado'}), 404
+            return return_many_from_resultproxy(result)
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
 
 
 @mercanteapi.route('/api/conhecimentos/<numeroCEmercante>', methods=['GET'])
-# @jwt_required
+@jwt_required
 def conhecimento_numero(numeroCEmercante):
     return select_one_from_class(conhecimentos,
                                  conhecimentos.c.numeroCEmercante,
@@ -119,8 +117,9 @@ def conhecimento_numero(numeroCEmercante):
 
 
 @mercanteapi.route('/api/conhecimentos/new/<datamodificacao>', methods=['GET'])
-# @jwt_required
+@jwt_required
 def conhecimento_new(datamodificacao):
+    engine = current_app.config['sql']
     try:
         datamodificacao = parser.parse(datamodificacao)
         print(datamodificacao)
@@ -139,21 +138,17 @@ def conhecimento_new(datamodificacao):
 
 
 @mercanteapi.route('/api/conhecimentos', methods=['GET', 'POST'])
-# @jwt_required
+@jwt_required
 def conhecimentos_list():
+    engine = current_app.config['sql']
     try:
+        uri_query = request.values
         with engine.begin() as conn:
-            uri_query = request.values
-            print(uri_query)
             lista_condicoes = [conhecimentos.c[campo] == valor
                                for campo, valor in uri_query.items()]
             s = select([conhecimentos]).where(and_(*lista_condicoes))
             result = conn.execute(s)
-            if result:
-                resultados = [dump_rowproxy(conhecimento) for conhecimento in result]
-                return jsonify(resultados), 200
-            else:
-                return jsonify({'msg': 'Conhecimento não encontrado'}), 404
+            return return_many_from_resultproxy(result)
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400

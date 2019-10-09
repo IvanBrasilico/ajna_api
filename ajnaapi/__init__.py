@@ -39,6 +39,7 @@ def create_app(config_class=Production):
     app.secret_key = config_class.SECRET
     app.config['SECRET_KEY'] = config_class.SECRET
     app.config['mongodb'] = config_class.db
+    app.config['sql'] = config_class.sql
     api = api_login.configure(app)
     login.configure(app)
     DBUser.dbsession = config_class.db

@@ -5,9 +5,6 @@ from sqlalchemy.dialects.mysql import BIGINT
 
 metadata = MetaData()
 
-engine = create_engine('mysql+pymysql://ivan@localhost:3306/mercante',
-                       pool_size=5, max_overflow=5, pool_recycle=3600)
-
 # Tabelas de lista do XML
 t_ConteinerVazio = Table(
     'ConteinerVazio', metadata,
@@ -152,5 +149,7 @@ if __name__ == '__main__':
     if confirma != 'S':
         exit('Saindo... (só recrio se digitar "S", digitou %s)' % confirma)
     print('Recriando tabelas, aguarde...')
+    engine = create_engine('mysql+pymysql://ivan@localhost:3306/mercante',
+                           pool_size=5, max_overflow=5, pool_recycle=3600)
     metadata.drop_all(engine)
     metadata.create_all(engine)

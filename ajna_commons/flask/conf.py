@@ -51,15 +51,14 @@ if MONGODB_URI:
 else:
     DATABASE = 'test'
 
+SQL_URI = os.environ.get('SQL_URI', 'mysql+pymysql://ivan@localhost:3306/mercante')
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
-
 
 # initialize constants used for server queuing
 TIMEOUT = 10
 BATCH_SIZE = 1000
 ALLOWED_EXTENSIONS = set(['csv', 'zip', 'txt', 'png', 'jpg', 'jpeg', 'sch'])
-
 
 # Address of MicroServices from ajna modules
 # Devem ser definidas em variáveis de ambiente no Servidor de Deploy
@@ -73,3 +72,6 @@ if not VIRASANA_URL:
 PADMA_URL = os.environ.get('PADMA_URL')
 if not PADMA_URL:
     PADMA_URL = 'http://localhost:5002'
+API_URL = os.environ.get('API_URL')
+if not API_URL:
+    API_URL = 'http://localhost:5004'
