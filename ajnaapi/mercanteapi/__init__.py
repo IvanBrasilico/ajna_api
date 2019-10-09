@@ -41,9 +41,13 @@ def select_many_from_class(table, campo, valor):
         with engine.begin() as conn:
             s = select([table]).where(
                 campo == valor)
+            print(campo, valor)
             result = conn.execute(s)
             # print(result.rowcount)
-            if result and result.rowcount > 0:
+            resultados = None
+            if result:
+                resultados = [dump_rowproxy(row) for row in result]
+            if resultados and len(resultados) > 0:
                 resultados = [dump_rowproxy(row) for row in result]
                 return jsonify(resultados), 200
             else:

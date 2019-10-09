@@ -21,6 +21,7 @@ setup(
         'Pillow',
         'PyMongo',
         'pymysql',
+        'python-dateutil',
         'python-jose[cryptography]',
         'redis',
         'requests',
