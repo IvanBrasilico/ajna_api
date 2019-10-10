@@ -42,6 +42,21 @@ class MercanteApiTestCase(ApiTestCase):
         self.not_allowed('/api/conhecimentos/0', methods=['POST', 'PUT', 'DELETE'])
         self.not_allowed('/api/conhecimentos/new/0', methods=['POST', 'PUT', 'DELETE'])
 
+    def test_error_conhecimentos(self):
+        self.login()
+        rv = self.client.get('/api/conhecimentosEmbarque?camponaoexiste=nao',
+                             headers=self.headers)
+        assert rv.status_code == 400
+        rv = self.client.get('/api/conhecimentosEmbarque/new/datainvalida',
+                             headers=self.headers)
+        assert rv.status_code == 400
+        rv = self.client.get('/api/conhecimentos?camponaoexiste=nao',
+                             headers=self.headers)
+        assert rv.status_code == 400
+        rv = self.client.get('/api/conhecimentos/new/datainvalida',
+                             headers=self.headers)
+        assert rv.status_code == 400
+
     def test_conhecimentosEmbarque_get(self):
         self.login()
         metadata.create_all(self.sql)
