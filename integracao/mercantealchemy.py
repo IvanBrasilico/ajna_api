@@ -168,6 +168,31 @@ manifestos = Table(
        onupdate=func.current_timestamp())
 )
 
+itens = Table(
+    'itens', metadata,
+    Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
+    Column('NCM', Text),
+    Column('codigoConteiner', Text),
+    Column('codigoTipoEmbalagem', Text),
+    Column('contraMarca', Text),
+    Column('cubagemM3', Text),
+    Column('dataAtualizacao', Text),
+    Column('horaAtualizacao', Text),
+    Column('indicadorUsoParcial', Text),
+    Column('isoCode', Text),
+    Column('lacre', Text),
+    Column('marca', Text),
+    Column('numeroCEmercante', CHAR(15)),
+    Column('numeroSequencialItemCarga', CHAR(5)),
+    Column('pesoBruto', Text),
+    Column('qtdeItens', Text),
+    Column('tara', Text),
+    Column('tipoItemCarga', Text),
+    Column('create_date', DateTime, server_default=func.current_timestamp()),
+    Column('last_modified', DateTime, server_default=func.current_timestamp(),
+           onupdate=func.current_timestamp())
+)
+
 
 if __name__ == '__main__':
     confirma = input('Recriar todas as tabelas ** APAGA TODOS OS DADOS ** (S/N)')

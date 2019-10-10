@@ -12,19 +12,19 @@ import logging
 import os
 import time
 import sqlalchemy
-from sqlalchemy import func, select
+from sqlalchemy import func, select, and_
 
 from ajna_commons.flask.log import logger
-from integracao.mercantealchemy import conhecimentos, manifestos, \
-    t_conhecimentosEmbarque, t_manifestosCarga
+from integracao.mercantealchemy import (conhecimentos, itens, manifestos,
+    t_conhecimentosEmbarque, t_itensCarga, t_manifestosCarga)
 
 
-def execute_movimento(conn, destino, chave, valor_chave,
+def execute_movimento(conn, destino, chaves_valores,
                       tipoMovimento, keys, row):
     # print(tipoMovimento)
     if tipoMovimento == 'E':
         sql = destino.delete(
-        ).where(chave == valor_chave)
+        ).where(and_(**chaves_valores))
         return conn.execute(sql)
     keys.remove('ID')
     keys.remove('last_modified')
@@ -41,11 +41,11 @@ def execute_movimento(conn, destino, chave, valor_chave,
             pass
     # tipoMovimento == 'A':
     sql = destino.update(
-    ).where(chave == valor_chave)
+    ).where(and_(**chaves_valores))
     return conn.execute(sql, **dict_campos)
 
 
-def processa_resumo(engine, origem, destino, chave):
+def processa_resumo(engine, origem, destino, chaves):
     with engine.begin() as conn:
         s = select([func.Max(destino.c.create_date)])
         c = conn.execute(s).fetchone()
@@ -59,10 +59,10 @@ def processa_resumo(engine, origem, destino, chave):
         cont = 0
         for row in conn.execute(s):
             cont += 1
-            valor_chave = row[chave]
+            chaves_valores = {chave:row[chave] for chave in chaves}
             # print(numeroCEmercante)
             tipoMovimento = row[origem.c.tipoMovimento]
-            result_proxy = execute_movimento(conn, destino, chave, valor_chave,
+            result_proxy = execute_movimento(conn, destino, chaves_valores,
                                              tipoMovimento, destino.c.keys(), row)
         return cont
 
@@ -70,9 +70,13 @@ def processa_resumo(engine, origem, destino, chave):
 def mercante_resumo(engine):
     logger.info('Iniciando resumo da base Mercante...')
     migracoes = {t_conhecimentosEmbarque: conhecimentos,
-                 t_manifestosCarga: manifestos}
-    chaves = {conhecimentos: 'numeroCEmercante',
-              manifestos: 'numero'}
+                 t_manifestosCarga: manifestos,
+                 t_itensCarga: itens}
+
+    chaves = {conhecimentos: ('numeroCEmercante'),
+              manifestos: ('numero'),
+              itens: ('numeroCEmercante', 'numeroSequencialItemCarga')}
+
     for origem, destino in migracoes.items():
         t0 = time.time()
         cont = processa_resumo(engine, origem, destino, chaves[destino])
