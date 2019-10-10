@@ -1,0 +1,116 @@
+openapi: 3.0.1
+info:
+  title: API-AJNA
+  description: API para acesso de outras aplicações a dados do AJNA
+  version: "1.0a"
+servers:
+  - url: /api
+paths:
+  /login:
+    post:
+      summary: retorna token JWT
+      operationId: authentication.generate_token
+      requestBody:
+        description: Usuario e Senha
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationJson'
+      responses:
+        '200':
+          description: JWT token
+          content:
+            'text/plain':
+              schema:
+                type: string
+  /secret:
+    get:
+      summary: Return secret string
+      operationId: authentication.get_secret
+      responses:
+        '200':
+          description: secret response
+          content:
+            'text/plain':
+              schema:
+                type: string
+      security:
+        - jwt: ['secret']
+  /conhecimentos/{numeroCEmercante}:
+    get:
+      parameters:
+        - name: numeroCEmercante
+          in: path
+          description: Numero do CE Mercante no sistema original
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conhecimentos'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      x-bearerInfoFunc: authentication.decode_token
+  schemas:
+    AuthenticationJson:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    conhecimentos:
+      type: object
+      properties:
+        codigoEmpresaNavegacao:
+          type: string
+        codigoTerminalCarregamento:
+          type: string
+        consignatario:
+          type: string
+        cubagem:
+          type: string
+        dataAtualizacao:
+          type: string
+        dataEmissao:
+          type: string
+        descricao:
+          type: string
+        embarcador:
+          type: string
+        horaAtualizacao:
+          type: string
+        indicadorShipsConvenience:
+          type: string
+        manifestoCE:
+          type: string
+        numeroCEMaster:
+          type: string
+        numeroCEmercante:
+          type: string
+        paisDestinoFinalMercante:
+          type: string
+        portoDestFinal:
+          type: string
+        portoOrigemCarga:
+          type: string
+        tipoBLConhecimento:
+          type: string
+        tipoTrafego:
+          type: string

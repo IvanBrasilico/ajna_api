@@ -15,16 +15,19 @@ import sqlalchemy
 from sqlalchemy import func, select, and_
 
 from ajna_commons.flask.log import logger
-from integracao.mercantealchemy import (conhecimentos, itens, manifestos,
-    t_conhecimentosEmbarque, t_itensCarga, t_manifestosCarga)
+from integracao.mercantealchemy import (conhecimentos, conteineresVazios, itens,
+                                        manifestos, NCMItem, t_conhecimentosEmbarque,
+                                        t_ConteinerVazio, t_itensCarga, t_manifestosCarga,
+                                        t_NCMItemCarga)
 
 
 def execute_movimento(conn, destino, chaves_valores,
                       tipoMovimento, keys, row):
     # print(tipoMovimento)
+    # print(chaves_valores)
     if tipoMovimento == 'E':
         sql = destino.delete(
-        ).where(and_(**chaves_valores))
+        ).where(and_(*chaves_valores))
         return conn.execute(sql)
     keys.remove('ID')
     keys.remove('last_modified')
@@ -41,7 +44,7 @@ def execute_movimento(conn, destino, chaves_valores,
             pass
     # tipoMovimento == 'A':
     sql = destino.update(
-    ).where(and_(**chaves_valores))
+    ).where(and_(*chaves_valores))
     return conn.execute(sql, **dict_campos)
 
 
@@ -59,7 +62,7 @@ def processa_resumo(engine, origem, destino, chaves):
         cont = 0
         for row in conn.execute(s):
             cont += 1
-            chaves_valores = {chave:row[chave] for chave in chaves}
+            chaves_valores = [destino.c[chave] == row[chave] for chave in chaves]
             # print(numeroCEmercante)
             tipoMovimento = row[origem.c.tipoMovimento]
             result_proxy = execute_movimento(conn, destino, chaves_valores,
@@ -71,11 +74,17 @@ def mercante_resumo(engine):
     logger.info('Iniciando resumo da base Mercante...')
     migracoes = {t_conhecimentosEmbarque: conhecimentos,
                  t_manifestosCarga: manifestos,
-                 t_itensCarga: itens}
+                 t_itensCarga: itens,
+                 t_NCMItemCarga: NCMItem,
+                 t_ConteinerVazio: conteineresVazios}
 
-    chaves = {conhecimentos: ('numeroCEmercante'),
-              manifestos: ('numero'),
-              itens: ('numeroCEmercante', 'numeroSequencialItemCarga')}
+    chaves = {conhecimentos: ['numeroCEmercante'],
+              manifestos: ['numero'],
+              itens: ['numeroCEmercante', 'numeroSequencialItemCarga'],
+              NCMItem: ['numeroCEMercante', 'codigoConteiner',
+                        'numeroSequencialItemCarga'],
+              conteineresVazios: ['idConteinerVazio', 'manifesto']
+              }
 
     for origem, destino in migracoes.items():
         t0 = time.time()

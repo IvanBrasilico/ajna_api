@@ -123,7 +123,7 @@ conhecimentos = Table(
     Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
     Column('codigoEmpresaNavegacao', Text),
     Column('codigoTerminalCarregamento', Text),
-    Column('consignatario', Text),
+    Column('consignatario', CHAR(15)),
     Column('cubagem', Text),
     Column('dataAtualizacao', Text),
     Column('dataEmissao', Text),
@@ -131,8 +131,8 @@ conhecimentos = Table(
     Column('embarcador', Text),
     Column('horaAtualizacao', Text),
     Column('indicadorShipsConvenience', Text),
-    Column('manifestoCE', Text),
-    Column('numeroCEMaster', Text),
+    Column('manifestoCE', CHAR(15)),
+    Column('numeroCEMaster', CHAR(15)),
     Column('numeroCEmercante', CHAR(15), unique=True),
     Column('paisDestinoFinalMercante', Text),
     Column('portoDestFinal', Text),
@@ -143,7 +143,6 @@ conhecimentos = Table(
     Column('last_modified', DateTime, server_default=func.current_timestamp(),
            onupdate=func.current_timestamp())
 )
-
 
 manifestos = Table(
     'manifestos', metadata,
@@ -165,14 +164,14 @@ manifestos = Table(
     Column('tipoTrafego', Text),
     Column('create_date', DateTime, server_default=func.current_timestamp()),
     Column('last_modified', DateTime, server_default=func.current_timestamp(),
-       onupdate=func.current_timestamp())
+           onupdate=func.current_timestamp())
 )
 
 itens = Table(
     'itens', metadata,
     Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
     Column('NCM', Text),
-    Column('codigoConteiner', Text),
+    Column('codigoConteiner', CHAR(11)),
     Column('codigoTipoEmbalagem', Text),
     Column('contraMarca', Text),
     Column('cubagemM3', Text),
@@ -193,6 +192,36 @@ itens = Table(
            onupdate=func.current_timestamp())
 )
 
+NCMItem = Table(
+    'NCMItem', metadata,
+    Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
+    Column('codigoConteiner', CHAR(11)),
+    Column('codigoTipoEmbalagem', Text),
+    Column('descritivo', Text),
+    Column('identificacaoNCM', Text),
+    Column('itemEmbaladoMadeira', Text),
+    Column('marcaMercadoria', Text),
+    Column('numeroCEMercante', CHAR(15)),
+    Column('numeroIdentificacao', Text),
+    Column('numeroSequencialItemCarga', CHAR(5)),
+    Column('qtdeVolumes', Text),
+    Column('create_date', DateTime, server_default=func.current_timestamp()),
+    Column('last_modified', DateTime, server_default=func.current_timestamp(),
+           onupdate=func.current_timestamp())
+)
+
+
+conteineresVazios = Table(
+    'conteineresVazio', metadata,
+    Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
+    Column('idConteinerVazio', CHAR(11)),
+    Column('isoConteinerVazio', Text),
+    Column('manifesto', CHAR(15)),
+    Column('taraConteinerVazio', Text),
+    Column('create_date', DateTime, server_default=func.current_timestamp()),
+    Column('last_modified', DateTime, server_default=func.current_timestamp(),
+       onupdate=func.current_timestamp())
+)
 
 if __name__ == '__main__':
     confirma = input('Recriar todas as tabelas ** APAGA TODOS OS DADOS ** (S/N)')

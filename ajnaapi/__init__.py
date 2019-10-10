@@ -1,8 +1,9 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, send_file, url_for
 from flask_bootstrap import Bootstrap
 from flask_login import current_user
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View
+from flask_swagger_ui import get_swaggerui_blueprint
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import redirect
 
@@ -13,13 +14,20 @@ from ajnaapi.endpoints import ajna_api
 from ajnaapi.mercanteapi import mercanteapi
 from .config import Production
 
+SWAGGER_URL = '/api/docs' # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/api/openapi.yaml' # Our API url (can of course be a local resource)
+
 
 def create_app(config_class=Production):
     app = Flask(__name__)
     Bootstrap(app)
     nav = Nav(app)
     csrf = CSRFProtect(app)
-
+    swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+    @app.route('/api/openapi.yaml')
+    def return_yaml():
+        return send_file('openapi.yaml')
     @nav.navigation()
     def mynavbar():
         """Menu da aplicação."""
