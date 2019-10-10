@@ -11,3 +11,5 @@ api-venv/*
 htmlcov
 /notebooks/mercante/*
 /mercante/*
+venv/*
+*.db

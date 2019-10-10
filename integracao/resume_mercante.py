@@ -21,6 +21,7 @@ from integracao.mercantealchemy import conhecimentos, manifestos, \
 
 def execute_movimento(conn, destino, chave, valor_chave,
                       tipoMovimento, keys, row):
+    # print(tipoMovimento)
     if tipoMovimento == 'E':
         sql = destino.delete(
         ).where(chave == valor_chave)
@@ -31,9 +32,11 @@ def execute_movimento(conn, destino, chave, valor_chave,
                    for key in keys}
     if tipoMovimento == 'I':
         sql = destino.insert()
+        # print(sql, dict_campos)
         try:
             return conn.execute(sql, **dict_campos)
-        except sqlalchemy.exc.IntegrityError:
+        except sqlalchemy.exc.IntegrityError as err:
+            print(err)
             # TODO: Ver como resolver o problema de processar duas vezes (criar flag??)
             pass
     # tipoMovimento == 'A':
@@ -66,22 +69,22 @@ def processa_resumo(engine, origem, destino, chave):
 
 def mercante_resumo(engine):
     logger.info('Iniciando resumo da base Mercante...')
-    t0 = time.time()
     migracoes = {t_conhecimentosEmbarque: conhecimentos,
                  t_manifestosCarga: manifestos}
     chaves = {conhecimentos: 'numeroCEmercante',
-              manifestos: 'numeroManifesto'}
+              manifestos: 'numero'}
     for origem, destino in migracoes.items():
+        t0 = time.time()
         cont = processa_resumo(engine, origem, destino, chaves[destino])
-    t = time.time()
-    logger.info('%d registros processados em %0.2f' %
-                (cont, t - t0)
-                )
+        t = time.time()
+        logger.info('%d registros processados em %0.2f s' %
+                    (cont, t - t0)
+                    )
 
 
 if __name__ == '__main__':
     os.environ['DEBUG'] = '1'
     logger.setLevel(logging.DEBUG)
-    engine = sqlalchemy.create_engine(
-        'mysql+pymysql://ivan@localhost:3306/mercante')
+    # engine = sqlalchemy.create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
+    engine = sqlalchemy.create_engine('sqlite:///teste.db')
     mercante_resumo(engine)

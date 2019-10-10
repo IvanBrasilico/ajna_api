@@ -144,12 +144,37 @@ conhecimentos = Table(
            onupdate=func.current_timestamp())
 )
 
+
+manifestos = Table(
+    'manifestos', metadata,
+    Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
+    Column('codAgenciaInformante', Text),
+    Column('codigoEmpresaNavegacao', Text),
+    Column('codigoTerminalCarregamento', Text),
+    Column('codigoTerminalDescarregamento', Text),
+    Column('dataAtualizacao', Text),
+    Column('dataEncerramento', Text),
+    Column('dataInicioOperacao', Text),
+    Column('horaAtualizacao', Text),
+    Column('numero', CHAR(15), unique=True),
+    Column('numeroImoDPC', Text),
+    Column('numeroViagem', Text),
+    Column('portoCarregamento', Text),
+    Column('portoDescarregamento', Text),
+    Column('quantidadeConhecimento', Text),
+    Column('tipoTrafego', Text),
+    Column('create_date', DateTime, server_default=func.current_timestamp()),
+    Column('last_modified', DateTime, server_default=func.current_timestamp(),
+       onupdate=func.current_timestamp())
+)
+
+
 if __name__ == '__main__':
     confirma = input('Recriar todas as tabelas ** APAGA TODOS OS DADOS ** (S/N)')
     if confirma != 'S':
         exit('Saindo... (só recrio se digitar "S", digitou %s)' % confirma)
     print('Recriando tabelas, aguarde...')
-    engine = create_engine('mysql+pymysql://ivan@localhost:3306/mercante',
-                           pool_size=5, max_overflow=5, pool_recycle=3600)
+    # engine = create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
+    engine = create_engine('sqlite:///teste.db')
     metadata.drop_all(engine)
     metadata.create_all(engine)

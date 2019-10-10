@@ -112,6 +112,6 @@ def mercante_updates(engine):
 if __name__ == '__main__':
     os.environ['DEBUG'] = '1'
     logger.setLevel(logging.DEBUG)
-    engine = sqlalchemy.create_engine(
-        'mysql+mysqlconnector://ivan@localhost:3306/mercante')
+    #engine = sqlalchemy.create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
+    engine = sqlalchemy.create_engine('sqlite:///teste.db')
     mercante_updates(engine)
