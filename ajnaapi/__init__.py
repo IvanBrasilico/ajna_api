@@ -20,6 +20,7 @@ API_URL = '/docs/openapi.yaml' # Our API url (can of course be a local resource)
 
 def create_app(config_class=Production):
     app = Flask(__name__)
+    app.logger.info('Criando app')
     Bootstrap(app)
     nav = Nav(app)
     csrf = CSRFProtect(app)
@@ -33,22 +34,21 @@ def create_app(config_class=Production):
     app.register_blueprint(mercanteapi)
     csrf.exempt(mercanteapi)
     app.logger.info('Configurando swagger-ui...')
-    print('Configurando swagger-ui...')
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
     @app.route('/docs/openapi.yaml')
     def return_yaml():
         return send_file('openapi.yaml')
 
-    print('Configurando api login...')
+    app.logger.info('Configurando api login...')
     api = api_login.configure(app)
     csrf.exempt(api)
 
-    print('Configurando login...')
+    app.logger.info('Configurando login...')
     login.configure(app)
     DBUser.dbsession = config_class.db
 
-    print('Configurando / e redirects')
+    app.logger.info('Configurando / e redirects')
     @nav.navigation()
     def mynavbar():
         """Menu da aplicação."""
