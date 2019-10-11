@@ -1,8 +1,10 @@
 import logging
 from werkzeug.serving import run_simple
 from werkzeug.wsgi import DispatcherMiddleware
+from ajnaapi import create_app
 
-from ajnaapi.main import app
+app = create_app()  # pragma: no cover
+print(app.url_map)  # pragma: no cover
 
 
 gunicorn_logger = logging.getLogger('gunicorn.error')
