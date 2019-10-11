@@ -70,7 +70,7 @@ def processa_classes_em_lista(engine, lista_arquivos):
     return count_objetos, lista_erros
 
 
-def mercante_updates(engine):
+def xml_para_mercante(engine):
     logger.info('Iniciando atualizações da base Mercante...')
     lista_arquivos = \
         [f for f in os.listdir(mercante.MERCANTE_DIR)
@@ -114,4 +114,4 @@ if __name__ == '__main__':
     logger.setLevel(logging.DEBUG)
     #engine = sqlalchemy.create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
     engine = sqlalchemy.create_engine('sqlite:///teste.db')
-    mercante_updates(engine)
+    xml_para_mercante(engine)

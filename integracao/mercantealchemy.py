@@ -1,7 +1,10 @@
 # coding: utf-8
 from sqlalchemy import create_engine
-from sqlalchemy import Column, CHAR, DateTime, func, MetaData, Table, Text
+from sqlalchemy import BigInteger, Column, CHAR, \
+    DateTime, func, Integer, MetaData, Table, Text
 from sqlalchemy.dialects.mysql import BIGINT
+
+from ajna_commons.flask.conf import SQL_URI
 
 metadata = MetaData()
 
@@ -120,7 +123,8 @@ t_manifestosCarga = Table(
 
 conhecimentos = Table(
     'conhecimentos', metadata,
-    Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
+    Column('ID', BigInteger().with_variant(Integer, "sqlite"),
+           primary_key=True, autoincrement=True),
     Column('codigoEmpresaNavegacao', Text),
     Column('codigoTerminalCarregamento', Text),
     Column('consignatario', CHAR(15)),
@@ -146,7 +150,8 @@ conhecimentos = Table(
 
 manifestos = Table(
     'manifestos', metadata,
-    Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
+    Column('ID', BigInteger().with_variant(Integer, "sqlite"),
+           primary_key=True, autoincrement=True),
     Column('codAgenciaInformante', Text),
     Column('codigoEmpresaNavegacao', Text),
     Column('codigoTerminalCarregamento', Text),
@@ -169,7 +174,8 @@ manifestos = Table(
 
 itens = Table(
     'itens', metadata,
-    Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
+    Column('ID', BigInteger().with_variant(Integer, "sqlite"),
+           primary_key=True, autoincrement=True),
     Column('NCM', Text),
     Column('codigoConteiner', CHAR(11)),
     Column('codigoTipoEmbalagem', Text),
@@ -194,7 +200,8 @@ itens = Table(
 
 NCMItem = Table(
     'NCMItem', metadata,
-    Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
+    Column('ID', BigInteger().with_variant(Integer, "sqlite"),
+           primary_key=True, autoincrement=True),
     Column('codigoConteiner', CHAR(11)),
     Column('codigoTipoEmbalagem', Text),
     Column('descritivo', Text),
@@ -213,7 +220,8 @@ NCMItem = Table(
 
 conteineresVazios = Table(
     'conteineresVazio', metadata,
-    Column('ID', BIGINT(20), primary_key=True, autoincrement=True),
+    Column('ID', BigInteger().with_variant(Integer, "sqlite"),
+           primary_key=True, autoincrement=True),
     Column('idConteinerVazio', CHAR(11)),
     Column('isoConteinerVazio', Text),
     Column('manifesto', CHAR(15)),
@@ -229,6 +237,12 @@ if __name__ == '__main__':
         exit('Saindo... (só recrio se digitar "S", digitou %s)' % confirma)
     print('Recriando tabelas, aguarde...')
     # engine = create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
-    engine = create_engine('sqlite:///teste.db')
-    metadata.drop_all(engine)
-    metadata.create_all(engine)
+    banco = input('Escolha a opção de Banco (1 - MySQL/ 2 - Sqlite)')
+    if banco == '1':
+        engine = create_engine(SQL_URI)
+        metadata.drop_all(engine)
+        metadata.create_all(engine)
+    if banco == '2':
+        engine = create_engine('sqlite:///teste.db')
+        metadata.drop_all(engine)
+        metadata.create_all(engine)
