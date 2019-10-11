@@ -4,7 +4,7 @@ info:
   description: API para acesso de outras aplicações a dados do AJNA
   version: "1.0a"
 servers:
-  - url: /api
+  - url: /ajnaapi/api
 paths:
   /login:
     post:
@@ -34,6 +34,80 @@ paths:
             'text/plain':
               schema:
                 type: string
+      security:
+        - jwt: ['secret']
+  /grid_data:
+    post:
+      requestBody:
+        description: Lista de eventos maiores que um ID ou Data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: aplication/json
+                  description: Campos a retornar - padrão MongoDB
+                  required: true
+                recinto:
+                  type: aplication/json
+                  description: Campos a retornar - padrão MongoDB
+                  required: true
+      responses:
+        200:
+          description:
+          content:
+            image/jpeg:
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /image/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          description: id da imagem do escaneamento no banco de dados AJNA
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description:
+          content:
+            image/jpeg:
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /summary_aniita/<ce_mercante>:
+    get:
+      parameters:
+        - name: ce_mercante
+          in: path
+          description: número do conhecimento de transporte NIC CE Mercante
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Lista de contêineres do CE, algumas informações do sistema Mercante, id das imagens do CE
+          content:
+            aplication/json:
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
       security:
         - jwt: ['secret']
   /conhecimentos/{numeroCEmercante}:

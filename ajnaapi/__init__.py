@@ -14,8 +14,8 @@ from ajnaapi.endpoints import ajna_api
 from ajnaapi.mercanteapi import mercanteapi
 from .config import Production
 
-SWAGGER_URL = '/api/docs' # URL for exposing Swagger UI (without trailing '/')
-API_URL = '/api/openapi.yaml' # Our API url (can of course be a local resource)
+SWAGGER_URL = '/docs' # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/docs/openapi.yaml' # Our API url (can of course be a local resource)
 
 
 def create_app(config_class=Production):
@@ -25,7 +25,7 @@ def create_app(config_class=Production):
     csrf = CSRFProtect(app)
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
-    @app.route('/api/openapi.yaml')
+    @app.route('/docs/openapi.yaml')
     def return_yaml():
         return send_file('openapi.yaml')
     @nav.navigation()

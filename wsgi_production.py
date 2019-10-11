@@ -1,4 +1,5 @@
 import logging
+from werkzeug.serving import run_simple
 from werkzeug.wsgi import DispatcherMiddleware
 
 from ajnaapi.main import app
@@ -12,3 +13,7 @@ application = DispatcherMiddleware(app,
                                    {
                                        '/ajnaapi': app
                                    })
+
+
+if __name__ == '__main__':
+    run_simple('localhost', 5004, application, use_reloader=True)

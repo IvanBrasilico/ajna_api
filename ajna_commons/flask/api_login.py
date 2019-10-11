@@ -63,12 +63,17 @@ def configure(app: Flask):
         Portanto DEVE estar protegido no Servidor Apache
 
         """
+        # print(request.environ)
         s_dn = request.environ.get('HTTP_SSL_CLIENT_S_DN')
-        logger.error('s_dn %s' % s_dn)
+        logger.info('s_dn %s' % s_dn)
         if s_dn:
-            name = dict([x.split('=') for x in s_dn.split('/')[1:]])['CN']
-            logger.error(name)
-            user = DBUser.get(name)
+            name = dict([x.split('=') for x in s_dn.split(',')[1:]])
+            if name:
+                name = name.get('CN')
+            logger.info('%s ofereceu certificado digital' % name)
+            if not name:
+                return jsonify({'msg': 'Certificado não encontrado %s' % s_dn}), 401
+            user = DBUser.get(name.lower())
             if not user:
                 return jsonify({'msg': 'Usuário não cadastrado %s' % name}), 403
             access_token = create_access_token(identity=user.id)
