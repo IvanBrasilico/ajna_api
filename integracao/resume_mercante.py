@@ -12,6 +12,7 @@ import logging
 import os
 import time
 import sqlalchemy
+from datetime import datetime
 from sqlalchemy import func, select, and_
 
 from ajna_commons.flask.log import logger
@@ -33,6 +34,8 @@ def execute_movimento(conn, destino, chaves_valores,
     keys.remove('last_modified')
     dict_campos = {key: row[key]
                    for key in keys}
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    dict_campos['last_modified'] = timestamp
     if tipoMovimento == 'I':
         sql = destino.insert()
         # print(sql, dict_campos)
