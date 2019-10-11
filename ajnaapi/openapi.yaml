@@ -134,6 +134,69 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
+  /conhecimentos/new/{datamodificacao}:
+    get:
+      parameters:
+        - name: datamodificacao
+          in: path
+          description: Data inicial de pesquisa
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conhecimentos'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /conhecimentos:
+    get:
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conhecimentos'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /manifestos/{numero}:
+    get:
+      parameters:
+        - name: numero
+          in: path
+          description: Numero do Manifesto no sistema original
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Manifesto
+          content:
+            application/json:
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
 components:
   securitySchemes:
     jwt:

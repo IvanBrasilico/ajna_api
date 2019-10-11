@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.sql import select
 from sqlalchemy.engine.result import RowProxy
 from sqlalchemy.sql.expression import and_
-from integracao.mercantealchemy import (conhecimentos,
+from integracao.mercantealchemy import (conhecimentos, manifestos,
                                         t_conhecimentosEmbarque)
 from dateutil import parser
 
@@ -158,3 +158,12 @@ def conhecimentos_list():
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
+
+
+
+@mercanteapi.route('/api/manifestos/<numero>', methods=['GET'])
+@jwt_required
+def manifesto_numero(numero):
+    return select_one_from_class(manifestos,
+                                 manifestos.c.numero,
+                                 numero)
