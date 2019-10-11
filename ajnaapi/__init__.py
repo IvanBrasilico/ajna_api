@@ -23,12 +23,32 @@ def create_app(config_class=Production):
     Bootstrap(app)
     nav = Nav(app)
     csrf = CSRFProtect(app)
+    # app.config['SERVER_NAME'] = 'ajna.api'
+    app.secret_key = config_class.SECRET
+    app.config['SECRET_KEY'] = config_class.SECRET
+    app.config['mongodb'] = config_class.db
+    app.config['sql'] = config_class.sql
+    app.register_blueprint(ajna_api)
+    csrf.exempt(ajna_api)
+    app.register_blueprint(mercanteapi)
+    csrf.exempt(mercanteapi)
+
     print('Configurando swagger-ui...')
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
     @app.route('/docs/openapi.yaml')
     def return_yaml():
         return send_file('openapi.yaml')
+
+    print('Configurando api login...')
+    api = api_login.configure(app)
+    csrf.exempt(api)
+
+    print('Configurando login...')
+    login.configure(app)
+    DBUser.dbsession = config_class.db
+
+    print('Configurando / e redirects')
     @nav.navigation()
     def mynavbar():
         """Menu da aplicação."""
@@ -43,18 +63,4 @@ def create_app(config_class=Production):
             return render_template('index.html')
         else:
             return redirect(url_for('commons.login'))
-
-    # app.config['SERVER_NAME'] = 'ajna.api'
-    app.secret_key = config_class.SECRET
-    app.config['SECRET_KEY'] = config_class.SECRET
-    app.config['mongodb'] = config_class.db
-    app.config['sql'] = config_class.sql
-    api = api_login.configure(app)
-    login.configure(app)
-    DBUser.dbsession = config_class.db
-    app.register_blueprint(ajna_api)
-    app.register_blueprint(mercanteapi)
-    csrf.exempt(api)
-    csrf.exempt(ajna_api)
-    csrf.exempt(mercanteapi)
     return app
