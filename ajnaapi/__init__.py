@@ -23,6 +23,7 @@ def create_app(config_class=Production):
     Bootstrap(app)
     nav = Nav(app)
     csrf = CSRFProtect(app)
+    print('Configurando swagger-ui...')
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
     @app.route('/docs/openapi.yaml')
