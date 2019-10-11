@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 
 from ajna_commons.flask.conf import SQL_URI
-from integracao.processa_mxl_mercante import xml_para_mercante
+from integracao.processa_xml_mercante import xml_para_mercante
 from integracao.resume_mercante import mercante_resumo
 
 
