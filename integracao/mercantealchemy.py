@@ -144,8 +144,7 @@ conhecimentos = Table(
     Column('tipoBLConhecimento', Text),
     Column('tipoTrafego', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
-       onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp())
 )
 
 manifestos = Table(
