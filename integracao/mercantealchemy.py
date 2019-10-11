@@ -34,7 +34,7 @@ t_NCMItemCarga = Table(
     Column('numeroSequencialItemCarga', Text),
     Column('qtdeVolumes', Text),
     Column('tipoMovimento', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp())
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp())
 )
 
 # Tabelas base do XML
@@ -60,7 +60,7 @@ t_conhecimentosEmbarque = Table(
     Column('tipoBLConhecimento', Text),
     Column('tipoMovimento', Text),
     Column('tipoTrafego', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp())
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp())
 )
 
 t_exclusoesEscala = Table(
@@ -70,7 +70,7 @@ t_exclusoesEscala = Table(
     Column('horaExclusao', Text),
     Column('numeroEscalaMercante', Text),
     Column('tipoMovimento', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp())
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp())
 )
 
 t_itensCarga = Table(
@@ -94,7 +94,7 @@ t_itensCarga = Table(
     Column('tara', Text),
     Column('tipoItemCarga', Text),
     Column('tipoMovimento', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp())
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp())
 )
 
 t_manifestosCarga = Table(
@@ -116,7 +116,7 @@ t_manifestosCarga = Table(
     Column('quantidadeConhecimento', Text),
     Column('tipoMovimento', Text),
     Column('tipoTrafego', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp())
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp())
 )
 
 ### Tabelas resumo
@@ -143,8 +143,8 @@ conhecimentos = Table(
     Column('portoOrigemCarga', Text),
     Column('tipoBLConhecimento', Text),
     Column('tipoTrafego', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
+    Column('last_modified', TIMESTAMP, server_default=func.current_timestamp(),
            onupdate=func.current_timestamp())
 )
 
@@ -167,8 +167,8 @@ manifestos = Table(
     Column('portoDescarregamento', Text),
     Column('quantidadeConhecimento', Text),
     Column('tipoTrafego', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
+    Column('last_modified', TIMESTAMP, server_default=func.current_timestamp(),
            onupdate=func.current_timestamp())
 )
 
@@ -193,8 +193,8 @@ itens = Table(
     Column('qtdeItens', Text),
     Column('tara', Text),
     Column('tipoItemCarga', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
+    Column('last_modified', TIMESTAMP, server_default=func.current_timestamp(),
            onupdate=func.current_timestamp())
 )
 
@@ -212,8 +212,8 @@ NCMItem = Table(
     Column('numeroIdentificacao', Text),
     Column('numeroSequencialItemCarga', CHAR(5)),
     Column('qtdeVolumes', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
+    Column('last_modified', TIMESTAMP, server_default=func.current_timestamp(),
            onupdate=func.current_timestamp())
 )
 
@@ -226,8 +226,8 @@ conteineresVazios = Table(
     Column('isoConteinerVazio', Text),
     Column('manifesto', CHAR(15)),
     Column('taraConteinerVazio', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
+    Column('last_modified', TIMESTAMP, server_default=func.current_timestamp(),
        onupdate=func.current_timestamp())
 )
 
