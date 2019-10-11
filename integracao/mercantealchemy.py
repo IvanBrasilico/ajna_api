@@ -167,8 +167,7 @@ manifestos = Table(
     Column('quantidadeConhecimento', Text),
     Column('tipoTrafego', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
-       onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp())
 )
 
 itens = Table(
@@ -193,8 +192,7 @@ itens = Table(
     Column('tara', Text),
     Column('tipoItemCarga', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
-       onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp())
 )
 
 NCMItem = Table(
@@ -212,8 +210,7 @@ NCMItem = Table(
     Column('numeroSequencialItemCarga', CHAR(5)),
     Column('qtdeVolumes', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
-       onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp())
 )
 
 
@@ -226,8 +223,7 @@ conteineresVazios = Table(
     Column('manifesto', CHAR(15)),
     Column('taraConteinerVazio', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, server_default=func.current_timestamp(),
-       onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp())
 )
 
 if __name__ == '__main__':
