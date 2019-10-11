@@ -2,7 +2,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy import BigInteger, Column, CHAR, \
     DateTime, func, Integer, MetaData, Table, Text
-from sqlalchemy.dialects.mysql import BIGINT
+from sqlalchemy.dialects.mysql import BIGINT, TIMESTAMP
 
 from ajna_commons.flask.conf import SQL_URI
 
@@ -17,7 +17,7 @@ t_ConteinerVazio = Table(
     Column('manifesto', Text),
     Column('taraConteinerVazio', Text),
     Column('tipoMovimento', Text),
-    Column('create_date', DateTime, server_default=func.current_timestamp())
+    Column('create_date', TIMESTAMP, server_default=func.current_timestamp())
 )
 
 t_NCMItemCarga = Table(
