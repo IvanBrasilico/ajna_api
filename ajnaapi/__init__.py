@@ -32,7 +32,7 @@ def create_app(config_class=Production):
     csrf.exempt(ajna_api)
     app.register_blueprint(mercanteapi)
     csrf.exempt(mercanteapi)
-    current_app.logger.info('Configurando swagger-ui...')
+    app.logger.info('Configurando swagger-ui...')
     print('Configurando swagger-ui...')
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
