@@ -17,9 +17,10 @@ from .config import Production
 SWAGGER_URL = '/docs' # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/docs/openapi.yaml' # Our API url (can of course be a local resource)
 
+app = Flask(__name__)
+
 
 def create_app(config_class=Production):
-    app = Flask(__name__)
     app.logger.info('Criando app')
     Bootstrap(app)
     nav = Nav(app)
