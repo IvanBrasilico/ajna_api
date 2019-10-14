@@ -173,9 +173,14 @@ manifestos = Table(
 itens = Table(
     'itens', metadata,
     Column('ID', BigInteger().with_variant(Integer, "sqlite"),
-           primary_key=True, autoincrement=True),
-    Column('NCM', Text),
+           primary_key=True, autoincrement=True), \
+    # TODO: Confirmar que chave é esta
+    # A chave aqui é composta
+    # Provavelmente numeroCEmercante + numeroSequencialItemCarga
+    Column('numeroCEmercante', CHAR(15)),
+    Column('numeroSequencialItemCarga', CHAR(5)),
     Column('codigoConteiner', CHAR(11)),
+    Column('NCM', CHAR(4)),
     Column('codigoTipoEmbalagem', Text),
     Column('contraMarca', Text),
     Column('cubagemM3', Text),
@@ -186,7 +191,6 @@ itens = Table(
     Column('lacre', Text),
     Column('marca', Text),
     Column('numeroCEmercante', CHAR(15)),
-    Column('numeroSequencialItemCarga', CHAR(5)),
     Column('pesoBruto', Text),
     Column('qtdeItens', Text),
     Column('tara', Text),
@@ -199,28 +203,31 @@ NCMItem = Table(
     'NCMItem', metadata,
     Column('ID', BigInteger().with_variant(Integer, "sqlite"),
            primary_key=True, autoincrement=True),
+    # TODO: Confirmar que chave é esta
+    # A chave aqui é composta
+    # Provavelmente numeroCEmercante + numeroSequencialItemCarga
+    Column('numeroCEMercante', CHAR(15)),
+    Column('numeroSequencialItemCarga', CHAR(5)),
     Column('codigoConteiner', CHAR(11)),
+    Column('identificacaoNCM', CHAR(4)),
     Column('codigoTipoEmbalagem', Text),
     Column('descritivo', Text),
     Column('identificacaoNCM', Text),
     Column('itemEmbaladoMadeira', Text),
     Column('marcaMercadoria', Text),
-    Column('numeroCEMercante', CHAR(15)),
     Column('numeroIdentificacao', Text),
-    Column('numeroSequencialItemCarga', CHAR(5)),
     Column('qtdeVolumes', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
     Column('last_modified', DateTime, onupdate=func.current_timestamp())
 )
 
-
 conteineresVazios = Table(
     'conteineresVazio', metadata,
     Column('ID', BigInteger().with_variant(Integer, "sqlite"),
            primary_key=True, autoincrement=True),
+    Column('manifesto', CHAR(15)),
     Column('idConteinerVazio', CHAR(11)),
     Column('isoConteinerVazio', Text),
-    Column('manifesto', CHAR(15)),
     Column('taraConteinerVazio', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
     Column('last_modified', DateTime, onupdate=func.current_timestamp())

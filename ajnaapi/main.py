@@ -1,4 +1,4 @@
-from flask import current_app, Flask, render_template, send_file, url_for
+from flask import Flask, render_template, send_file, url_for
 from flask_bootstrap import Bootstrap
 from flask_login import current_user
 from flask_nav import Nav
@@ -72,4 +72,4 @@ def create_app(config_class=Production):
 if __name__ == '__main__':  # pragma: no cover
     app = create_app()  # pragma: no cover
     print(app.url_map)  # pragma: no cover
-    app.run(port=5004, debug=True)
+    app.run(port=5004)

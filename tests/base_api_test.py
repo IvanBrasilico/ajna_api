@@ -5,7 +5,7 @@ import unittest
 from werkzeug.exceptions import BadRequest
 
 from ajna_commons.flask.user import DBUser
-from ajnaapi import create_app
+from ajnaapi.main import create_app
 from ajnaapi.config import Testing
 
 

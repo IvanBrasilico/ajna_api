@@ -88,7 +88,7 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
-  /summary_aniita/<ce_mercante>:
+  /summary_aniita/{ce_mercante}:
     get:
       parameters:
         - name: ce_mercante
@@ -186,9 +186,295 @@ paths:
             type: string
       responses:
         200:
-          description: Manifesto
+          description: Conhecimento
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/manifestos'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /manifestos/new/{datamodificacao}:
+    get:
+      parameters:
+        - name: datamodificacao
+          in: path
+          description: Data inicial de pesquisa
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manifestos'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /manifestos:
+    get:
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/manifestos'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /itens/{conhecimento}:
+    get:
+      parameters:
+        - name: numero
+          in: path
+          description: Numero do Manifesto no sistema original
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/itens'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /itens/{conhecimento}/{sequencial}:
+    get:
+      parameters:
+        - name: numero
+          in: path
+          description: Numero do Manifesto no sistema original
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/itens'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /itens/new/{datamodificacao}:
+    get:
+      parameters:
+        - name: datamodificacao
+          in: path
+          description: Data inicial de pesquisa
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/itens'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /itens:
+    get:
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/itens'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /NCMitem/{conhecimento}:
+    get:
+      parameters:
+        - name: numero
+          in: path
+          description: Numero do Manifesto no sistema original
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NCMitem'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /NCMitem/{conhecimento}/{sequencial}:
+    get:
+      parameters:
+        - name: numero
+          in: path
+          description: Numero do Manifesto no sistema original
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NCMitem'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /NCMitem/new/{datamodificacao}:
+    get:
+      parameters:
+        - name: datamodificacao
+          in: path
+          description: Data inicial de pesquisa
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NCMitem'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /NCMitem:
+    get:
+      responses:
+        200:
+          description: Conhecimento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NCMitem'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /conteineresVazios/{manifesto}:
+    get:
+      parameters:
+        - name: manifesto
+          in: path
+          description: Numero do Manifesto no sistema original
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Lista de Conteineres Vazios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conteineresVazios'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /conteineresVazios/new/{datamodificacao}:
+    get:
+      parameters:
+        - name: datamodificacao
+          in: path
+          description: Data inicial de pesquisa
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Lista de Conteineres Vazios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conteineresVazios'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /conteineresVazios:
+    get:
+      responses:
+        200:
+          description: Lista de Conteineres Vazios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/conteineresVazios'
         400:
           description: Erro
           content: {}
@@ -250,4 +536,36 @@ components:
         tipoBLConhecimento:
           type: string
         tipoTrafego:
+          type: string
+    manifestos:
+      type: object
+      properties:
+        numero:
+          type: string
+    itens:
+      type: object
+      properties:
+        numeroCEmercante:
+          type: string
+        numeroSequencialItemCarga:
+          type: string
+        codigoConteiner:
+          type: string
+        NCM:
+          type: string
+    NCMitem:
+      type: object
+      properties:
+        numeroCEmercante:
+          type: string
+        numeroSequencialItemCarga:
+          type: string
+        identicacaoNCM:
+          type: string
+    conteineresVazios:
+      type: object
+      properties:
+        manifesto:
+          type: string
+        idConteinerVazio:
           type: string
