@@ -13,3 +13,4 @@ htmlcov
 /mercante/*
 venv/*
 *.db
+/notebooks/mercante.zip
