@@ -47,9 +47,11 @@ $sudo systemctl restart httpd.service
 
 3. Habilitar no Apache as seguintes linhas (no nosso caso, em /etc/httpd/conf.d/ssl.conf):
 
+```
 SSLCACertificate /etc/ssl/certs/AC_RFB.crt
 SSLVerifyClient require
 SSLVerifyDepth 10
+```
 
 4. Reiniciar o servidor 
 ```
