@@ -1,3 +1,4 @@
+"""Endpoints para integração de clientes e sistemas com os dados do AJNA."""
 import datetime
 from base64 import b64encode
 from collections import OrderedDict
@@ -111,6 +112,7 @@ def dues_update():
 @ajna_api.route('/api/summary_aniita/<ce_mercante>', methods=['GET'])
 @jwt_required
 def api_summary(ce_mercante):
+    """Fornece um sumário dos dados para visualização."""
     db = current_app.config['mongodb']
     loader = CargaLoader()
     ce_mercante = mongo_sanitizar(ce_mercante)

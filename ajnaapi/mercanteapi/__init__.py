@@ -3,8 +3,8 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.sql import select
 from sqlalchemy.engine.result import RowProxy
 from sqlalchemy.sql.expression import and_
-from integracao.mercantealchemy import (conhecimentos, conteineresVazios, itens,
-                                        manifestos, NCMItem, t_conhecimentosEmbarque)
+from integracao.mercante.mercantealchemy import conhecimentos, \
+    conteineresVazios, itens, manifestos, NCMItem, t_conhecimentosEmbarque
 from dateutil import parser
 
 mercanteapi = Blueprint('mercanteapi', __name__)

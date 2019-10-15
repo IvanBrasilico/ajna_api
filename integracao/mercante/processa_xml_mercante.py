@@ -14,7 +14,7 @@ from collections import Counter
 from xml.etree import ElementTree
 
 from ajna_commons.flask.log import logger
-from integracao import mercante
+from integracao.mercante import mercante
 
 
 def processa_classes(engine, lista_arquivos):

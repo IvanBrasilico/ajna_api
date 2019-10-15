@@ -1,3 +1,4 @@
+"""Arquivo principal da definição da aplicação que roda a API."""
 from flask import Flask, render_template, send_file, url_for
 from flask_bootstrap import Bootstrap
 from flask_login import current_user
@@ -19,6 +20,7 @@ API_URL = '/docs/openapi.yaml'  # Our API url (can of course be a local resource
 
 
 def create_app(config_class=Production):
+    """Cria app básica e vincula todos os blueprints e módulos/extensões."""
     app = Flask(__name__)
     app.logger.info('Criando app')
     Bootstrap(app)

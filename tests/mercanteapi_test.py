@@ -1,9 +1,8 @@
 # Tescases for mercanteapi blueprint
 import json
 from dateutil import parser
-from integracao.mercantealchemy import metadata
-from integracao.mercantealchemy import (conhecimentos, conteineresVazios, itens,
-                                        manifestos, NCMItem, t_conhecimentosEmbarque)
+from integracao.mercante.mercantealchemy import metadata
+from integracao.mercante.mercantealchemy import (conhecimentos, manifestos, t_conhecimentosEmbarque)
 
 from tests.base_api_test import ApiTestCase
 

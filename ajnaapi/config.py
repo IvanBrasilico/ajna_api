@@ -1,7 +1,7 @@
+"""Opções de configuração da aplicação."""
+
 # import sys
-
 # COMMONS_PATH = os.path.join('..', 'ajna_docs', 'commons')
-
 # sys.path.insert(0, COMMONS_PATH)
 
 from pymongo import MongoClient
@@ -11,6 +11,8 @@ from ajna_commons.flask.conf import MONGODB_URI, SECRET, SQL_URI
 
 
 class Production:
+    """Configuração do ambiente Produção."""
+
     TESTING = False
     SECRET = SECRET
     db = MongoClient(host=MONGODB_URI).test
@@ -19,6 +21,8 @@ class Production:
 
 
 class Testing:
+    """Configuração do ambiente de Testes."""
+
     TESTING = True
     SECRET = 'fraco'  # nosec
     db = MongoClient(host=MONGODB_URI).unit_test
