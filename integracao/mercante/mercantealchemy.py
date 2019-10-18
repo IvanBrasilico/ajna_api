@@ -177,8 +177,8 @@ itens = Table(
     # TODO: Confirmar que chave é esta
     # A chave aqui é composta
     # Provavelmente numeroCEmercante + numeroSequencialItemCarga
-    Column('numeroCEmercante', CHAR(15)),
-    Column('numeroSequencialItemCarga', CHAR(5)),
+    Column('numeroCEmercante', CHAR(15), index=True),
+    Column('numeroSequencialItemCarga', CHAR(5), index=True),
     Column('codigoConteiner', CHAR(11)),
     Column('NCM', CHAR(4)),
     Column('codigoTipoEmbalagem', Text),
@@ -206,10 +206,10 @@ NCMItem = Table(
     # TODO: Confirmar que chave é esta
     # A chave aqui é composta
     # Provavelmente numeroCEmercante + numeroSequencialItemCarga
-    Column('numeroCEMercante', CHAR(15)),
-    Column('numeroSequencialItemCarga', CHAR(5)),
-    Column('codigoConteiner', CHAR(11)),
-    Column('identificacaoNCM', CHAR(4)),
+    Column('numeroCEMercante', CHAR(15), index=True),
+    Column('numeroSequencialItemCarga', CHAR(5), index=True),
+    Column('codigoConteiner', CHAR(11), index=True),
+    Column('identificacaoNCM', CHAR(4), index=True),
     Column('codigoTipoEmbalagem', Text),
     Column('descritivo', Text),
     Column('identificacaoNCM', Text),
@@ -225,8 +225,8 @@ conteineresVazios = Table(
     'conteineresVazio', metadata,
     Column('ID', BigInteger().with_variant(Integer, "sqlite"),
            primary_key=True, autoincrement=True),
-    Column('manifesto', CHAR(15)),
-    Column('idConteinerVazio', CHAR(11)),
+    Column('manifesto', CHAR(15), index=True),
+    Column('idConteinerVazio', CHAR(11), index=True),
     Column('isoConteinerVazio', Text),
     Column('taraConteinerVazio', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),

@@ -70,12 +70,13 @@ def processa_classes_em_lista(engine, lista_arquivos):
     return count_objetos, lista_erros
 
 
-def xml_para_mercante(engine):
+def xml_para_mercante(engine, lote=100):
     logger.info('Iniciando atualizações da base Mercante...')
     lista_arquivos = \
         [f for f in os.listdir(mercante.MERCANTE_DIR)
          if os.path.isfile(os.path.join(mercante.MERCANTE_DIR, f))]
     # print(lista_arquivos)
+    lista_arquivos = lista_arquivos[:lote]
     t0 = time.time()
     count_objetos, lista_erros = processa_classes(engine, lista_arquivos)
     t = time.time()
