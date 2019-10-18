@@ -93,7 +93,7 @@ def xml_para_mercante(engine, lote=100):
                 )
     logger.info(str(count_objetos_lista.most_common()))
     arquivoscomerro = set([*lista_erros, *lista_erros_lista])
-    logger.info('Arquivos com erro sendo copiados para diretório erro ' %
+    logger.info('%d Arquivos com erro sendo copiados para diretório erro ' %
                 len(arquivoscomerro)
                 )
     for arquivo in arquivoscomerro:
