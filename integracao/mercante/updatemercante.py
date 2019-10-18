@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 
 from ajna_commons.flask.conf import SQL_URI
-from mercante.processa_xml_mercante import xml_para_mercante
-from mercante.resume_mercante import mercante_resumo
+from integracao.mercante.processa_xml_mercante import xml_para_mercante
+from integracao.mercante.resume_mercante import mercante_resumo
 
 
 def do():
