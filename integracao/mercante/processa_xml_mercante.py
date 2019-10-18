@@ -93,8 +93,8 @@ def xml_para_mercante(engine, lote=100):
                 )
     logger.info(str(count_objetos_lista.most_common()))
     arquivoscomerro = set([*lista_erros, *lista_erros_lista])
-    logger.info('Arquivos com erro sendo copiados para diretório erro ' +
-                ', '.join(arquivoscomerro)
+    logger.info('Arquivos com erro sendo copiados para diretório erro ' %
+                len(arquivoscomerro)
                 )
     for arquivo in arquivoscomerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),
@@ -102,8 +102,8 @@ def xml_para_mercante(engine, lote=100):
     lista_arquivos_semerro = \
         [f for f in os.listdir(mercante.MERCANTE_DIR)
          if os.path.isfile(os.path.join(mercante.MERCANTE_DIR, f))]
-    logger.info('Arquivos SEM erro sendo copiados para diretório processados ' +
-                ', '.join(lista_arquivos_semerro)
+    logger.info('%d Arquivos SEM erro sendo copiados para diretório processados ' %
+                len(lista_arquivos_semerro)
                 )
     for arquivo in lista_arquivos_semerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),
