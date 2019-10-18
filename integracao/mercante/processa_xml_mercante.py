@@ -99,9 +99,8 @@ def xml_para_mercante(engine, lote=100):
     for arquivo in arquivoscomerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),
                   os.path.join(mercante.MERCANTE_DIR, 'erros', arquivo))
-    lista_arquivos_semerro = \
-        [f for f in os.listdir(mercante.MERCANTE_DIR)
-         if os.path.isfile(os.path.join(mercante.MERCANTE_DIR, f))]
+    lista_arquivos_semerro = [arquivo for arquivo in lista_arquivos
+                              if arquivo not in arquivoscomerro]
     logger.info('%d Arquivos SEM erro sendo copiados para diretório processados ' %
                 len(lista_arquivos_semerro)
                 )
