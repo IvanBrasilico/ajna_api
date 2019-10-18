@@ -16,10 +16,9 @@ from datetime import datetime
 from sqlalchemy import func, select, and_
 
 from ajna_commons.flask.log import logger
-from mercante.mercantealchemy import (conhecimentos, conteineresVazios, itens,
-                                      manifestos, NCMItem, t_conhecimentosEmbarque,
-                                      t_ConteinerVazio, t_itensCarga, t_manifestosCarga,
-                                      t_NCMItemCarga)
+from integracao.mercante.mercantealchemy import conhecimentos, conteineresVazios, \
+    itens, manifestos, NCMItem, t_conhecimentosEmbarque, t_ConteinerVazio, \
+    t_itensCarga, t_manifestosCarga, t_NCMItemCarga
 
 
 def execute_movimento(conn, destino, chaves_valores,
