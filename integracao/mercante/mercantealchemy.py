@@ -212,7 +212,6 @@ NCMItem = Table(
     Column('identificacaoNCM', CHAR(4), index=True),
     Column('codigoTipoEmbalagem', Text),
     Column('descritivo', Text),
-    Column('identificacaoNCM', Text),
     Column('itemEmbaladoMadeira', Text),
     Column('marcaMercadoria', Text),
     Column('numeroIdentificacao', Text),
