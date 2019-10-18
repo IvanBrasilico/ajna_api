@@ -220,8 +220,7 @@ NCMItem = Table(
     Column('qtdeVolumes', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
     Column('last_modified', DateTime, onupdate=func.current_timestamp()),
-    Index('NCMItem_chave', 'numeroCEmercante', 'codigoConteiner',
-      'numeroSequencialItemCarga')
+    Index('NCMItem_chave', 'numeroCEMercante', 'codigoConteiner', 'numeroSequencialItemCarga')
 )
 
 conteineresVazios = Table(
