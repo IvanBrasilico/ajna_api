@@ -30,7 +30,7 @@ def api_grid_data():
     result = []
     try:
         if request.method == 'POST':
-            print(request.json)
+            # print(request.json)
             current_app.logger.info(request.json)
             query = request.json['query']
             projection = request.json.get('projection')
@@ -39,11 +39,14 @@ def api_grid_data():
                 if isinstance(value, dict):
                     value_processed = {}
                     for key2, value2 in value.items():
-                        try:
-                            value_processed[key2] = \
-                                datetime.strptime(value2, '%Y-%m-%d  %H:%M:%S')
-                        except Exception:  # TODO: See specific exception
-                            value_processed[key2] = mongo_sanitizar(value2)
+                        if isinstance(value2, str):
+                            try:
+                                value_processed[key2] = \
+                                    datetime.strptime(value2, '%Y-%m-%d  %H:%M:%S')
+                            except Exception:  # TODO: See specific exception
+                                value_processed[key2] = mongo_sanitizar(value2)
+                        else:
+                            value_processed[key2] = value2
                     query_processed[key] = value_processed
                 else:
                     try:
@@ -54,26 +57,12 @@ def api_grid_data():
             current_app.logger.warning(query)
             current_app.logger.warning(query_processed)
             current_app.logger.warning(projection)
+            # TODO: limit and skip
             linhas = db['fs.files'].find(query_processed, projection).limit(100)
-            for linha in linhas:
-                dict_linha = {}
-                for key, value in linha.items():
-                    if isinstance(value, dict):
-                        value_processed = {}
-                        for key2, value2 in value.items():
-                            try:
-                                value_processed[key2] = \
-                                    datetime.strptime(value2, '%Y-%m-%d  %H:%M:%S')
-                            except Exception:
-                                value_processed[key2] = str(value2)
-                        dict_linha[key] = value_processed
-                    else:
-                        try:
-                            dict_linha[key] = \
-                                datetime.strptime(value, '%Y-%m-%d  %H:%M:%S')
-                        except Exception:
-                            dict_linha[key] = str(value)
-                result.append(dict_linha)
+            result = list(linhas)
+            for linha in result:
+                linha['_id'] = str(linha['_id'])
+            # print(result)
         else:
             current_app.logger.warning(
                 'Filtro %s' % {key: value
