@@ -85,7 +85,7 @@ def mercante_resumo(engine):
               itens: ['numeroCEmercante', 'numeroSequencialItemCarga'],
               NCMItem: ['numeroCEMercante', 'codigoConteiner',
                         'numeroSequencialItemCarga'],
-              conteineresVazios: ['idConteinerVazio', 'manifesto']
+              conteineresVazios: ['manifesto', 'idConteinerVazio']
               }
 
     for origem, destino in migracoes.items():

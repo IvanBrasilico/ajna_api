@@ -219,7 +219,9 @@ NCMItem = Table(
     Column('numeroIdentificacao', Text),
     Column('qtdeVolumes', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp()),
+    Index('NCMItem_chave', 'numeroCEmercante', 'codigoConteiner',
+      'numeroSequencialItemCarga')
 )
 
 conteineresVazios = Table(
@@ -231,7 +233,8 @@ conteineresVazios = Table(
     Column('isoConteinerVazio', Text),
     Column('taraConteinerVazio', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp()),
+    Index('conteineresVazios', 'manifesto', 'idConteinerVazio')
 )
 
 if __name__ == '__main__':
