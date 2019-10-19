@@ -11,9 +11,9 @@
 
 ### Configuração básica de SSL
 
-1. Instalar openssl no apache (mod_ssl), se ainda não instalado.
+1 - Instalar openssl no apache (mod_ssl), se ainda não instalado.
 
-2. Habilitar ssl na configuração do Apache (no nosso caso, /etc/httpd/conf.d/ssl.conf)
+2 - Habilitar ssl na configuração do Apache (no nosso caso, /etc/httpd/conf.d/ssl.conf)
 
 ```
 SSLEngine on
@@ -21,13 +21,13 @@ SSLCertificateFile      /etc/ssl/certs/apache-selfsigned.crt
 SSLCertificateKeyFile /etc/ssl/private/apache-selfsigned.key
 ```
 
-3. Gerar as chaves para o Servidor se não existirem
+3 - Gerar as chaves para o Servidor se não existirem
 
 ```
 sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt
 ```
 
-4. Reiniciar o servidor 
+4 - Reiniciar o servidor 
 ```
 $sudo httpd -t
 $sudo systemctl restart httpd.service
@@ -53,19 +53,19 @@ SSLVerifyClient require
 SSLVerifyDepth 10
 ```
 
-4. Reiniciar o servidor 
+4 - Reiniciar o servidor 
 ```
 $sudo httpd -t
 $sudo systemctl restart httpd.service
 ```
 
 *Obs:* Quando houver uma nova versão da cadeia de certificação (o que ocorre aproximadamente a cada 3 anos),
- as novas cedias devem ser inseridas ao AC_RFB.crt, reiniciando o servidor.
+ as novas caedias devem ser inseridas ao AC_RFB.crt, reiniciando o servidor.
  
  
 ### Configuração dos caminhos de ProxyPass das aplicações
 
-1. Configurar os endpoints responsáveis pela autenticação (no nosso caso, em /etc/httpd/conf.d/ssl.conf).
+1 - Configurar os endpoints responsáveis pela autenticação (no nosso caso, em /etc/httpd/conf.d/ssl.conf).
 
 ```
 # initialize the special headers to a blank value to avoid http header forgeries
@@ -82,8 +82,8 @@ RequestHeader set SSL_CLIENT_VERIFY  ""
  RequestHeader set SSL_SERVER_S_DN_OU "%{SSL_SERVER_S_DN_OU}s"
  RequestHeader set SSL_CLIENT_VERIFY "%{SSL_CLIENT_VERIFY}s"
 
- ProxyPass http://127.0.0.1:5004/ajnaapi
- ProxyPassReverse http://127.0.0.1:5004/ajnaapi
+ ProxyPass http://127.0.0.1:5004/ajnaapi/api/login_certificado
+ ProxyPassReverse http://127.0.0.1:5004/ajnaapi/api//login_certificado
 </Location>
 <Location /virasana/login_certificado>
  SSLVerifyClient require
@@ -93,12 +93,12 @@ RequestHeader set SSL_CLIENT_VERIFY  ""
  RequestHeader set SSL_SERVER_S_DN_OU "%{SSL_SERVER_S_DN_OU}s"
  RequestHeader set SSL_CLIENT_VERIFY "%{SSL_CLIENT_VERIFY}s"
 
- ProxyPass http://127.0.0.1:5001/virasana
- ProxyPassReverse http://127.0.0.1:5001/virasana
+ ProxyPass http://127.0.0.1:5001/virasana/login_certificado
+ ProxyPassReverse http://127.0.0.1:5001/virasana/login_certificado
 </Location>
 ```
 
-2. Configurar ProxyPass para as aplicações.
+2 - Configurar ProxyPass para as aplicações.
 
 ```
  <Location /ajnaapi>
@@ -117,7 +117,7 @@ RequestHeader set SSL_CLIENT_VERIFY  ""
 ```
 
 
-3. Configurar Redirect na porta 80 (no nosso caso em /etc/httpd/conf.d/sites.conf)
+3 - Configurar Redirect na porta 80 (no nosso caso em /etc/httpd/conf.d/sites.conf)
 
 ```
  <VirtualHost *:80>
