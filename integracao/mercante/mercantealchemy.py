@@ -1,7 +1,7 @@
 # coding: utf-8
 from sqlalchemy import create_engine
 from sqlalchemy import BigInteger, Column, CHAR, \
-    DateTime, func, Integer, MetaData, Table, Text
+    DateTime, func, Integer, Index, MetaData, Table, Text
 from sqlalchemy.dialects.mysql import BIGINT, TIMESTAMP
 
 from ajna_commons.flask.conf import SQL_URI
@@ -127,7 +127,7 @@ conhecimentos = Table(
            primary_key=True, autoincrement=True),
     Column('codigoEmpresaNavegacao', Text),
     Column('codigoTerminalCarregamento', Text),
-    Column('consignatario', CHAR(15)),
+    Column('consignatario', CHAR(20)),
     Column('cubagem', Text),
     Column('dataAtualizacao', Text),
     Column('dataEmissao', Text),
@@ -177,8 +177,8 @@ itens = Table(
     # TODO: Confirmar que chave é esta
     # A chave aqui é composta
     # Provavelmente numeroCEmercante + numeroSequencialItemCarga
-    Column('numeroCEmercante', CHAR(15)),
-    Column('numeroSequencialItemCarga', CHAR(5)),
+    Column('numeroCEmercante', CHAR(15), index=True),
+    Column('numeroSequencialItemCarga', CHAR(10), index=True),
     Column('codigoConteiner', CHAR(11)),
     Column('NCM', CHAR(4)),
     Column('codigoTipoEmbalagem', Text),
@@ -196,8 +196,10 @@ itens = Table(
     Column('tara', Text),
     Column('tipoItemCarga', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp()),
+    Index('itens_chave', 'numeroCEmercante', 'numeroSequencialItemCarga')
 )
+
 
 NCMItem = Table(
     'NCMItem', metadata,
@@ -206,31 +208,32 @@ NCMItem = Table(
     # TODO: Confirmar que chave é esta
     # A chave aqui é composta
     # Provavelmente numeroCEmercante + numeroSequencialItemCarga
-    Column('numeroCEMercante', CHAR(15)),
-    Column('numeroSequencialItemCarga', CHAR(5)),
-    Column('codigoConteiner', CHAR(11)),
-    Column('identificacaoNCM', CHAR(4)),
+    Column('numeroCEMercante', CHAR(15), index=True),
+    Column('numeroSequencialItemCarga', CHAR(5), index=True),
+    Column('codigoConteiner', CHAR(11), index=True),
+    Column('identificacaoNCM', CHAR(6), index=True),
     Column('codigoTipoEmbalagem', Text),
     Column('descritivo', Text),
-    Column('identificacaoNCM', Text),
     Column('itemEmbaladoMadeira', Text),
     Column('marcaMercadoria', Text),
     Column('numeroIdentificacao', Text),
     Column('qtdeVolumes', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp()),
+    Index('NCMItem_chave', 'numeroCEMercante', 'codigoConteiner', 'numeroSequencialItemCarga')
 )
 
 conteineresVazios = Table(
     'conteineresVazio', metadata,
     Column('ID', BigInteger().with_variant(Integer, "sqlite"),
            primary_key=True, autoincrement=True),
-    Column('manifesto', CHAR(15)),
-    Column('idConteinerVazio', CHAR(11)),
+    Column('manifesto', CHAR(15), index=True),
+    Column('idConteinerVazio', CHAR(11), index=True),
     Column('isoConteinerVazio', Text),
     Column('taraConteinerVazio', Text),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp()),
-    Column('last_modified', DateTime, onupdate=func.current_timestamp())
+    Column('last_modified', DateTime, onupdate=func.current_timestamp()),
+    Index('conteineresVazios', 'manifesto', 'idConteinerVazio')
 )
 
 if __name__ == '__main__':

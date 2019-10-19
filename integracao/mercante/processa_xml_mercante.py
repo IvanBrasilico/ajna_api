@@ -70,12 +70,13 @@ def processa_classes_em_lista(engine, lista_arquivos):
     return count_objetos, lista_erros
 
 
-def xml_para_mercante(engine):
+def xml_para_mercante(engine, lote=100):
     logger.info('Iniciando atualizações da base Mercante...')
     lista_arquivos = \
         [f for f in os.listdir(mercante.MERCANTE_DIR)
          if os.path.isfile(os.path.join(mercante.MERCANTE_DIR, f))]
     # print(lista_arquivos)
+    lista_arquivos = lista_arquivos[:lote]
     t0 = time.time()
     count_objetos, lista_erros = processa_classes(engine, lista_arquivos)
     t = time.time()
@@ -92,17 +93,16 @@ def xml_para_mercante(engine):
                 )
     logger.info(str(count_objetos_lista.most_common()))
     arquivoscomerro = set([*lista_erros, *lista_erros_lista])
-    logger.info('Arquivos com erro sendo copiados para diretório erro ' +
-                ', '.join(arquivoscomerro)
+    logger.info('%d Arquivos com erro sendo copiados para diretório erro ' %
+                len(arquivoscomerro)
                 )
     for arquivo in arquivoscomerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),
                   os.path.join(mercante.MERCANTE_DIR, 'erros', arquivo))
-    lista_arquivos_semerro = \
-        [f for f in os.listdir(mercante.MERCANTE_DIR)
-         if os.path.isfile(os.path.join(mercante.MERCANTE_DIR, f))]
-    logger.info('Arquivos SEM erro sendo copiados para diretório processados ' +
-                ', '.join(lista_arquivos_semerro)
+    lista_arquivos_semerro = [arquivo for arquivo in lista_arquivos
+                              if arquivo not in arquivoscomerro]
+    logger.info('%d Arquivos SEM erro sendo copiados para diretório processados ' %
+                len(lista_arquivos_semerro)
                 )
     for arquivo in lista_arquivos_semerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),
