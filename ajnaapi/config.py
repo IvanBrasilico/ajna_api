@@ -26,7 +26,7 @@ class Staging:
     TESTING = True
     SECRET = 'fraco'  # nosec
     db = MongoClient(host=MONGODB_URI).unit_test
-    sql = create_engine('sqlite:///:teste.db:')
+    sql = create_engine('sqlite:///teste.db')
 
 
 

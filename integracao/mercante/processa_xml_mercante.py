@@ -15,6 +15,7 @@ from xml.etree import ElementTree
 
 from ajna_commons.flask.log import logger
 from integracao.mercante import mercante
+from ajnaapi.config import Staging
 
 
 def processa_classes(engine, lista_arquivos):
@@ -113,5 +114,5 @@ if __name__ == '__main__':
     os.environ['DEBUG'] = '1'
     logger.setLevel(logging.DEBUG)
     #engine = sqlalchemy.create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
-    engine = sqlalchemy.create_engine('sqlite:///teste.db')
+    engine = Staging.sql
     xml_para_mercante(engine)
