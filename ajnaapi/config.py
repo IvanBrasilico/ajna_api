@@ -20,6 +20,16 @@ class Production:
                         pool_size=5, max_overflow=5, pool_recycle=3600)
 
 
+class Staging:
+    """Configuração do ambiente de Testes."""
+
+    TESTING = True
+    SECRET = 'fraco'  # nosec
+    db = MongoClient(host=MONGODB_URI).unit_test
+    sql = create_engine('sqlite:///:teste.db:')
+
+
+
 class Testing:
     """Configuração do ambiente de Testes."""
 

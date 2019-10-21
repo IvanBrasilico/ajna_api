@@ -5,9 +5,9 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from ajnaapi.main import create_app
 
 from ajna_commons.flask.user import DBUser
-from ajnaapi.config import Testing
+from ajnaapi.config import Staging
 
-app = create_app(Testing)  # pragma: no cover Testing = SQLite
+app = create_app(Staging)  # pragma: no cover Testing = SQLite
 DBUser.dbsession = None  # Aceita autenticação fake (qqer username==password)
 
 gunicorn_logger = logging.getLogger('gunicorn.debug')
