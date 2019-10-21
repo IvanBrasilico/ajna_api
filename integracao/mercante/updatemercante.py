@@ -13,7 +13,7 @@ def do():
         print('Lote de %s arquivos' % lote)
     sql = create_engine(SQL_URI)
     xml_para_mercante(sql, lote)
-    # mercante_resumo(sql)
+    mercante_resumo(sql)
 
 
 if __name__ == '__main__':
