@@ -33,7 +33,8 @@ def execute_movimento(conn, destino, chaves_valores,
     keys.remove('last_modified')
     dict_campos = {key: row[key]
                    for key in keys}
-    timestamp = datetime.now() # .strftime('%Y-%m-%d %H:%M:%S')
+    # Diferença entre banco MySQL e SQLite
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     dict_campos['last_modified'] = timestamp
     if tipoMovimento == 'I':
         sql = destino.insert()
