@@ -12,7 +12,7 @@ metadata = MetaData()
 # Tabelas auxiliares / log
 ArquivoProcessado = Table(
     'arquivosprocesados', metadata,
-    Column('index', BIGINT(20), index=True),
+    Column('ID', Integer, index=True),
     Column('nome', VARCHAR(50)),
     Column('filename_date', TIMESTAMP),
     Column('create_date', TIMESTAMP, server_default=func.current_timestamp())
@@ -25,10 +25,14 @@ def data_ultimo_arquivo_processado():
         c = conn.execute(s).fetchone()
     return c
 
-def grava_arquivo_processado(arquivo, data):
+
+def grava_arquivo_processado(nome, data):
+    timestamp = data.strftime('%Y-%m-%d %H:%M:%S')
     with engine.begin() as conn:
         sql = ArquivoProcessado.insert()
-        return conn.execute(sql, **dict_campos)
+        return conn.execute(sql,
+                            nome=nome,
+                            filename_date=timestamp)
 
 
 # Tabelas de lista do XML
