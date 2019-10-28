@@ -25,6 +25,11 @@ def data_ultimo_arquivo_processado():
         c = conn.execute(s).fetchone()
     return c
 
+def grava_arquivo_processado(arquivo, data):
+    with engine.begin() as conn:
+        sql = ArquivoProcessado.insert()
+        return conn.execute(sql, **dict_campos)
+
 
 # Tabelas de lista do XML
 t_ConteinerVazio = Table(

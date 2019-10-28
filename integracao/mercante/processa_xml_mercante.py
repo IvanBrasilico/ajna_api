@@ -17,29 +17,30 @@ from xml.etree import ElementTree
 from ajna_commons.flask.log import logger
 from integracao.mercante import mercante, mercantealchemy
 from ajnaapi.config import Staging
-from integracao.mercante.mercantealchemy import data_ultimo_arquivo_processado
+from integracao.mercante.mercantealchemy import data_ultimo_arquivo_processado, \
+    grava_arquivo_processado
 
-FORMATO_DATA = '%y%m%d%H%M%S'
+FORMATO_DATA_ANIITA = '%y%m%d%H%M%S'
+FORMATO_DATA_ARQUIVO = '%y-%m-%d%-H-%-M-%S'
 URL_ANIITA_LISTA = ''
 URL_ANIITA_DOWNLOAD = ''
-DESTINO_ARQUIVOS = 'mercante'
 
 
 def get_arquivos_novos():
     """Baixa arquivos novos da API do Aniita"""
     data_ultimo_arquivo = data_ultimo_arquivo_processado()
-    datainicial = datetime.strftime(data_ultimo_arquivo, FORMATO_DATA)
-    datafinal = datetime.strftime(datetime.now(), FORMATO_DATA)
+    datainicial = datetime.strftime(data_ultimo_arquivo, FORMATO_DATA_ANIITA)
+    datafinal = datetime.strftime(datetime.now(), FORMATO_DATA_ANIITA)
     print(datainicial, datafinal)
     r = requests.get(URL_ANIITA_LISTA, data={'datainicial': datainicial,
                                              'datafinal': datafinal})
     lista_arquivos = r.json()
     for filename in lista_arquivos:
         r = requests.get(URL_ANIITA_DOWNLOAD, filename)
-        destino = os.path.join(DESTINO_ARQUIVOS, filename)
+        destino = os.path.join(mercante.MERCANTE_DIR, filename)
         with open(destino, 'wb') as out:
             out.write(r.content)
-    
+
 
 def processa_classes(engine, lista_arquivos):
     count_objetos = Counter()
@@ -95,11 +96,14 @@ def processa_classes_em_lista(engine, lista_arquivos):
 
 
 def xml_para_mercante(engine, lote=100):
+    logger.info('Baixando arquivos novos...')
+    get_arquivos_novos()
     logger.info('Iniciando atualizações da base Mercante...')
     lista_arquivos = \
         [f for f in os.listdir(mercante.MERCANTE_DIR)
          if os.path.isfile(os.path.join(mercante.MERCANTE_DIR, f))]
     # print(lista_arquivos)
+    lista_arquivos = sorted(lista_arquivos)
     lista_arquivos = lista_arquivos[:lote]
     t0 = time.time()
     count_objetos, lista_erros = processa_classes(engine, lista_arquivos)
@@ -120,6 +124,17 @@ def xml_para_mercante(engine, lote=100):
     logger.info('%d Arquivos com erro sendo copiados para diretório erro ' %
                 len(arquivoscomerro)
                 )
+    # Grava em tabela arquivos processados
+    for arquivo in lista_arquivos:
+        ind_partedata = arquivo.rfind('_', )
+        partedata = arquivo[ind_partedata:-4]
+        try:
+            data = datetime.strptime(partedata, FORMATO_DATA_ARQUIVO)
+        except ValueError as err:
+            data = 0.
+            print(err)
+        grava_arquivo_processado(arquivo, data)
+    # Tira arquivos processados do path
     for arquivo in arquivoscomerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),
                   os.path.join(mercante.MERCANTE_DIR, 'erros', arquivo))
@@ -128,6 +143,7 @@ def xml_para_mercante(engine, lote=100):
     logger.info('%d Arquivos SEM erro sendo copiados para diretório processados ' %
                 len(lista_arquivos_semerro)
                 )
+    # Tira arquivos com erro do path
     for arquivo in lista_arquivos_semerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),
                   os.path.join(mercante.MERCANTE_DIR, 'processados', arquivo))
