@@ -8,15 +8,38 @@ import logging
 import os
 import time
 import pandas as pd
-import sqlalchemy
+import requests
+from datetime import datetime
 
 from collections import Counter
 from xml.etree import ElementTree
 
 from ajna_commons.flask.log import logger
-from integracao.mercante import mercante
+from integracao.mercante import mercante, mercantealchemy
 from ajnaapi.config import Staging
+from integracao.mercante.mercantealchemy import data_ultimo_arquivo_processado
 
+FORMATO_DATA = '%y%m%d%H%M%S'
+URL_ANIITA_LISTA = ''
+URL_ANIITA_DOWNLOAD = ''
+DESTINO_ARQUIVOS = 'mercante'
+
+
+def get_arquivos_novos():
+    """Baixa arquivos novos da API do Aniita"""
+    data_ultimo_arquivo = data_ultimo_arquivo_processado()
+    datainicial = datetime.strftime(data_ultimo_arquivo, FORMATO_DATA)
+    datafinal = datetime.strftime(datetime.now(), FORMATO_DATA)
+    print(datainicial, datafinal)
+    r = requests.get(URL_ANIITA_LISTA, data={'datainicial': datainicial,
+                                             'datafinal': datafinal})
+    lista_arquivos = r.json()
+    for filename in lista_arquivos:
+        r = requests.get(URL_ANIITA_DOWNLOAD, filename)
+        destino = os.path.join(DESTINO_ARQUIVOS, filename)
+        with open(destino, 'wb') as out:
+            out.write(r.content)
+    
 
 def processa_classes(engine, lista_arquivos):
     count_objetos = Counter()
@@ -87,7 +110,7 @@ def xml_para_mercante(engine, lote=100):
     logger.info(str(count_objetos.most_common()))
     t0 = time.time()
     count_objetos_lista, lista_erros_lista = processa_classes_em_lista(engine,
-                                                              lista_arquivos)
+                                                                       lista_arquivos)
     t = time.time()
     logger.info('%d arquivos processados com %d lista de objetos em %0.2f s' %
                 (len(lista_arquivos), sum(count_objetos_lista.values()), t - t0)
@@ -113,6 +136,6 @@ def xml_para_mercante(engine, lote=100):
 if __name__ == '__main__':
     os.environ['DEBUG'] = '1'
     logger.setLevel(logging.DEBUG)
-    #engine = sqlalchemy.create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
+    # engine = sqlalchemy.create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
     engine = Staging.sql
     xml_para_mercante(engine)
