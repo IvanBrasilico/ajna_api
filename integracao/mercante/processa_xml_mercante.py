@@ -9,14 +9,15 @@ import os
 import time
 import pandas as pd
 import requests
+import sqlalchemy
 from datetime import datetime
 
 from collections import Counter
 from xml.etree import ElementTree
 
 from ajna_commons.flask.log import logger
-from integracao.mercante import mercante, mercantealchemy
-from ajnaapi.config import Staging
+from integracao.mercante import mercante
+# from ajnaapi.config import Staging
 from integracao.mercante.mercantealchemy import data_ultimo_arquivo_processado, \
     grava_arquivo_processado
 
@@ -154,5 +155,6 @@ if __name__ == '__main__':
     os.environ['DEBUG'] = '1'
     logger.setLevel(logging.DEBUG)
     # engine = sqlalchemy.create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
-    engine = Staging.sql
+    # engine = Staging.sql
+    engine = sqlalchemy.create_engine('sqlite:///teste.db')
     xml_para_mercante(engine)
