@@ -16,7 +16,7 @@ from datetime import datetime
 from sqlalchemy import func, select, and_
 
 from ajna_commons.flask.log import logger
-from ajnaapi.config import Staging
+# from ajnaapi.config import Staging
 from integracao.mercante.mercantealchemy import conhecimentos, conteineresVazios, \
     itens, manifestos, NCMItem, t_conhecimentosEmbarque, t_ConteinerVazio, \
     t_itensCarga, t_manifestosCarga, t_NCMItemCarga
@@ -103,5 +103,6 @@ if __name__ == '__main__':
     os.environ['DEBUG'] = '1'
     logger.setLevel(logging.DEBUG)
     # engine = sqlalchemy.create_engine('mysql+pymysql://ivan@localhost:3306/mercante')
-    engine = Staging.sql
+    # engine = Staging.sql
+    engine = sqlalchemy.create_engine('sqlite:///teste.db')
     mercante_resumo(engine)
