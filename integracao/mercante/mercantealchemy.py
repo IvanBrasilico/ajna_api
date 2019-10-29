@@ -23,7 +23,7 @@ def data_ultimo_arquivo_processado(engine):
     with engine.begin() as conn:
         s = select([func.Max(ArquivoProcessado.c.filename_date)])
         c = conn.execute(s).fetchone()
-    return c
+    return c[0]
 
 
 def grava_arquivo_processado(engine, nome, data):
