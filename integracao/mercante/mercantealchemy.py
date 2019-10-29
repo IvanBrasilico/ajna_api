@@ -11,7 +11,7 @@ metadata = MetaData()
 
 # Tabelas auxiliares / log
 ArquivoProcessado = Table(
-    'arquivosprocesados', metadata,
+    'arquivosprocessados', metadata,
     Column('ID', Integer, index=True),
     Column('nome', VARCHAR(50)),
     Column('filename_date', TIMESTAMP),
