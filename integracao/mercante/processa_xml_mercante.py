@@ -34,12 +34,13 @@ def get_arquivos_novos(engine):
     datafinal = datetime.strftime(data_ultimo_arquivo + timedelta(days = 1),
                                   FORMATO_DATA_ANIITA)
     print(datainicial, datafinal)
-    r = requests.get(URL_ANIITA_LISTA, data={'dtInicial': datainicial,
+    r = requests.get(URL_ANIITA_LISTA, params={'dtInicial': datainicial,
                                              'dtFinal': datafinal})
     print(r.url)
+    print(r.text)
     lista_arquivos = r.json()
     for filename in lista_arquivos:
-        r = requests.get(URL_ANIITA_DOWNLOAD, data={'nome': filename})
+        r = requests.get(URL_ANIITA_DOWNLOAD, params={'nome': filename})
         print(r.url)
         destino = os.path.join(mercante.MERCANTE_DIR, filename)
         print('Gerando arquivo %s' % destino)
