@@ -40,9 +40,10 @@ def get_arquivos_novos(engine):
     print(r.text)
     if r.status_code == 200:
         lista_arquivos = r.json()
-        for filename in lista_arquivos:
+        for item in lista_arquivos:
             r = requests.get(URL_ANIITA_DOWNLOAD, params={'nome': filename})
             print(r.url)
+            filename = item['nomeArquivo']
             destino = os.path.join(mercante.MERCANTE_DIR, filename)
             print('Gerando arquivo %s' % destino)
             if r.status_code == 200:
