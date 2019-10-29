@@ -38,14 +38,16 @@ def get_arquivos_novos(engine):
                                              'dtFinal': datafinal})
     print(r.url)
     print(r.text)
-    lista_arquivos = r.json()
-    for filename in lista_arquivos:
-        r = requests.get(URL_ANIITA_DOWNLOAD, params={'nome': filename})
-        print(r.url)
-        destino = os.path.join(mercante.MERCANTE_DIR, filename)
-        print('Gerando arquivo %s' % destino)
-        with open(destino, 'wb') as out:
-            out.write(r.content)
+    if r.status_code == 200:
+        lista_arquivos = r.json()
+        for filename in lista_arquivos:
+            r = requests.get(URL_ANIITA_DOWNLOAD, params={'nome': filename})
+            print(r.url)
+            destino = os.path.join(mercante.MERCANTE_DIR, filename)
+            print('Gerando arquivo %s' % destino)
+            if r.status_code == 200:
+                with open(destino, 'wb') as out:
+                    out.write(r.content)
 
 
 def processa_classes(engine, lista_arquivos):
