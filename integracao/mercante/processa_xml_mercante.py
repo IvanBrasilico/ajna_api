@@ -24,7 +24,7 @@ from integracao.mercante.mercantealchemy import data_ultimo_arquivo_processado, 
 FORMATO_DATA_ANIITA = '%y%m%d%H%M%S'
 FORMATO_DATA_ARQUIVO = '%y-%m-%d%-H-%-M-%S'
 URL_ANIITA_LISTA = 'http://10.50.13.17:8443/consultaArquivos'
-URL_ANIITA_DOWNLOAD = 'http://10.50.13.16:8443/download'
+URL_ANIITA_DOWNLOAD = 'http://10.50.13.17:8443/download'
 
 
 def get_arquivos_novos(engine):
@@ -36,10 +36,13 @@ def get_arquivos_novos(engine):
     print(datainicial, datafinal)
     r = requests.get(URL_ANIITA_LISTA, data={'dtInicial': datainicial,
                                              'dtFinal': datafinal})
+    print(r.url)
     lista_arquivos = r.json()
     for filename in lista_arquivos:
         r = requests.get(URL_ANIITA_DOWNLOAD, data={'nome': filename})
+        print(r.url)
         destino = os.path.join(mercante.MERCANTE_DIR, filename)
+        print('Gerando arquivo %s' % destino)
         with open(destino, 'wb') as out:
             out.write(r.content)
 
