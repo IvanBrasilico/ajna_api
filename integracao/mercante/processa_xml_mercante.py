@@ -10,7 +10,7 @@ import time
 import pandas as pd
 import requests
 import sqlalchemy
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from collections import Counter
 from xml.etree import ElementTree
@@ -31,7 +31,7 @@ def get_arquivos_novos(engine):
     """Baixa arquivos novos da API do Aniita"""
     data_ultimo_arquivo = data_ultimo_arquivo_processado(engine)
     datainicial = datetime.strftime(data_ultimo_arquivo, FORMATO_DATA_ANIITA)
-    datafinal = datetime.strftime(datainicial + datetime.timedelta(days = 1),
+    datafinal = datetime.strftime(datainicial + timedelta(days = 1),
                                   FORMATO_DATA_ANIITA)
     print(datainicial, datafinal)
     r = requests.get(URL_ANIITA_LISTA, data={'dtInicial': datainicial,
