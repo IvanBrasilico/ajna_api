@@ -21,8 +21,8 @@ from integracao.mercante import mercante
 from integracao.mercante.mercantealchemy import data_ultimo_arquivo_processado, \
     grava_arquivo_processado
 
-FORMATO_DATA_ANIITA = '%y%m%d%H%M%S'
-FORMATO_DATA_ARQUIVO = '%y-%m-%d%-H-%-M-%S'
+FORMATO_DATA_ANIITA = '%Y%m%d%H%M%S'
+FORMATO_DATA_ARQUIVO = '%Y-%m-%d%-H-%-M-%S'
 URL_ANIITA_LISTA = 'http://10.50.13.17:8443/consultaArquivos'
 URL_ANIITA_DOWNLOAD = 'http://10.50.13.17:8443/download'
 
