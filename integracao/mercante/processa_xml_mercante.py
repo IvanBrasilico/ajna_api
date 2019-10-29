@@ -140,7 +140,7 @@ def xml_para_mercante(engine, lote=100):
         try:
             data = datetime.strptime(partedata, FORMATO_DATA_ARQUIVO)
         except ValueError as err:
-            data = 0.
+            data = datetime(0)
             print(err)
         grava_arquivo_processado(engine, arquivo, data)
     # Tira arquivos processados do path
