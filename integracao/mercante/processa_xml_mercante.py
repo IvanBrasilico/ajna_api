@@ -27,9 +27,9 @@ URL_ANIITA_LISTA = 'http://10.50.13.17:8443/consultaArquivos'
 URL_ANIITA_DOWNLOAD = 'http://10.50.13.16:8443/download'
 
 
-def get_arquivos_novos():
+def get_arquivos_novos(engine):
     """Baixa arquivos novos da API do Aniita"""
-    data_ultimo_arquivo = data_ultimo_arquivo_processado()
+    data_ultimo_arquivo = data_ultimo_arquivo_processado(engine)
     datainicial = datetime.strftime(data_ultimo_arquivo, FORMATO_DATA_ANIITA)
     datafinal = datetime.strftime(datainicial + datetime.timedelta(days = 1),
                                   FORMATO_DATA_ANIITA)
@@ -99,7 +99,7 @@ def processa_classes_em_lista(engine, lista_arquivos):
 
 def xml_para_mercante(engine, lote=100):
     logger.info('Baixando arquivos novos...')
-    get_arquivos_novos()
+    get_arquivos_novos(engine)
     logger.info('Iniciando atualizações da base Mercante...')
     lista_arquivos = \
         [f for f in os.listdir(mercante.MERCANTE_DIR)
@@ -135,7 +135,7 @@ def xml_para_mercante(engine, lote=100):
         except ValueError as err:
             data = 0.
             print(err)
-        grava_arquivo_processado(arquivo, data)
+        grava_arquivo_processado(engine, arquivo, data)
     # Tira arquivos processados do path
     for arquivo in arquivoscomerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),

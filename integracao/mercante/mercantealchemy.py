@@ -19,14 +19,14 @@ ArquivoProcessado = Table(
 )
 
 
-def data_ultimo_arquivo_processado():
+def data_ultimo_arquivo_processado(engine):
     with engine.begin() as conn:
         s = select([func.Max(ArquivoProcessado.c.filename_date)])
         c = conn.execute(s).fetchone()
     return c
 
 
-def grava_arquivo_processado(nome, data):
+def grava_arquivo_processado(engine, nome, data):
     timestamp = data.strftime('%Y-%m-%d %H:%M:%S')
     with engine.begin() as conn:
         sql = ArquivoProcessado.insert()
