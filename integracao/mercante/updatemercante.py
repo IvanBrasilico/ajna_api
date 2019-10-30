@@ -15,7 +15,7 @@ def do():
     print('Baixando arquivos novos...')
     sql = create_engine(SQL_URI)
     get_arquivos_novos(sql)
-    # xml_para_mercante(sql, lote)
+    xml_para_mercante(sql, lote)
     # mercante_resumo(sql)
 
 
