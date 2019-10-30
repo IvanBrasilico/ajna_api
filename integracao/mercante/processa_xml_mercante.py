@@ -40,7 +40,7 @@ def get_arquivos_novos(engine):
     print(r.text)
     if r.status_code == 200:
         lista_arquivos = r.json()
-        for item in lista_arquivos:
+        for item in lista_arquivos[:1]:
             filename = item['nomeArquivo']
             r = requests.get(URL_ANIITA_DOWNLOAD, params={'nome': filename})
             print(r.url)
@@ -52,12 +52,12 @@ def get_arquivos_novos(engine):
                 # Grava em tabela arquivos baixados
                 ind_partedata = filename.rfind('_', )
                 partedata = filename[ind_partedata:-4]
+                print(partedata)
                 try:
                     data = datetime.strptime(partedata, FORMATO_DATA_ARQUIVO)
+                    grava_arquivo_baixado(engine, filename, data)
                 except ValueError as err:
-                    data = datetime(0)
                     print(err)
-                grava_arquivo_baixado(engine, filename, data)
 
 
 def processa_classes(engine, lista_arquivos):
