@@ -30,7 +30,8 @@ URL_ANIITA_DOWNLOAD = 'http://10.50.13.17:8443/download'
 def get_arquivos_novos(engine):
     """Baixa arquivos novos da API do Aniita"""
     data_ultimo_arquivo = data_ultimo_arquivo_baixado(engine)
-    datainicial = datetime.strftime(data_ultimo_arquivo, FORMATO_DATA_ANIITA)
+    datainicial = datetime.strftime(data_ultimo_arquivo + timedelta(seconds=1),
+                                    FORMATO_DATA_ANIITA)
     datafinal = datetime.strftime(data_ultimo_arquivo + timedelta(days = 1),
                                   FORMATO_DATA_ANIITA)
     print(datainicial, datafinal)
@@ -40,7 +41,7 @@ def get_arquivos_novos(engine):
     print(r.text)
     if r.status_code == 200:
         lista_arquivos = r.json()
-        for item in lista_arquivos[:1]:
+        for item in lista_arquivos:
             filename = item['nomeArquivo']
             r = requests.get(URL_ANIITA_DOWNLOAD, params={'nome': filename})
             print(r.url)
