@@ -18,8 +18,8 @@ from xml.etree import ElementTree
 from ajna_commons.flask.log import logger
 from integracao.mercante import mercante
 # from ajnaapi.config import Staging
-from integracao.mercante.mercantealchemy import data_ultimo_arquivo_processado, \
-    grava_arquivo_processado
+from integracao.mercante.mercantealchemy import data_ultimo_arquivo_baixado, \
+    grava_arquivo_baixado
 
 FORMATO_DATA_ANIITA = '%Y%m%d%H%M%S'
 FORMATO_DATA_ARQUIVO = '%Y-%m-%d%-H-%-M-%S'
@@ -29,7 +29,7 @@ URL_ANIITA_DOWNLOAD = 'http://10.50.13.17:8443/download'
 
 def get_arquivos_novos(engine):
     """Baixa arquivos novos da API do Aniita"""
-    data_ultimo_arquivo = data_ultimo_arquivo_processado(engine)
+    data_ultimo_arquivo = data_ultimo_arquivo_baixado(engine)
     datainicial = datetime.strftime(data_ultimo_arquivo, FORMATO_DATA_ANIITA)
     datafinal = datetime.strftime(data_ultimo_arquivo + timedelta(days = 1),
                                   FORMATO_DATA_ANIITA)
@@ -49,6 +49,15 @@ def get_arquivos_novos(engine):
             if r.status_code == 200:
                 with open(destino, 'wb') as out:
                     out.write(r.content)
+                # Grava em tabela arquivos baixados
+                ind_partedata = filename.rfind('_', )
+                partedata = filename[ind_partedata:-4]
+                try:
+                    data = datetime.strptime(partedata, FORMATO_DATA_ARQUIVO)
+                except ValueError as err:
+                    data = datetime(0)
+                    print(err)
+                grava_arquivo_baixado(engine, filename, data)
 
 
 def processa_classes(engine, lista_arquivos):
@@ -105,8 +114,6 @@ def processa_classes_em_lista(engine, lista_arquivos):
 
 
 def xml_para_mercante(engine, lote=100):
-    logger.info('Baixando arquivos novos...')
-    get_arquivos_novos(engine)
     logger.info('Iniciando atualizações da base Mercante...')
     lista_arquivos = \
         [f for f in os.listdir(mercante.MERCANTE_DIR)
@@ -133,16 +140,6 @@ def xml_para_mercante(engine, lote=100):
     logger.info('%d Arquivos com erro sendo copiados para diretório erro ' %
                 len(arquivoscomerro)
                 )
-    # Grava em tabela arquivos processados
-    for arquivo in lista_arquivos:
-        ind_partedata = arquivo.rfind('_', )
-        partedata = arquivo[ind_partedata:-4]
-        try:
-            data = datetime.strptime(partedata, FORMATO_DATA_ARQUIVO)
-        except ValueError as err:
-            data = datetime(0)
-            print(err)
-        grava_arquivo_processado(engine, arquivo, data)
     # Tira arquivos processados do path
     for arquivo in arquivoscomerro:
         os.rename(os.path.join(mercante.MERCANTE_DIR, arquivo),

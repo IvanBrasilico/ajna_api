@@ -10,8 +10,8 @@ from ajna_commons.flask.conf import SQL_URI
 metadata = MetaData()
 
 # Tabelas auxiliares / log
-ArquivoProcessado = Table(
-    'arquivosprocessados', metadata,
+ArquivoBaixado = Table(
+    'arquivosbaixados', metadata,
     Column('ID', Integer, index=True),
     Column('nome', VARCHAR(50)),
     Column('filename_date', TIMESTAMP),
@@ -19,17 +19,17 @@ ArquivoProcessado = Table(
 )
 
 
-def data_ultimo_arquivo_processado(engine):
+def data_ultimo_arquivo_baixado(engine):
     with engine.begin() as conn:
-        s = select([func.Max(ArquivoProcessado.c.filename_date)])
+        s = select([func.Max(ArquivoBaixado.c.filename_date)])
         c = conn.execute(s).fetchone()
     return c[0]
 
 
-def grava_arquivo_processado(engine, nome, data):
+def grava_arquivo_baixado(engine, nome, data):
     timestamp = data.strftime('%Y-%m-%d %H:%M:%S')
     with engine.begin() as conn:
-        sql = ArquivoProcessado.insert()
+        sql = ArquivoBaixado.insert()
         return conn.execute(sql,
                             nome=nome,
                             filename_date=timestamp)
