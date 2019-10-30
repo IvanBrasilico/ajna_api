@@ -50,7 +50,7 @@ def get_arquivos_novos(engine):
                 with open(destino, 'wb') as out:
                     out.write(r.content)
                 # Grava em tabela arquivos baixados
-                ind_partedata = filename.rfind('_', )
+                ind_partedata = filename.rfind('_', ) + 1
                 partedata = filename[ind_partedata:-4]
                 print(partedata)
                 try:
