@@ -14,3 +14,4 @@ htmlcov
 venv/*
 *.db
 /notebooks/mercante.zip
+/notebooks/ivan.p12
