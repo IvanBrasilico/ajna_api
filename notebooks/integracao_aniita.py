@@ -8,8 +8,8 @@ import requests_pkcs12 as requests
 from PIL import Image
 
 warnings.simplefilter('ignore')
-BASE_URL = 'https://localhost/ajnaapi'
-# BASE_URL = 'https://ajna.alfsts.rf08.srf/ajnaapi'
+# BASE_URL = 'https://localhost/ajnaapi'
+BASE_URL = 'https://ajna.labin.rf08.srf/ajnaapi'
 
 if len(sys.argv) < 2:
     print('Informe CE-Mercante')
