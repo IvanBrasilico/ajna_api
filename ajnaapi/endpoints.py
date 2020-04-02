@@ -9,9 +9,24 @@ from flask_jwt_extended import jwt_required
 from ajna_commons.utils.images import mongo_image
 from ajna_commons.utils.sanitiza import mongo_sanitizar
 from ajnaapi.carga_mongo import CargaLoader
-from integracao import due_mongo
 
 ajna_api = Blueprint('ajnaapi', __name__)
+
+
+def converte_ids(adict: dict):
+    _id = adict.get('_id')
+    if _id:
+        # print('Convertendo id ', _id)
+        adict['_id'] = str(_id)
+    for key, value in adict.items():
+        if isinstance(value, dict):
+            # print('*****', key, value, type(value))
+            converte_ids(value)
+        if isinstance(value, list):
+            # print('*****', key, value, type(value))
+            for item in value:
+                # print('XXXXXXXXXXXXXXX', item, type(item))
+                converte_ids(item)
 
 
 @ajna_api.route('/api/grid_data', methods=['POST', 'GET'])
@@ -54,14 +69,16 @@ def api_grid_data():
                             datetime.strptime(value, '%Y-%m-%d  %H:%M:%S')
                     except Exception:
                         query_processed[key] = mongo_sanitizar(value)
-            current_app.logger.warning(query)
-            current_app.logger.warning(query_processed)
-            current_app.logger.warning(projection)
+            current_app.logger.info(query)
+            current_app.logger.info(query_processed)
+            current_app.logger.info(projection)
             # TODO: limit and skip
-            linhas = db['fs.files'].find(query_processed, projection).limit(100)
+            linhas = db['fs.files'].find(query_processed, projection).limit(1000)
             result = list(linhas)
+            # current_app.logger.warning(result)
+            # print(result)
             for linha in result:
-                linha['_id'] = str(linha['_id'])
+                converte_ids(linha)
             # print(result)
         else:
             current_app.logger.warning(
@@ -70,7 +87,7 @@ def api_grid_data():
             filtro = {mongo_sanitizar(key): mongo_sanitizar(value)
                       for key, value in request.args.items()}
             current_app.logger.warning('Filtro %s' % filtro)
-            linhas = db['fs.files'].find(filtro).limit(100)
+            linhas = db['fs.files'].find(filtro).limit(1000)
             for linha in linhas:
                 result.append({'_id': str(linha['_id']),
                                'contentType': str(linha['metadata'].get('contentType'))
@@ -79,23 +96,8 @@ def api_grid_data():
             return jsonify(result), 200
         return jsonify({}), 404
     except Exception as err:
-        current_app.logger.error(err, exc_info=True)
+        current_app.logger.error(err)  # , exc_info=True)
         return jsonify({'msg': 'Erro: %s' % err}), 400
-
-
-@ajna_api.route('/api/dues/update', methods=['POST'])
-@jwt_required
-def dues_update():
-    """Recebe um JSON no formato [{_id1: due1}, ..., {_idn: duen}] e grava."""
-    # FIXME: Sanitizar esta entrada tbm
-    db = current_app.config['mongodb']
-    try:
-        if request.method == 'POST':
-            due_mongo.update_due(db, request.json)
-        return jsonify({'msg': 'DUEs inseridas/atualizadas'}), 201
-    except Exception as err:
-        current_app.logger.error(err, exc_info=True)
-        return jsonify({'msg': 'Erro inesperado: %s ' % err}), 400
 
 
 @ajna_api.route('/api/summary_aniita/<ce_mercante>', methods=['GET'])
@@ -105,14 +107,14 @@ def api_summary(ce_mercante):
     db = current_app.config['mongodb']
     loader = CargaLoader()
     ce_mercante = mongo_sanitizar(ce_mercante)
-    print('Consultando CE-Mercante %s' % ce_mercante)
+    # print('Consultando CE-Mercante %s' % ce_mercante)
     try:
         cursor = db.fs.files.find(
             {'metadata.carga.conhecimento.conhecimento': ce_mercante}
         )
         summary = []
         registro_pai = OrderedDict()
-        print('Consultou!!!')
+        # print('Consultou!!!')
         ind = 0
         for linha in cursor:
             metadata = linha.get('metadata')

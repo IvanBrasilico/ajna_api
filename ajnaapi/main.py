@@ -1,5 +1,6 @@
 """Arquivo principal da definição da aplicação que roda a API."""
 from flask import Flask, render_template, send_file, url_for
+from flask import request
 from flask_bootstrap import Bootstrap
 from flask_login import current_user
 from flask_nav import Nav
@@ -10,9 +11,7 @@ from werkzeug.utils import redirect
 
 from ajna_commons.flask import api_login, login
 from ajna_commons.flask.user import DBUser
-
 from ajnaapi.endpoints import ajna_api
-from ajnaapi.mercanteapi import mercanteapi
 from .config import Production
 
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
@@ -33,8 +32,8 @@ def create_app(config_class=Production):
     app.config['sql'] = config_class.sql
     app.register_blueprint(ajna_api)
     csrf.exempt(ajna_api)
-    app.register_blueprint(mercanteapi)
-    csrf.exempt(mercanteapi)
+    # app.register_blueprint(mercanteapi)
+    # csrf.exempt(mercanteapi)
     app.logger.info('Configurando swagger-ui...')
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
@@ -69,7 +68,6 @@ def create_app(config_class=Production):
             return redirect(url_for('commons.login'))
 
     return app
-
 
 if __name__ == '__main__':  # pragma: no cover
     app = create_app()  # pragma: no cover
