@@ -57,7 +57,7 @@ paths:
         200:
           description:
           content:
-            image/jpeg:
+            application/json:
         400:
           description: Erro
           content: {}
@@ -475,6 +475,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/conteineresVazios'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /acessoveiculo/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          description: Id do Evento
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Evento Acesso Veiculo
+          content:
+            application/json:
         400:
           description: Erro
           content: {}
