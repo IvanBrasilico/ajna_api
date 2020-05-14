@@ -12,6 +12,8 @@ from werkzeug.utils import redirect
 from ajna_commons.flask import api_login, login
 from ajna_commons.flask.user import DBUser
 from ajnaapi.endpoints import ajna_api
+from ajnaapi.mercanteapi import mercanteapi
+from ajnaapi.recintosapi.routes import recintosapi
 from .config import Production
 
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
@@ -32,8 +34,10 @@ def create_app(config_class=Production):
     app.config['sql'] = config_class.sql
     app.register_blueprint(ajna_api)
     csrf.exempt(ajna_api)
-    # app.register_blueprint(mercanteapi)
-    # csrf.exempt(mercanteapi)
+    app.register_blueprint(mercanteapi)
+    csrf.exempt(mercanteapi)
+    app.register_blueprint(recintosapi)
+    csrf.exempt(recintosapi)
     app.logger.info('Configurando swagger-ui...')
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)

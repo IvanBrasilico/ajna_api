@@ -1,11 +1,12 @@
-from flask import Blueprint, current_app, jsonify, request
-from flask_jwt_extended import jwt_required
-from sqlalchemy.sql import select
-from sqlalchemy.engine.result import RowProxy
-from sqlalchemy.sql.expression import and_
-from integracao.mercante.mercantealchemy import conhecimentos, \
-    conteineresVazios, itens, manifestos, NCMItem, t_conhecimentosEmbarque
 from dateutil import parser
+from flask_jwt_extended import jwt_required
+from sqlalchemy.engine.result import RowProxy
+from sqlalchemy.sql import select
+from sqlalchemy.sql.expression import and_
+
+from flask import Blueprint, current_app, jsonify, request
+from virasana.integracao.mercante.mercantealchemy import Conhecimento, \
+    ConteinerVazio, Item, Manifesto, NCMItem
 
 mercanteapi = Blueprint('mercanteapi', __name__)
 
@@ -29,7 +30,7 @@ def select_one_from_class(table, campo, valor):
         if result:
             return jsonify(dump_rowproxy(result)), 200
         else:
-            return jsonify({'msg': '%s Não encontrado' % table.name}), 404
+            return jsonify({'msg': '%s Não encontrado' % table}), 404
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
@@ -97,90 +98,44 @@ def get_filtro(table, uri_query):
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
 
 
-@mercanteapi.route('/api/conhecimentosEmbarque/<numeroCEmercante>', methods=['GET'])
-@jwt_required
-def t_conhecimento(numeroCEmercante):
-    return select_many_from_class(t_conhecimentosEmbarque,
-                                  t_conhecimentosEmbarque.c.numeroCEmercante,
-                                  numeroCEmercante)
-
-
-@mercanteapi.route('/api/conhecimentosEmbarque/new/<datainicio>', methods=['GET'])
-@jwt_required
-def t_conhecimento_new(datainicio):
-    engine = current_app.config['sql']
-    try:
-        datainicio = parser.parse(datainicio)
-        print(datainicio)
-    except Exception as err:
-        current_app.logger.error(err, exc_info=True)
-        return jsonify({'msg': 'Erro no parâmetro: %s' % str(err)}), 400
-    try:
-        with engine.begin() as conn:
-            s = select([t_conhecimentosEmbarque]).where(
-                t_conhecimentosEmbarque.c.create_date >= datainicio)
-            result = conn.execute(s)
-            return return_many_from_resultproxy(result)
-    except Exception as err:
-        current_app.logger.error(err, exc_info=True)
-        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
-
-
-@mercanteapi.route('/api/conhecimentosEmbarque', methods=['GET', 'POST'])
-@jwt_required
-def t_conhecimento_list():
-    engine = current_app.config['sql']
-    try:
-        with engine.begin() as conn:
-            uri_query = request.values
-            lista_condicoes = [t_conhecimentosEmbarque.c[campo] == valor
-                               for campo, valor in uri_query.items()]
-            s = select([t_conhecimentosEmbarque]).where(and_(*lista_condicoes))
-            result = conn.execute(s)
-            return return_many_from_resultproxy(result)
-    except Exception as err:
-        current_app.logger.error(err, exc_info=True)
-        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
-
-
 @mercanteapi.route('/api/conhecimentos/<numeroCEmercante>', methods=['GET'])
 @jwt_required
 def conhecimento_numero(numeroCEmercante):
-    return select_one_from_class(conhecimentos,
-                                 conhecimentos.c.numeroCEmercante,
+    return select_one_from_class(Conhecimento,
+                                 Conhecimento.numeroCEmercante,
                                  numeroCEmercante)
 
 
 @mercanteapi.route('/api/conhecimentos/new/<datamodificacao>', methods=['GET'])
 @jwt_required
 def conhecimento_new(datamodificacao):
-    return get_datamodificacao_gt(conhecimentos, datamodificacao)
+    return get_datamodificacao_gt(Conhecimento, datamodificacao)
 
 
 @mercanteapi.route('/api/conhecimentos', methods=['GET', 'POST'])
 @jwt_required
 def conhecimentos_list():
-    return get_filtro(conhecimentos, request.values)
+    return get_filtro(Conhecimento, request.values)
 
 
 @mercanteapi.route('/api/manifestos/<numero>', methods=['GET'])
 @jwt_required
 def manifesto_numero(numero):
-    return select_one_from_class(manifestos,
-                                 manifestos.c.numero,
+    return select_one_from_class(Manifesto,
+                                 Manifesto.numero,
                                  numero)
 
 
 @mercanteapi.route('/api/manifestos/new/<datamodificacao>', methods=['GET'])
 @jwt_required
 def manifestos_new(datamodificacao):
-    return get_datamodificacao_gt(manifestos, datamodificacao)
+    return get_datamodificacao_gt(Manifesto, datamodificacao)
 
 
 @mercanteapi.route('/api/manifestos', methods=['GET', 'POST'])
 @jwt_required
 def manifestos_list():
-    return get_filtro(manifestos, request.values)
+    return get_filtro(Manifesto, request.values)
 
 
 @mercanteapi.route('/api/itens/<conhecimento>/<sequencial>', methods=['GET'])
@@ -188,26 +143,26 @@ def manifestos_list():
 def itens_numero(conhecimento, sequencial):
     query = {'numeroCEmercante': conhecimento,
              'numeroSequencialItemCarga': sequencial}
-    return get_filtro(itens, query)
+    return get_filtro(Item, query)
 
 
 @mercanteapi.route('/api/itens/new/<datamodificacao>', methods=['GET'])
 @jwt_required
 def itens_new(datamodificacao):
-    return get_datamodificacao_gt(itens, datamodificacao)
+    return get_datamodificacao_gt(Item, datamodificacao)
 
 
 @mercanteapi.route('/api/itens', methods=['GET', 'POST'])
 @jwt_required
 def itens_list():
-    return get_filtro(itens, request.values)
+    return get_filtro(Item, request.values)
 
 
 @mercanteapi.route('/api/itens/<conhecimento>', methods=['GET'])
 @jwt_required
 def itens_conhecimento(conhecimento):
-    return select_many_from_class(itens,
-                                  itens.c.numeroCEmercante,
+    return select_many_from_class(Item,
+                                  Item.numeroCEmercante,
                                   conhecimento)
 
 
@@ -239,21 +194,21 @@ def NCMItem_conhecimento(conhecimento):
                                   conhecimento)
 
 
-@mercanteapi.route('/api/conteineresVazios/new/<datamodificacao>', methods=['GET'])
+@mercanteapi.route('/api/ConteinerVazio/new/<datamodificacao>', methods=['GET'])
 @jwt_required
-def conteineresVazios_new(datamodificacao):
-    return get_datamodificacao_gt(conteineresVazios, datamodificacao)
+def ConteinerVazio_new(datamodificacao):
+    return get_datamodificacao_gt(ConteinerVazio, datamodificacao)
 
 
-@mercanteapi.route('/api/conteineresVazios', methods=['GET', 'POST'])
+@mercanteapi.route('/api/ConteinerVazio', methods=['GET', 'POST'])
 @jwt_required
-def conteineresVazios_list():
-    return get_filtro(conteineresVazios, request.values)
+def ConteinerVazio_list():
+    return get_filtro(ConteinerVazio, request.values)
 
 
-@mercanteapi.route('/api/conteineresVazios/<manifesto>', methods=['GET'])
+@mercanteapi.route('/api/ConteinerVazio/<manifesto>', methods=['GET'])
 @jwt_required
-def conteineresVazios_manifesto(manifesto):
-    return select_many_from_class(conteineresVazios,
-                                  conteineresVazios.c.manifesto,
+def ConteinerVazio_manifesto(manifesto):
+    return select_many_from_class(ConteinerVazio,
+                                  ConteinerVazio.c.manifesto,
                                   manifesto)
