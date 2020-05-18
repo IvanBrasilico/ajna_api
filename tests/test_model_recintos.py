@@ -30,7 +30,7 @@ class CargaLoaderTestCase(unittest.TestCase):
             acesso_json = json.load(exemplo_in)
         acesso_json['recinto'] = RECINTO
         acesso = orm.AcessoVeiculo(**acesso_json)
-        print(acesso.dump())
+        # print(acesso.dump())
         # assert False
 
     def test_insert_acessoveiculo_from_json_usecase(self):
@@ -38,8 +38,8 @@ class CargaLoaderTestCase(unittest.TestCase):
             acesso_json = json.load(exemplo_in)
         usecases = UseCases(self.db_session, RECINTO)
         acesso = usecases.insert_acessoveiculo(acesso_json)
-        print('11111111', acesso.dump())
-        print('11111bbbb', maschemas.AcessoVeiculo().dump(acesso))
+        # print('11111111', acesso.dump())
+        # print('11111bbbb', maschemas.AcessoVeiculo().dump(acesso))
         acesso_json = usecases.load_acessoveiculo(acesso.idEvento)
-        print('2222', acesso_json)
-        assert False
+        #vprint('2222', acesso_json)
+        # assert False

@@ -113,6 +113,9 @@ class AcessoVeiculo(EventoBase):
     modal = Column(String(1))
     gate = Column(String(10))
     listaCameras = []
+    # TODO: Campos abaixo provisórios para o COV
+    login = Column(String(40))
+    mercadoria = Column(String(200))
 
     # TODO: dataliberacao = Column(DateTime)
 
@@ -149,6 +152,8 @@ class AcessoVeiculo(EventoBase):
         self.modal = kwargs.get('modal')
         self.gate = kwargs.get('gate')
         self.listaCameras = []
+        self.login = kwargs.get('login')
+        self.mercadoria = kwargs.get('mercadoria')
 
 
 class ConteinerUld(BaseDumpable):
