@@ -1,8 +1,8 @@
 # Tescases for mercanteapi blueprint
 import json
 from dateutil import parser
-from integracao.mercante.mercantealchemy import metadata
-from integracao.mercante.mercantealchemy import (conhecimentos, manifestos, t_conhecimentosEmbarque)
+from virasana.integracao.mercante.mercantealchemy import metadata
+from virasana.integracao.mercante.mercantealchemy import Conhecimento, Manifesto
 
 from tests.base_api_test import ApiTestCase
 
@@ -18,10 +18,6 @@ class MercanteApiTestCase(ApiTestCase):
         self.headers = {'Authorization': 'Bearer %s' % token}
 
     def test_unauthorized_(self):
-        self.unauthorized('/api/conhecimentosEmbarque')
-        self.unauthorized('/api/conhecimentosEmbarque?numeroCEmercante=0')
-        self.unauthorized('/api/conhecimentosEmbarque/0')
-        self.unauthorized('/api/conhecimentosEmbarque/new/0')
         self.unauthorized('/api/conhecimentos?numeroCEmercante=0')
         self.unauthorized('/api/conhecimentos/0')
         self.unauthorized('/api/conhecimentos/new/0')
@@ -39,9 +35,6 @@ class MercanteApiTestCase(ApiTestCase):
         self.unauthorized('/api/conteineresVazios/new/0')
 
     def test_invalid_login_(self):
-        self.invalid_login('/api/conhecimentosEmbarque?numeroCEmercante=0')
-        self.invalid_login('/api/conhecimentosEmbarque/0')
-        self.invalid_login('/api/conhecimentosEmbarque/new/0')
         self.invalid_login('/api/conhecimentos?numeroCEmercante=0')
         self.invalid_login('/api/conhecimentos')
         self.invalid_login('/api/conhecimentos/new/0')
@@ -61,9 +54,6 @@ class MercanteApiTestCase(ApiTestCase):
         self.invalid_login('/api/conteineresVazios/new/0')
 
     def test_not_allowed_(self):
-        self.not_allowed('/api/conhecimentosEmbarque?numeroCEmercante=0')
-        self.not_allowed('/api/conhecimentosEmbarque/0', methods=['POST', 'PUT', 'DELETE'])
-        self.not_allowed('/api/conhecimentosEmbarque/new/0', methods=['POST', 'PUT', 'DELETE'])
         self.not_allowed('/api/conhecimentos?numeroCEmercante=0')
         self.not_allowed('/api/conhecimentos/0', methods=['POST', 'PUT', 'DELETE'])
         self.not_allowed('/api/conhecimentos/new/0', methods=['POST', 'PUT', 'DELETE'])
@@ -84,14 +74,6 @@ class MercanteApiTestCase(ApiTestCase):
 
     def test_error_conhecimentos(self):
         self.login()
-        rv = self.client.get('/api/conhecimentosEmbarque?camponaoexiste=nao',
-                             headers=self.headers)
-        assert rv.status_code == 400
-        rv = self.client.get('/api/conhecimentos?camponaoexiste=nao',
-                             headers=self.headers)
-        assert rv.status_code == 400
-        rv = self.client.get('/api/conhecimentosEmbarque/new/datainvalida',
-                             headers=self.headers)
         assert rv.status_code == 400
         rv = self.client.get('/api/conhecimentos/new/datainvalida',
                              headers=self.headers)
@@ -106,31 +88,6 @@ class MercanteApiTestCase(ApiTestCase):
                              headers=self.headers)
         assert rv.status_code == 400
 
-    def test_conhecimentosEmbarque_get(self):
-        self.login()
-        metadata.create_all(self.sql)
-        self._case('GET', '/api/conhecimentosEmbarque/000',
-                   status_code=404,
-                   query_dict={},
-                   headers=self.headers)
-        conn = self.sql.connect()
-        ins = t_conhecimentosEmbarque.insert()
-        create_date = '2019-01-01 00:00:00'
-        rp = conn.execute(ins, **{'numeroCEmercante': '000',
-                                  'last_modified': parser.parse(create_date)})
-        rp = conn.execute(ins, **{'numeroCEmercante': '000'})
-        r = self._case('GET', '/api/conhecimentosEmbarque/000',
-                       status_code=200,
-                       query_dict={},
-                       headers=self.headers)
-        r = self._case('GET', '/api/conhecimentosEmbarque',
-                       status_code=200,
-                       query_dict={'numeroCEmercante': '000'},
-                       headers=self.headers)
-        r = self._case('GET', '/api/conhecimentosEmbarque/new/%s' % create_date,
-                       status_code=200,
-                       query_dict={},
-                       headers=self.headers)
 
     def test_conhecimentos_get(self):
         self.login()
@@ -140,7 +97,7 @@ class MercanteApiTestCase(ApiTestCase):
                    query_dict={},
                    headers=self.headers)
         conn = self.sql.connect()
-        ins = conhecimentos.insert()
+        ins = Conhecimento.insert()
         last_modified = '2019-01-01 00:00:00'
         rp = conn.execute(ins, **{'numeroCEmercante': '000',
                                   'ID': 1,
@@ -167,7 +124,7 @@ class MercanteApiTestCase(ApiTestCase):
                    query_dict={},
                    headers=self.headers)
         conn = self.sql.connect()
-        ins = manifestos.insert()
+        ins = Manifesto.insert()
         last_modified = '2019-01-01 00:00:00'
         rp = conn.execute(ins, **{'numero': '000',
                                   'ID': 1,

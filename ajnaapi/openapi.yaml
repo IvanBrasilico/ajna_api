@@ -591,3 +591,6 @@ components:
           type: string
         idConteinerVazio:
           type: string
+
+
+

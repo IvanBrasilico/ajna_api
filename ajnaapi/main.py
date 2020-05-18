@@ -7,6 +7,7 @@ from flask_nav import Nav
 from flask_nav.elements import Navbar, View
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_wtf.csrf import CSRFProtect
+from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.utils import redirect
 
 from ajna_commons.flask import api_login, login
@@ -32,6 +33,10 @@ def create_app(config_class=Production):
     app.config['SECRET_KEY'] = config_class.SECRET
     app.config['mongodb'] = config_class.db
     app.config['sql'] = config_class.sql
+    db_session = scoped_session(sessionmaker(autocommit=False,
+                                                  autoflush=False,
+                                                  bind=config_class.sql))
+    app.config['db_session'] = db_session
     app.register_blueprint(ajna_api)
     csrf.exempt(ajna_api)
     app.register_blueprint(mercanteapi)
@@ -70,6 +75,12 @@ def create_app(config_class=Production):
             return render_template('index.html')
         else:
             return redirect(url_for('commons.login'))
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db_session = app.config.get('db_session')
+        if db_session:
+            db_session.remove()
 
     return app
 
