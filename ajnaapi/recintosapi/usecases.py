@@ -42,7 +42,7 @@ class UseCases:
     def insert_evento(self, aclass, evento: dict, commit=True) -> orm.EventoBase:
         logging.info('Creating evento %s %s' %
                      (aclass.__name__,
-                      evento.get('IDEvento'))
+                      evento.get('idEvento'))
                      )
         evento['recinto'] = self.recinto
         novo_evento = aclass(**evento)
@@ -114,13 +114,15 @@ class UseCases:
             raise (err)
 
     def insert_acessoveiculo(self, evento: dict) -> orm.AcessoVeiculo:
-        logging.info('Creating acessoveiculo %s..', evento.get('IDEvento'))
+        logging.info('Creating acessoveiculo %s..', evento.get('idEvento'))
         try:
+            print(evento)
             acessoveiculo = self.insert_evento(orm.AcessoVeiculo, evento)
-            listaConteineresUld = evento.get('listaConteineresUld')
+            print(acessoveiculo)
+            listaConteineresUld = evento.get('listaContainersUld')
             if listaConteineresUld:
                 for conteiner in listaConteineresUld:
-                    logging.info('Creating conteiner %s..', conteiner.get('nuem'))
+                    logging.info('Creating conteiner %s..', conteiner.get('num'))
                     conteiner['acessoveiculo_id'] = acessoveiculo.id
                     conteineruld = orm.ConteinerUld(**conteiner)
                     print(conteineruld.dump())
