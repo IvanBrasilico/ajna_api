@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from sqlalchemy import create_engine
 
 from ajna_commons.flask.conf import MONGODB_URI, SECRET, SQL_URI
+from ajna_commons.flask.log import logger
 
 
 class Production:
@@ -16,8 +17,12 @@ class Production:
     TESTING = False
     SECRET = SECRET
     db = MongoClient(host=MONGODB_URI).test
-    sql = create_engine(SQL_URI,
-                        pool_size=5, max_overflow=5, pool_recycle=3600)
+    try:
+        sql = create_engine(SQL_URI,
+                            pool_size=5, max_overflow=5, pool_recycle=3600)
+    except TypeError as err:
+        logger.error('Erro ao conectar no Banco de Dados (config.py - Production):')
+        logger.error(str(err))
 
 
 class Staging:
