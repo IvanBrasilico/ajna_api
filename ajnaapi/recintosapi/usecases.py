@@ -116,13 +116,13 @@ class UseCases:
     def insert_acessoveiculo(self, evento: dict) -> orm.AcessoVeiculo:
         logging.info('Creating acessoveiculo %s..', evento.get('idEvento'))
         try:
-            print(evento)
+            # print(evento)
             acessoveiculo = self.insert_evento(orm.AcessoVeiculo, evento)
-            print(acessoveiculo)
+            # print(acessoveiculo)
             listaConteineresUld = evento.get('listaContainersUld')
             if listaConteineresUld:
                 for conteiner in listaConteineresUld:
-                    logging.info('Creating conteiner %s..', conteiner.get('num'))
+                    # logging.info('Creating conteiner %s..', conteiner.get('num'))
                     conteiner['acessoveiculo_id'] = acessoveiculo.id
                     conteineruld = orm.ConteinerUld(**conteiner)
                     print(conteineruld.dump())
