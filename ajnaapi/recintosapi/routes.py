@@ -22,8 +22,7 @@ def insert_acessoveiculo():
     db_session = current_app.config['db_session']
     try:
         evento_json = request.json
-        recinto = '1'
-        usecases = UseCases(db_session, recinto)
+        usecases = UseCases(db_session)
         acessoveiculo = usecases.insert_acessoveiculo(evento_json)
         return jsonify({'msg': 'Objeto incluído', 'id': acessoveiculo.id}), 201
     except Exception as err:

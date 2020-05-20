@@ -8,16 +8,12 @@ from ajnaapi.recintosapi import models as orm
 
 class UseCases:
 
-    def __init__(self, db_session, recinto: str):
+    def __init__(self, db_session):
         """Init
 
         :param db_session: Conexao ao Banco
-        :param recinto: codigo do recinto
-        :param request_IP: IP de origem
-        :param basepath: Diretório raiz para gravar arquivos
         """
         self.db_session = db_session
-        self.recinto = recinto
         self.eventos_com_filhos = {
             orm.AcessoVeiculo: self.load_acessoveiculo,
         }
@@ -39,13 +35,14 @@ class UseCases:
                    file.filename
         return erro is None, erro
 
+
     def insert_evento(self, aclass, evento: dict, commit=True) -> orm.EventoBase:
         logging.info('Creating evento %s %s' %
                      (aclass.__name__,
                       evento.get('idEvento'))
                      )
-        evento['recinto'] = self.recinto
         novo_evento = aclass(**evento)
+
         self.db_session.add(novo_evento)
         if commit:
             self.db_session.commit()
@@ -54,7 +51,7 @@ class UseCases:
         self.db_session.refresh(novo_evento)
         return novo_evento
 
-    def load_evento(self, aclass, IDEvento: int, fields: list = None) -> orm.EventoBase:
+    def load_evento(self, aclass, recinto: str, IDEvento: int, fields: list = None) -> orm.EventoBase:
         """
         Retorna Evento classe aclass encontrado único com recinto E IDEvento.
 
@@ -67,7 +64,7 @@ class UseCases:
         """
         query = self.db_session.query(aclass).filter(
             aclass.IDEvento == IDEvento,
-            aclass.recinto == self.recinto
+            aclass.recinto == recinto
         )
         if fields and isinstance(fields, list) and len(fields) > 0:
             query = query.options(load_only(fields))
