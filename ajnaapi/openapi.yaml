@@ -497,6 +497,8 @@ paths:
           description: Evento Acesso Veiculo
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/AcessoVeiculo'
         400:
           description: Erro
           content: {}
@@ -505,6 +507,30 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
+  /acessoveiculo:
+    post:
+      summary: Recebe Evento acessoveiculo
+      operationId: authentication.generate_token
+      requestBody:
+        description: Conteúdo do Evento
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcessoVeiculo'
+      responses:
+        201:
+          description: Resposta em caso de sucesso
+          content:
+            application/json:
+              schema: {}
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+
 components:
   securitySchemes:
     jwt:
@@ -591,6 +617,100 @@ components:
           type: string
         idConteinerVazio:
           type: string
-
-
-
+    AcessoVeiculo:
+      type: object
+      properties:
+        cnpjTransportador:
+          type: string
+        codRecintoDestino:
+          type: integer
+        contingencia:
+          type: boolean
+        cpfOperOcor:
+          type: string
+        cpfOperReg:
+          type: string
+        direcao:
+          type: string
+        dtHrAgenda:
+          type: string
+        dtHrOcorrencia:
+          type: string
+        dtHrRegistro:
+          type: string
+        gate:
+          type: string
+        id:
+          properties: id
+          type: object
+        idEvento:
+          type: string
+        listaConteineresUld:
+          properties: listaConteineresUld
+          type: object
+        login:
+          type: string
+        mercadoria:
+          type: string
+        modal:
+          type: string
+        motorista_cpf:
+          type: string
+        motorista_nome:
+          type: string
+        motorista_protocoloCredenciamento:
+          type: string
+        nmtransportador:
+          type: string
+        ocrPlaca:
+          type: boolean
+        oogDimensao:
+          type: boolean
+        oogPeso:
+          type: boolean
+        operacao:
+          type: string
+        placa:
+          type: string
+        protocoloAgenda:
+          type: string
+        protocoloEventoRetifCanc:
+          type: string
+        recinto:
+          type: string
+        tipoGranel:
+          type: string
+    ConteinerUld:
+      type: object
+      properties:
+        acessoveiculo:
+          properties: acessoveiculo
+          type: object
+        acessoveiculo_id:
+          properties: acessoveiculo_id
+          type: object
+        avaria:
+          type: boolean
+        cnpjCliente:
+          type: string
+        destinoCarga:
+          type: string
+        id:
+          properties: id
+          type: object
+        imoNavio:
+          type: string
+        nmCliente:
+          type: string
+        num:
+          type: string
+        numBooking:
+          type: string
+        ocrNum:
+          type: boolean
+        portoDescarga:
+          type: string
+        tipo:
+          type: string
+        vazio:
+          type: boolean

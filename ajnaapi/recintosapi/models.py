@@ -4,7 +4,7 @@ from dateutil.parser import parse
 from sqlalchemy import Boolean, Column, DateTime, Integer, \
     String, BigInteger, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 
 from ajnaapi.config import Production
 
@@ -103,7 +103,7 @@ class AcessoVeiculo(EventoBase):
     listaSemirreboque = []
     listaConteineresUld = relationship('ConteinerUld', back_populates='acessoveiculo')
     cnpjTransportador = Column(String(14))  # TODO: cpfcnpjtransportador ????
-    nmtransportador = Column(String(50))
+    nmtransportador = Column(String(100))
     # TODO: Precisa mesmo desta campo protocolo????
     #  E motorista, precisa ser separado mesmo???
     motorista_protocoloCredenciamento = Column(String(40))
@@ -162,6 +162,12 @@ class AcessoVeiculo(EventoBase):
         self.login = kwargs.get('login')
         self.mercadoria = kwargs.get('mercadoria')
 
+    @validates('nmtransportador', 'motorista_nome', 'mercadoria')
+    def validate_code(self, key, value):
+        max_len = getattr(self.__class__, key).prop.columns[0].type.length
+        if value and len(value) > max_len:
+            return value[:max_len]
+        return value
 
 class ConteinerUld(BaseDumpable):
     __tablename__ = 'conteineresuld'
@@ -186,6 +192,12 @@ class ConteinerUld(BaseDumpable):
         'AcessoVeiculo'  # , backref=backref('listaConteineresUld')
     )
 
+    @validates('numBooking', 'portoDescarga', 'destinoCarga', 'imoNavio', 'nmCliente')
+    def validate_code(self, key, value):
+        max_len = getattr(self.__class__, key).prop.columns[0].type.length
+        if value and len(value) > max_len:
+            return value[:max_len]
+        return value
 
 if __name__ == '__main__':
     engine = Production.sql
