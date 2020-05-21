@@ -40,6 +40,6 @@ class CargaLoaderTestCase(unittest.TestCase):
         acesso = usecases.insert_acessoveiculo(acesso_json)
         # print('11111111', acesso.dump())
         # print('11111bbbb', maschemas.AcessoVeiculo().dump(acesso))
-        acesso_json = usecases.load_acessoveiculo(acesso.idEvento)
+        acesso_json = usecases.load_acessoveiculo(RECINTO, acesso.idEvento)
         #vprint('2222', acesso_json)
         # assert False

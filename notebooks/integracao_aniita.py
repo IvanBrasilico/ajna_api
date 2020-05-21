@@ -39,7 +39,7 @@ else:
 print(r.status_code)
 print(r.text)
 jwt_token = r.json().get('access_token')
-headers = {'Authorization': 'Bearer %s' % jwt_token}
+my_headers = {'Authorization': 'Bearer %s' % jwt_token}
 
 # Pesquisar um conhecimento, retornar lista de contêineres e de imagens
 payload = {'query': {'metadata.carga.conhecimento.conhecimento': ce_mercante},
@@ -47,7 +47,7 @@ payload = {'query': {'metadata.carga.conhecimento.conhecimento': ce_mercante},
            }
 r = requests.post(BASE_URL + '/api/grid_data',
                   json=payload,
-                  headers=headers,
+                  headers=my_headers,
                   verify=False)
 print(r.status_code)
 print(r.text)
@@ -57,7 +57,7 @@ for image_json in r.json():
     image_id = image_json['_id']
     r = requests.get(BASE_URL + '/api/image/%s' % image_id,
                      json=payload,
-                     headers=headers,
+                     headers=my_headers,
                      verify=False)
     plt.imshow(Image.open(io.BytesIO(b64decode(r.json().get('content')))))
     plt.show()
@@ -65,7 +65,7 @@ for image_json in r.json():
 # Retornar um JSON com um resumo das informações que o Banco do AJNA tem sobre o CE-Mercante
 r = requests.get(BASE_URL + '/api/summary_aniita/%s' % ce_mercante,
                  json=payload,
-                 headers=headers,
+                 headers=my_headers,
                  verify=False)
 print(r.status_code)
 print(r.text)
@@ -79,7 +79,7 @@ payload = {'query': {'metadata.carga.conhecimento.conhecimento': ce_mercante},
            }
 r = requests.post(BASE_URL + '/api/grid_data',
                   json=payload,
-                  headers=headers,
+                  headers=my_headers,
                   verify=False)
 print(r.status_code)
 print(r.text)

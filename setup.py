@@ -19,6 +19,7 @@ setup(
         'flask-swagger-ui',
         'flask_wtf',
         'gunicorn',
+        'json2html',
         'pandas',
         'Pillow',
         'PyMongo',
