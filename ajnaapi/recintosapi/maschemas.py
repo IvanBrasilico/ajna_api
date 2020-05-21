@@ -14,6 +14,7 @@ class ConteinerUld(SQLAlchemyAutoSchema):
 class AcessoVeiculo(SQLAlchemyAutoSchema):
     listaConteineresUld = fields.Nested('ConteinerUld', many=True,
                                         exclude=('id',))
+
     class Meta:
         model = orm.AcessoVeiculo
         include_relationships = True

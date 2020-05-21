@@ -9,7 +9,7 @@ from ajnaapi.recintosapi import models as orm
 class UseCases:
 
     def __init__(self, db_session):
-        """Init
+        """Init.
 
         :param db_session: Conexao ao Banco
         """
@@ -50,7 +50,8 @@ class UseCases:
         self.db_session.refresh(novo_evento)
         return novo_evento
 
-    def load_evento(self, aclass, recinto: str, IDEvento: int, fields: list = None) -> orm.EventoBase:
+    def load_evento(self, aclass, recinto: str, IDEvento: int,
+                    fields: list = None) -> orm.EventoBase:
         """
         Retorna Evento classe aclass encontrado único com recinto E IDEvento.
 
@@ -81,7 +82,7 @@ class UseCases:
         return filhos
 
     def insert_filhos(self, oevento, osfilhos, classefilho, fk_no_filho):
-        """Processa lista no campo 'campofilhos' para inserir aclasse
+        """Processa lista no campo 'campofilhos' para inserir aclasse.
 
         :param oevento: dict com valores recebidos do JSON
         :param campofilhos: nome do campo que contem filhos do evento

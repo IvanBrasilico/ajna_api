@@ -249,6 +249,7 @@ class ConteinerUld(BaseDumpable):
             return value[:max_len]
         return value
 
+
 class Semirreboque(BaseDumpable):
     __tablename__ = 'semirreboques'
     __table_args__ = {'sqlite_autoincrement': True}
@@ -257,7 +258,7 @@ class Semirreboque(BaseDumpable):
     placa = Column(String(7))
     tara = Column(Numeric(5))
     pesagemveiculo_id = Column(BigInteger().with_variant(Integer, 'sqlite'),
-                              ForeignKey('pesagensveiculo.id'))
+                               ForeignKey('pesagensveiculo.id'))
     pesagemveiculo = relationship(
         'PesagemVeiculo'  # , backref=backref('listaSemirreboque')
     )
@@ -274,6 +275,3 @@ if __name__ == '__main__':
     engine = Production.sql
     # Base.metadata.drop_all(engine, [])
     Base.metadata.create_all(engine)
-
-
-

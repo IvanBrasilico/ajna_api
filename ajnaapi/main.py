@@ -1,6 +1,5 @@
 """Arquivo principal da definição da aplicação que roda a API."""
 from flask import Flask, render_template, send_file, url_for
-from flask import request
 from flask_bootstrap import Bootstrap
 from flask_login import current_user
 from flask_nav import Nav
@@ -34,8 +33,8 @@ def create_app(config_class=Production):
     app.config['mongodb'] = config_class.db
     app.config['sql'] = config_class.sql
     db_session = scoped_session(sessionmaker(autocommit=False,
-                                                  autoflush=False,
-                                                  bind=config_class.sql))
+                                             autoflush=False,
+                                             bind=config_class.sql))
     app.config['db_session'] = db_session
     app.register_blueprint(ajna_api)
     csrf.exempt(ajna_api)
@@ -83,6 +82,7 @@ def create_app(config_class=Production):
             db_session.remove()
 
     return app
+
 
 if __name__ == '__main__':  # pragma: no cover
     app = create_app()  # pragma: no cover
