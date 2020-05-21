@@ -180,7 +180,7 @@ class PesagemVeiculo(EventoBase):
     placa = Column(String(7))
     # TODO: tara está duplicada???
     # tara = Column(Numeric(10))
-    listaSemirreboque = []
+    listaSemirreboque = relationship('Semirreboque', back_populates='pesagemveiculo')
     taraConjunto = Column(Numeric(5))
     numConteinerUld = Column(String(11))
     tipoConteinerUld = Column(String(5))
@@ -200,7 +200,6 @@ class PesagemVeiculo(EventoBase):
         self.listaManifestos = []
         self.pesoBrutoManifesto = kwargs.get('pesoBrutoManifesto')
         self.placa = kwargs.get('placa')
-        self.listaSemirreboque = []
         self.taraConjunto = kwargs.get('taraConjunto')
         self.numConteinerUld = kwargs.get('numConteinerUld')
         self.tipoConteinerUld = kwargs.get('tipoConteinerUld')
@@ -259,8 +258,8 @@ class Semirreboque(BaseDumpable):
     tara = Column(Numeric(5))
     pesagemveiculo_id = Column(BigInteger().with_variant(Integer, 'sqlite'),
                               ForeignKey('pesagensveiculo.id'))
-    pesagens = relationship(
-        'PesagemVeiculo'  # , backref=backref('listaConteineresUld')
+    pesagemveiculo = relationship(
+        'PesagemVeiculo'  # , backref=backref('listaSemirreboque')
     )
 
     @validates('placa')
