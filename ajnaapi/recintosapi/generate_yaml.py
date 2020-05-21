@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from ruamel import yaml
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
@@ -24,7 +22,7 @@ def yaml_from_model(model):
                 except (AttributeError, NotImplementedError):
                     yaml_dict[c] = {'type': 'object', 'properties': c}
                     pass
-    #print(yaml_dict)
+    # print(yaml_dict)
     return yaml.dump({model.__name__: yaml_dict},
                      default_flow_style=False)
 

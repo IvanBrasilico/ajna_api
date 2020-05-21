@@ -20,6 +20,7 @@ setup(
         'flask_wtf',
         'gunicorn',
         'json2html',
+        'marshmallow-sqlalchemy',
         'pandas',
         'Pillow',
         'PyMongo',
