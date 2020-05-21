@@ -47,9 +47,9 @@ paths:
               properties:
                 query:
                   type: aplication/json
-                  description: Campos a retornar - padrão MongoDB
+                  description: Campos do filtro a aplicar - padrão MongoDB
                   required: true
-                recinto:
+                projection:
                   type: aplication/json
                   description: Campos a retornar - padrão MongoDB
                   required: true
@@ -530,7 +530,53 @@ paths:
               schema: {}
       security:
         - jwt: ['secret']
-
+  /pesagemveiculo/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          description: Id do Evento
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Evento Pesagem Veiculo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PesagemVeiculo'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /pesagemveiculo:
+    post:
+      summary: Recebe Evento pesagemveiculo
+      operationId: authentication.generate_token
+      requestBody:
+        description: Conteúdo do Evento
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PesagemVeiculo'
+      responses:
+        201:
+          description: Resposta em caso de sucesso
+          content:
+            application/json:
+              schema: {}
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
 components:
   securitySchemes:
     jwt:
@@ -620,6 +666,8 @@ components:
     AcessoVeiculo:
       type: object
       properties:
+        id:
+          type: number
         cnpjTransportador:
           type: string
         codRecintoDestino:
@@ -640,9 +688,6 @@ components:
           type: string
         gate:
           type: string
-        id:
-          properties: id
-          type: object
         idEvento:
           type: string
         listaConteineresUld:
@@ -683,21 +728,14 @@ components:
     ConteinerUld:
       type: object
       properties:
-        acessoveiculo:
-          properties: acessoveiculo
-          type: object
-        acessoveiculo_id:
-          properties: acessoveiculo_id
-          type: object
+        id:
+          type: number
         avaria:
           type: boolean
         cnpjCliente:
           type: string
         destinoCarga:
           type: string
-        id:
-          properties: id
-          type: object
         imoNavio:
           type: string
         nmCliente:
@@ -714,3 +752,58 @@ components:
           type: string
         vazio:
           type: boolean
+    PesagemVeiculo:
+      type: object
+      properties:
+        id:
+          type: number
+        balanca:
+          type: string
+        capturaAutoPeso:
+          type: boolean
+        contingencia:
+          type: boolean
+        cpfOperOcor:
+          type: string
+        cpfOperReg:
+          type: string
+        dtHrOcorrencia:
+          type: string
+        dtHrRegistro:
+          type: string
+        dutos:
+          type: string
+        idEvento:
+          type: string
+        listaSemirreboque:
+          properties: listaSemirreboque
+          type: object
+        numConteinerUld:
+          type: string
+        pesoBrutoBalanca:
+          type: number
+        pesoBrutoManifesto:
+          type: number
+        placa:
+          type: string
+        protocoloEventoRetifCanc:
+          type: string
+        recinto:
+          type: string
+        taraConjunto:
+          type: number
+        taraConteinerUld:
+          type: number
+        tipoConteinerUld:
+          type: string
+        volume:
+          type: number
+    Semirreboque:
+      type: object
+      properties:
+        id:
+          type: number
+        placa:
+          type: string
+        tara:
+          type: number

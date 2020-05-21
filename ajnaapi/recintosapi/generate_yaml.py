@@ -7,7 +7,8 @@ TYPES = {
     'str': {'type': 'string'},
     'datetime': {'type': 'string'},
     'bool': {'type': 'boolean'},
-    'int': {'type': 'integer'}
+    'int': {'type': 'integer'},
+    'Decimal': {'type': 'number'}
 }
 
 
@@ -28,5 +29,7 @@ def yaml_from_model(model):
 
 
 if __name__ == '__main__':
-    print(yaml_from_model(models.AcessoVeiculo))
-    print(yaml_from_model(models.ConteinerUld))
+    # print(yaml_from_model(models.AcessoVeiculo))
+    # print(yaml_from_model(models.ConteinerUld))
+    print(yaml_from_model(models.PesagemVeiculo))
+    print(yaml_from_model(models.Semirreboque))
