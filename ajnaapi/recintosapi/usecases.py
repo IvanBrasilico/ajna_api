@@ -35,7 +35,6 @@ class UseCases:
                    file.filename
         return erro is None, erro
 
-
     def insert_evento(self, aclass, evento: dict, commit=True) -> orm.EventoBase:
         logging.info('Creating evento %s %s' %
                      (aclass.__name__,
@@ -95,10 +94,12 @@ class UseCases:
             novofilho = classefilho(**params)
             self.db_session.add(novofilho)
 
-    def load_acessoveiculo(self, idEvento: str) -> dict:
+    def load_acessoveiculo(self, recinto: str, idEvento: str) -> dict:
         try:
             acessoveiculo = self.db_session.query(orm.AcessoVeiculo).filter(
                 orm.AcessoVeiculo.idEvento == idEvento
+            ).filter(
+                orm.AcessoVeiculo.recinto == recinto
             ).outerjoin(
                 orm.ConteinerUld
             ).first()
@@ -122,7 +123,7 @@ class UseCases:
                     # logging.info('Creating conteiner %s..', conteiner.get('num'))
                     conteiner['acessoveiculo_id'] = acessoveiculo.id
                     conteineruld = orm.ConteinerUld(**conteiner)
-                    print(conteineruld.dump())
+                    # print(conteineruld.dump())
                     self.db_session.add(conteineruld)
             self.db_session.commit()
         except Exception as err:
@@ -130,3 +131,40 @@ class UseCases:
             self.db_session.rollback()
             raise (err)
         return acessoveiculo
+
+    def load_pesagemveiculo(self, recinto: str, idEvento: str) -> dict:
+        try:
+            pesagemveiculo = self.db_session.query(orm.PesagemVeiculo).filter(
+                orm.PesagemVeiculo.idEvento == idEvento
+            ).filter(
+                orm.PesagemVeiculo.recinto == recinto
+            ).outerjoin(
+                orm.Semirreboque
+            ).first()
+            pesagemveiculo_schema = maschemas.PesagemVeiculo()
+            # print('*******', pesagemveiculo.dump())
+            data = pesagemveiculo_schema.dump(pesagemveiculo)
+            return data
+        except Exception as err:
+            logging.error(err, exc_info=True)
+            raise (err)
+
+    def insert_pesagemveiculo(self, evento: dict) -> orm.PesagemVeiculo:
+        logging.info('Creating pesagemveiculo %s..', evento.get('idEvento'))
+        try:
+            # print(evento)
+            pesagemveiculo = self.insert_evento(orm.PesagemVeiculo, evento)
+            # print(pesagemveiculo)
+            listaSemirreboque = evento.get('listaSemirreboque')
+            if listaSemirreboque:
+                for reboque in listaSemirreboque:
+                    # logging.info('Creating conteiner %s..', conteiner.get('num'))
+                    reboque['pesagemveiculo_id'] = pesagemveiculo.id
+                    semirreboque = orm.Semirreboque(**reboque)
+                    self.db_session.add(semirreboque)
+            self.db_session.commit()
+        except Exception as err:
+            logging.error(err, exc_info=True)
+            self.db_session.rollback()
+            raise (err)
+        return pesagemveiculo
