@@ -51,11 +51,6 @@ def get_pesagemveiculo(id):
         return jsonify({'msg': str(err)}), 500
 
 
-@recintosapi.route('/api/pesagemveiculo', methods=['GET'])
-@jwt_required
-def get_pesagemveiculo():
-
-
 @recintosapi.route('/api/pesagemveiculo', methods=['POST'])
 @jwt_required
 def insert_pesagemveiculo():
