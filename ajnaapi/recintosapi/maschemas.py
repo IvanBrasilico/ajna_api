@@ -19,3 +19,20 @@ class AcessoVeiculo(SQLAlchemyAutoSchema):
         model = orm.AcessoVeiculo
         include_relationships = True
         load_instance = True
+
+
+class Semirreboque(SQLAlchemyAutoSchema):
+    class Meta:
+        model = orm.Semirreboque
+        include_fk = True
+        load_instance = True
+
+
+class PesagemVeiculo(SQLAlchemyAutoSchema):
+    listaSemirreboque = fields.Nested('Semirreboque', many=True,
+                                      exclude=('id',))
+
+    class Meta:
+        model = orm.PesagemVeiculo
+        include_relationships = True
+        load_instance = True
