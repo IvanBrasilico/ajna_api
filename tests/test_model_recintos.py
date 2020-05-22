@@ -36,7 +36,8 @@ class CargaLoaderTestCase(unittest.TestCase):
     def test_insert_acessoveiculo_from_json_usecase(self):
         with open('tests/json/AcessoVeiculo.json', 'r') as exemplo_in:
             acesso_json = json.load(exemplo_in)
-        usecases = UseCases(self.db_session, RECINTO)
+        acesso_json['recinto'] = RECINTO
+        usecases = UseCases(self.db_session)
         acesso = usecases.insert_acessoveiculo(acesso_json)
         # print('11111111', acesso.dump())
         # print('11111bbbb', maschemas.AcessoVeiculo().dump(acesso))
