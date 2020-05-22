@@ -75,7 +75,10 @@ def resumo_evento():
         id = request.args['id']
         format = request.args.get('format', 'html')
         usecases = UseCases(db_session)
-        data = usecases.load_acessoveiculo(recinto, id)
+        if tipo == 'AcessoVeiculo':
+            data = usecases.load_acessoveiculo(recinto, id)
+        else:
+            data = usecases.load_pesagemveiculo(recinto, id)
         if format == 'html':
             data = json2html.convert(data)
         elif format == 'text':
