@@ -15,7 +15,7 @@ recintosapi = Blueprint('recintosapi', __name__)
 @jwt_required
 def get_acessoveiculo(id):
     return select_one_from_class(AcessoVeiculo,
-                                 AcessoVeiculo.IdEvento,
+                                 AcessoVeiculo.id,
                                  id)
 
 
@@ -37,7 +37,7 @@ def insert_acessoveiculo():
 @jwt_required
 def get_pesagemveiculo(id):
     return select_one_from_class(PesagemVeiculo,
-                                 PesagemVeiculo.IdEvento,
+                                 PesagemVeiculo.id,
                                  id)
 
 
