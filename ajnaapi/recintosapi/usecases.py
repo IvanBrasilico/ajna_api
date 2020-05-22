@@ -95,15 +95,25 @@ class UseCases:
             novofilho = classefilho(**params)
             self.db_session.add(novofilho)
 
-    def load_acessoveiculo(self, recinto: str, idEvento: str) -> dict:
+    def load_acessoveiculo(self,
+                           recinto: str = None,
+                           idEvento: str = None,
+                           id: int = None) -> dict:
         try:
-            acessoveiculo = self.db_session.query(orm.AcessoVeiculo).filter(
-                orm.AcessoVeiculo.idEvento == idEvento
-            ).filter(
-                orm.AcessoVeiculo.recinto == recinto
-            ).outerjoin(
-                orm.ConteinerUld
-            ).first()
+            if id:
+                acessoveiculo = self.db_session.query(orm.AcessoVeiculo).filter(
+                    orm.AcessoVeiculo.id == id
+                ).outerjoin(
+                    orm.ConteinerUld
+                ).one()
+            else:
+                acessoveiculo = self.db_session.query(orm.AcessoVeiculo).filter(
+                    orm.AcessoVeiculo.idEvento == idEvento
+                ).filter(
+                    orm.AcessoVeiculo.recinto == recinto
+                ).outerjoin(
+                    orm.ConteinerUld
+                ).first()
             acessoveiculo_schema = maschemas.AcessoVeiculo()
             # print('*******', acessoveiculo.dump())
             data = acessoveiculo_schema.dump(acessoveiculo)
@@ -133,15 +143,25 @@ class UseCases:
             raise (err)
         return acessoveiculo
 
-    def load_pesagemveiculo(self, recinto: str, idEvento: str) -> dict:
+    def load_pesagemveiculo(self,
+                            recinto: str = None,
+                            idEvento: str = None,
+                            id: int = None) -> dict:
         try:
-            pesagemveiculo = self.db_session.query(orm.PesagemVeiculo).filter(
-                orm.PesagemVeiculo.idEvento == idEvento
-            ).filter(
-                orm.PesagemVeiculo.recinto == recinto
-            ).outerjoin(
-                orm.Semirreboque
-            ).first()
+            if id:
+                pesagemveiculo = self.db_session.query(orm.PesagemVeiculo).filter(
+                    orm.PesagemVeiculo.id == id
+                ).outerjoin(
+                    orm.Semirreboque
+                ).one()
+            else:
+                pesagemveiculo = self.db_session.query(orm.PesagemVeiculo).filter(
+                    orm.PesagemVeiculo.idEvento == idEvento
+                ).filter(
+                    orm.PesagemVeiculo.recinto == recinto
+                ).outerjoin(
+                    orm.Semirreboque
+                ).first()
             pesagemveiculo_schema = maschemas.PesagemVeiculo()
             # print('*******', pesagemveiculo.dump())
             data = pesagemveiculo_schema.dump(pesagemveiculo)

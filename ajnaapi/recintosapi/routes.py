@@ -14,9 +14,14 @@ recintosapi = Blueprint('recintosapi', __name__)
 @recintosapi.route('/api/acessoveiculo/<id>', methods=['GET'])
 @jwt_required
 def get_acessoveiculo(id):
-    return select_one_from_class(AcessoVeiculo,
-                                 AcessoVeiculo.id,
-                                 id)
+    db_session = current_app.config['db_session']
+    try:
+        usecases = UseCases(db_session)
+        data = usecases.load_acessoveiculo(id=id)
+        return jsonify(data), 200
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': str(err)}), 500
 
 
 @recintosapi.route('/api/acessoveiculo', methods=['POST'])
@@ -36,9 +41,19 @@ def insert_acessoveiculo():
 @recintosapi.route('/api/pesagemveiculo/<id>', methods=['GET'])
 @jwt_required
 def get_pesagemveiculo(id):
-    return select_one_from_class(PesagemVeiculo,
-                                 PesagemVeiculo.id,
-                                 id)
+    db_session = current_app.config['db_session']
+    try:
+        usecases = UseCases(db_session)
+        data = usecases.load_acessoveiculo(id=id)
+        return jsonify(data), 200
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': str(err)}), 500
+
+
+@recintosapi.route('/api/pesagemveiculo', methods=['GET'])
+@jwt_required
+def get_pesagemveiculo():
 
 
 @recintosapi.route('/api/pesagemveiculo', methods=['POST'])
