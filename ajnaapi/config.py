@@ -34,7 +34,6 @@ class Staging:
     sql = create_engine('sqlite://')
 
 
-
 class Testing:
     """Configuração do ambiente de Testes."""
 
