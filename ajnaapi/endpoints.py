@@ -1,5 +1,6 @@
 """Endpoints para integração de clientes e sistemas com os dados do AJNA."""
 import datetime
+import json
 from base64 import b64encode
 from collections import OrderedDict
 
@@ -47,13 +48,21 @@ def api_grid_data():
         if request.method == 'POST':
             # print(request.json)
             try:
-                current_app.logger.info(str(type(request.json)) +  str(request.json))
+                request_json = request.json
+                current_app.logger.info(str(type(request.json)) + str(request.json))
             except Exception as err:
+                request_json = {}
                 current_app.logger.error(str(err))
                 current_app.logger.error(request.data)
-
-            query = request.json['query']
-            projection = request.json.get('projection')
+            if isinstance(request_json, str):
+                try:
+                    request_json = request_json.replace('\'', '"')
+                    request_json = json.loads(request_json)
+                except Exception as err:
+                    request_json = {}
+                    current_app.logger.error(str(err))
+            query = request_json['query']
+            projection = request_json.get('projection')
             query_processed = {}
             for key, value in query.items():
                 if isinstance(value, dict):
@@ -62,7 +71,8 @@ def api_grid_data():
                         if isinstance(value2, str):
                             try:
                                 value_processed[key2] = \
-                                    datetime.strptime(value2, '%Y-%m-%d  %H:%M:%S')
+                                    datetime.datetime.strptime(value2,
+                                                               '%Y-%m-%d  %H:%M:%S')
                             except Exception:  # TODO: See specific exception
                                 value_processed[key2] = mongo_sanitizar(value2)
                         else:
@@ -71,7 +81,7 @@ def api_grid_data():
                 else:
                     try:
                         query_processed[key] = \
-                            datetime.strptime(value, '%Y-%m-%d  %H:%M:%S')
+                            datetime.datetime.strptime(value, '%Y-%m-%d  %H:%M:%S')
                     except Exception:
                         query_processed[key] = mongo_sanitizar(value)
             current_app.logger.info(query)
