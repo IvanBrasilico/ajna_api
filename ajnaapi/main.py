@@ -1,6 +1,7 @@
 """Arquivo principal da definição da aplicação que roda a API."""
 from flask import Flask, render_template, send_file, url_for, request
 from flask_bootstrap import Bootstrap
+from flask_jwt_extended import get_jwt_identity
 from flask_login import current_user
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View
@@ -88,9 +89,9 @@ def create_app(config_class=Production):
         ip = request.environ.get('HTTP_X_REAL_IP',
                                  request.remote_addr)
         try:
-            user_name = current_user.name
+            user_name = get_jwt_identity()
         except:
-            user_name = 'no user'
+            user_name = 'no user app'
         app.logger.info('url: %s %s IP:%s User: %s' %
                         (path, method, ip, user_name))
 
