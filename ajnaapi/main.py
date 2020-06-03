@@ -82,18 +82,6 @@ def create_app(config_class=Production):
         if db_session:
             db_session.remove()
 
-    @app.before_request
-    def before_request_callback():
-        path = request.path
-        method = request.method
-        ip = request.environ.get('HTTP_X_REAL_IP',
-                                 request.remote_addr)
-        try:
-            user_name = get_jwt_identity()
-        except:
-            user_name = 'no user app'
-        app.logger.info('url: %s %s IP:%s User: %s' %
-                        (path, method, ip, user_name))
 
     return app
 
