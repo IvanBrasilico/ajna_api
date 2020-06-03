@@ -46,7 +46,7 @@ def api_grid_data():
     try:
         if request.method == 'POST':
             # print(request.json)
-            current_app.logger.info(request.json)
+            current_app.logger.info(type(request.json) +  str(request.json))
             query = request.json['query']
             projection = request.json.get('projection')
             query_processed = {}
@@ -96,7 +96,7 @@ def api_grid_data():
             return jsonify(result), 200
         return jsonify({}), 404
     except Exception as err:
-        current_app.logger.error(err)  # , exc_info=True)
+        current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro: %s' % err}), 400
 
 
