@@ -46,7 +46,12 @@ def api_grid_data():
     try:
         if request.method == 'POST':
             # print(request.json)
-            current_app.logger.info(type(request.json) +  str(request.json))
+            try:
+                current_app.logger.info(str(type(request.json)) +  str(request.json))
+            except Exception as err:
+                current_app.logger.error(str(err))
+                current_app.logger.error(request.data)
+
             query = request.json['query']
             projection = request.json.get('projection')
             query_processed = {}
