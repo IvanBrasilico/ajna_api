@@ -112,6 +112,7 @@ def api_grid_data():
         return jsonify({}), 404
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
+        current_app.logger.error(request.data)
         return jsonify({'msg': 'Erro: %s' % err}), 400
 
 
