@@ -47,11 +47,11 @@ def api_grid_data():
     try:
         if request.method == 'POST':
             try:
+                current_app.logger.info('grid_data request_data ' + str(request.data))
                 if request.is_json:
                     request_dict = request.get_json()
                 else:
                     request_dict = request.form
-                current_app.logger.info('grid_data request_data ' + str(request.data))
                 current_app.logger.info(str(type(request.json)) + str(request.json))
             except Exception as err:
                 request_dict = {}
