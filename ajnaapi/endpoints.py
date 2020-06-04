@@ -46,23 +46,26 @@ def api_grid_data():
     result = []
     try:
         if request.method == 'POST':
-            # print(request.json)
             try:
-                request_json = request.json
+                if request.is_json:
+                    request_dict = request.get_json()
+                else:
+                    request_dict = request.form
+                current_app.logger.info('grid_data request_data ' + str(request.data))
                 current_app.logger.info(str(type(request.json)) + str(request.json))
             except Exception as err:
-                request_json = {}
+                request_dict = {}
                 current_app.logger.error(str(err))
                 current_app.logger.error(request.data)
-            if isinstance(request_json, str):
+            if isinstance(request_dict, str):
                 try:
-                    request_json = request_json.replace('\'', '"')
-                    request_json = json.loads(request_json)
+                    request_dict = request_dict.replace('\'', '"')
+                    request_dict = json.loads(request_dict)
                 except Exception as err:
-                    request_json = {}
+                    request_dict = {}
                     current_app.logger.error(str(err))
-            query = request_json['query']
-            projection = request_json.get('projection')
+            query = request_dict['query']
+            projection = request_dict.get('projection')
             query_processed = {}
             for key, value in query.items():
                 if isinstance(value, dict):

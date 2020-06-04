@@ -8,7 +8,7 @@ import requests_pkcs12 as requests
 from PIL import Image
 
 warnings.simplefilter('ignore')
-BASE_URL = 'https://localhost/ajnaapi'
+BASE_URL = 'http://localhost:5004'
 # BASE_URL = 'https://ajna.labin.rf08.srf/ajnaapi'
 
 if len(sys.argv) < 2:
