@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import and_
 
 from flask import Blueprint, current_app, jsonify, request
 from virasana.integracao.mercante.mercantealchemy import Conhecimento, \
-    ConteinerVazio, Item, Manifesto, NCMItem
+    ConteinerVazio, Item, Manifesto, NCMItem, Escala
 
 mercanteapi = Blueprint('mercanteapi', __name__)
 
@@ -212,3 +212,23 @@ def ConteinerVazio_manifesto(manifesto):
     return select_many_from_class(ConteinerVazio,
                                   ConteinerVazio.c.manifesto,
                                   manifesto)
+
+
+@mercanteapi.route('/api/escalas/new/<datamodificacao>', methods=['GET'])
+@jwt_required
+def Escala_new(datamodificacao):
+    return get_datamodificacao_gt(Escala, datamodificacao)
+
+
+@mercanteapi.route('/api/escalas', methods=['GET', 'POST'])
+@jwt_required
+def Escala_list():
+    return get_filtro(Escala, request.values)
+
+
+@mercanteapi.route('/api/escalas/<numeroDaEscala>', methods=['GET'])
+@jwt_required
+def Escala_manifesto(numeroDaEscala):
+    return select_many_from_class(Escala,
+                                  Escala.c.numeroDaEscala,
+                                  numeroDaEscala)

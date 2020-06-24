@@ -175,6 +175,71 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
+  /escalas/{numeroDaEscala}:
+    get:
+      parameters:
+        - name: numeroDaEscala
+          in: path
+          description: Numero da Escala no sistema original
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Escala
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Escala'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /escalas/new/{datamodificacao}:
+    get:
+      parameters:
+        - name: datamodificacao
+          in: path
+          description: Data inicial de pesquisa
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Escala
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Escala'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /escalas:
+    get:
+      responses:
+        200:
+          description: Escala
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Escala'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
   /manifestos/{numero}:
     get:
       parameters:
@@ -418,7 +483,7 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
-  /conteineresVazios/{manifesto}:
+  /ConteinerVazio/{manifesto}:
     get:
       parameters:
         - name: manifesto
@@ -442,7 +507,7 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
-  /conteineresVazios/new/{datamodificacao}:
+  /ConteinerVazios/new/{datamodificacao}:
     get:
       parameters:
         - name: datamodificacao
@@ -466,7 +531,7 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
-  /conteineresVazios:
+  /ConteinerVazio:
     get:
       responses:
         200:
@@ -635,6 +700,37 @@ components:
       type: object
       properties:
         numero:
+          type: string
+    escalas:
+      type: object
+      properties:
+        numeroDaEscala:
+          type: string
+        dataAtualizacao:
+          type: string
+        horaAtualizacao:
+          type: string
+        agenciaDeNavegacao:
+          type: string
+        portoDaEscala:
+          type: string
+        embarcacao:
+          type: string
+        numeroViagemDoArmador:
+          type: string
+        tipoOperacaoPrevista:
+          type: string
+        bandeiraDaEmbarcacao:
+          type: string
+        empresaDeNavegacao:
+          type: string
+        dataPrevistaAtracacao:
+          type: string
+        dataPrevistaDesatracacao:
+          type: string
+        dataEfetivaPrimeiraAtracacao:
+          type: string
+        dataEfetivaPrimeiraDesatracacao:
           type: string
     itens:
       type: object
