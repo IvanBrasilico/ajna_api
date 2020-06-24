@@ -507,7 +507,7 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
-  /ConteinerVazios/new/{datamodificacao}:
+  /ConteinerVazio/new/{datamodificacao}:
     get:
       parameters:
         - name: datamodificacao

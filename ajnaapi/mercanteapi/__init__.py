@@ -8,6 +8,7 @@ from flask import Blueprint, current_app, jsonify, request
 from virasana.integracao.mercante.mercantealchemy import Conhecimento, \
     ConteinerVazio, Item, Manifesto, NCMItem, Escala
 
+
 mercanteapi = Blueprint('mercanteapi', __name__)
 
 
