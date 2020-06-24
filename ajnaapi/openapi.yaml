@@ -701,7 +701,7 @@ components:
       properties:
         numero:
           type: string
-    escalas:
+    Escala:
       type: object
       properties:
         numeroDaEscala:
