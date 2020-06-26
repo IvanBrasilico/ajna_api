@@ -57,7 +57,5 @@ def imagensrvf(rvf_id):
 if __name__ == '__main__':
     from ajnaapi.utils import yaml_from_model
     print(yaml_from_model(OVR))
-    print(yaml_from_model(EventoOVR))
-    print(yaml_from_model(TipoEventoOVR))
     print(yaml_from_model(RVF))
     print(yaml_from_model(ImagemRVF))

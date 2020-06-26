@@ -1118,3 +1118,68 @@ components:
         type: integer
       user_name:
         type: string
+    RVF:
+      create_date:
+        type: string
+      datahora:
+        type: string
+      descricao:
+        type: string
+      id:
+        properties: id
+        type: object
+      imagens:
+        properties: imagens
+        type: object
+        $ref: '#components/schemas/ImagemRVF'
+      infracoesencontradas:
+        properties: infracoesencontradas
+        type: object
+      lacresverificados:
+        properties: lacresverificados
+        type: object
+      last_modified:
+        type: string
+      marcasencontradas:
+        properties: marcasencontradas
+        type: object
+      numeroCEmercante:
+        type: string
+      numerolote:
+        type: string
+      ovr:
+        properties: ovr
+        type: object
+      ovr_id:
+        type: integer
+      peso:
+        type: number
+      user_name:
+        type: string
+      volume:
+        type: number
+
+    ImagemRVF:
+      id:
+        properties: id
+        type: integer
+      create_date:
+        type: string
+      descricao:
+        type: string
+      imagem:
+        type: string
+      itemtg_id:
+        type: integer
+      marca:
+        type: string
+      ordem:
+        type: integer
+      rvf_id:
+        properties: rvf_id
+        type: integer
+      tg_id:
+        type: integer
+      user_name:
+        type: string
+
