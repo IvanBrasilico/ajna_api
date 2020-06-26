@@ -13,8 +13,10 @@ from werkzeug.utils import redirect
 from ajna_commons.flask import api_login, login
 from ajna_commons.flask.user import DBUser
 from ajnaapi.endpoints import ajna_api
-from ajnaapi.mercanteapi import mercanteapi
+from ajnaapi.mercanteapi.routes import mercanteapi
 from ajnaapi.recintosapi.routes import recintosapi
+from ajnaapi.bhadrasanaapi.routes import bhadrasanaapi
+
 from .config import Production
 
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
@@ -32,6 +34,7 @@ def create_app(config_class=Production):
     app.secret_key = config_class.SECRET
     app.config['SECRET_KEY'] = config_class.SECRET
     app.config['mongodb'] = config_class.db
+    app.config['mongodb_risco'] = config_class.db_risco
     app.config['sql'] = config_class.sql
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
@@ -43,6 +46,8 @@ def create_app(config_class=Production):
     csrf.exempt(mercanteapi)
     app.register_blueprint(recintosapi)
     csrf.exempt(recintosapi)
+    app.register_blueprint(bhadrasanaapi)
+    csrf.exempt(bhadrasanaapi)
     app.logger.info('Configurando swagger-ui...')
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)

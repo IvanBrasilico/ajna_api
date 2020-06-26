@@ -2,13 +2,30 @@ openapi: 3.0.1
 info:
   title: API-AJNA
   description: API para acesso de outras aplicações a dados do AJNA
-  version: "1.0a"
+  version: "1.0b"
 servers:
   - url: /ajnaapi/api
+tags:
+  - name: autenticação
+    description: Funções de autenticação de usuário
+  - name: virasana
+    description: Módulo de controle das imagens de inspeção não invasiva
+    externalDocs:
+      url: https://ajna.labin08.rf08.srf/site
+  - name: bhadrasana
+    description: Módulo de controle de risco e controle de carga, com registro das verificações físicas
+    externalDocs:
+      url: https://ajna.labin08.rf08.srf/ficha_site
+  - name: mercante
+    description: Dados importados dos arquivos XML do Mercante
+  - name: API Recintos
+    description: Dados importados da API Recintos
 paths:
   /login:
     post:
       summary: retorna token JWT
+      tags:
+        - autenticação
       operationId: authentication.generate_token
       requestBody:
         description: Usuario e Senha
@@ -23,21 +40,26 @@ paths:
             'text/plain':
               schema:
                 type: string
-  /secret:
-    get:
-      summary: Return secret string
-      operationId: authentication.get_secret
+  /login_certificado:
+    post:
+      summary: retorna token JWT
+      tags:
+        - autenticação
+      operationId: authentication.generate_token
+      requestBody:
+        description: Certificado digital PKCS11
       responses:
         '200':
-          description: secret response
+          description: JWT token
           content:
             'text/plain':
               schema:
                 type: string
-      security:
-        - jwt: ['secret']
   /grid_data:
     post:
+      summary: Consulta GridFS do MongoDB das imagens de escaneamento
+      tags:
+        - virasana
       requestBody:
         description: Lista de eventos maiores que um ID ou Data
         content:
@@ -68,6 +90,9 @@ paths:
         - jwt: ['secret']
   /image/{id}:
     get:
+      summary: Retorna conteúdo da imagem
+      tags:
+        - virasana
       parameters:
         - name: id
           in: path
@@ -77,7 +102,7 @@ paths:
             type: string
       responses:
         200:
-          description:
+          description: Conteúdo em base64
           content:
             image/jpeg:
         400:
@@ -90,6 +115,9 @@ paths:
         - jwt: ['secret']
   /summary_aniita/{ce_mercante}:
     get:
+      summary: Retorna um pequeno sumário dos dados do CE para visualização
+      tags:
+        - virasana
       parameters:
         - name: ce_mercante
           in: path
@@ -110,8 +138,63 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
+  /image_risco/{id}:
+    get:
+      summary: Retorna conteúdo da imagem
+      tags:
+        - bhadrasana
+      parameters:
+        - name: id
+          in: path
+          description: id da imagem do escaneamento no banco de dados AJNA
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conteúdo em base64
+          content:
+            image/jpeg:
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /fichas/{id}:
+    get:
+      summary: Retorna conteúdo da Ficha de Controle de Carga
+      tags:
+        - bhadrasana
+      parameters:
+        - name: id
+          in: path
+          description: id da Ficha
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OVR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OVR'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
   /conhecimentos/{numeroCEmercante}:
     get:
+      summary: Retorna objeto
+      tags:
+        - mercante
       parameters:
         - name: numeroCEmercante
           in: path
@@ -136,6 +219,9 @@ paths:
         - jwt: ['secret']
   /conhecimentos/new/{datamodificacao}:
     get:
+      summary: Retorna lista de objetos com data de modificacao maior que a data passada
+      tags:
+        - mercante
       parameters:
         - name: datamodificacao
           in: path
@@ -160,6 +246,9 @@ paths:
         - jwt: ['secret']
   /conhecimentos:
     get:
+      summary: Retorna lista de objetos correspondente ao filtro
+      tags:
+        - mercante
       responses:
         200:
           description: Conhecimento
@@ -177,6 +266,9 @@ paths:
         - jwt: ['secret']
   /escalas/{numeroDaEscala}:
     get:
+      summary: Retorna objeto
+      tags:
+        - mercante
       parameters:
         - name: numeroDaEscala
           in: path
@@ -201,6 +293,9 @@ paths:
         - jwt: ['secret']
   /escalas/new/{datamodificacao}:
     get:
+      summary: Retorna lista de objetos com data de modificacao maior que a data passada
+      tags:
+        - mercante
       parameters:
         - name: datamodificacao
           in: path
@@ -225,6 +320,9 @@ paths:
         - jwt: ['secret']
   /escalas:
     get:
+      summary: Retorna lista de objetos correspondente ao filtro
+      tags:
+        - mercante
       responses:
         200:
           description: Escala
@@ -242,6 +340,9 @@ paths:
         - jwt: ['secret']
   /manifestos/{numero}:
     get:
+      summary: Retorna objeto
+      tags:
+        - mercante
       parameters:
         - name: numero
           in: path
@@ -266,6 +367,9 @@ paths:
         - jwt: ['secret']
   /manifestos/new/{datamodificacao}:
     get:
+      summary: Retorna lista de objetos com data de modificacao maior que a data passada
+      tags:
+        - mercante
       parameters:
         - name: datamodificacao
           in: path
@@ -290,6 +394,9 @@ paths:
         - jwt: ['secret']
   /manifestos:
     get:
+      summary: Retorna lista de objetos correspondente ao filtro
+      tags:
+        - mercante
       responses:
         200:
           description: Conhecimento
@@ -307,6 +414,9 @@ paths:
         - jwt: ['secret']
   /itens/{conhecimento}:
     get:
+      summary: Retorna objeto
+      tags:
+        - mercante
       parameters:
         - name: numero
           in: path
@@ -331,6 +441,9 @@ paths:
         - jwt: ['secret']
   /itens/{conhecimento}/{sequencial}:
     get:
+      summary: Retorna objeto
+      tags:
+        - mercante
       parameters:
         - name: numero
           in: path
@@ -355,6 +468,9 @@ paths:
         - jwt: ['secret']
   /itens/new/{datamodificacao}:
     get:
+      summary: Retorna lista de objetos com data de modificacao maior que a data passada
+      tags:
+        - mercante
       parameters:
         - name: datamodificacao
           in: path
@@ -379,6 +495,9 @@ paths:
         - jwt: ['secret']
   /itens:
     get:
+      summary: Retorna lista de objetos correspondente ao filtro
+      tags:
+        - mercante
       responses:
         200:
           description: Conhecimento
@@ -396,6 +515,9 @@ paths:
         - jwt: ['secret']
   /NCMitem/{conhecimento}:
     get:
+      summary: Retorna objeto
+      tags:
+        - mercante
       parameters:
         - name: numero
           in: path
@@ -420,6 +542,9 @@ paths:
         - jwt: ['secret']
   /NCMitem/{conhecimento}/{sequencial}:
     get:
+      summary: Retorna objeto
+      tags:
+        - mercante
       parameters:
         - name: numero
           in: path
@@ -444,6 +569,9 @@ paths:
         - jwt: ['secret']
   /NCMitem/new/{datamodificacao}:
     get:
+      summary: Retorna lista de objetos com data de modificacao maior que a data passada
+      tags:
+        - mercante
       parameters:
         - name: datamodificacao
           in: path
@@ -468,6 +596,9 @@ paths:
         - jwt: ['secret']
   /NCMitem:
     get:
+      summary: Retorna lista de objetos correspondente ao filtro
+      tags:
+        - mercante
       responses:
         200:
           description: Conhecimento
@@ -485,6 +616,9 @@ paths:
         - jwt: ['secret']
   /ConteinerVazio/{manifesto}:
     get:
+      summary: Retorna objeto
+      tags:
+        - mercante
       parameters:
         - name: manifesto
           in: path
@@ -509,6 +643,9 @@ paths:
         - jwt: ['secret']
   /ConteinerVazio/new/{datamodificacao}:
     get:
+      summary: Retorna lista de objetos com data de modificacao maior que a data passada
+      tags:
+        - mercante
       parameters:
         - name: datamodificacao
           in: path
@@ -533,6 +670,9 @@ paths:
         - jwt: ['secret']
   /ConteinerVazio:
     get:
+      summary: Retorna lista de objetos correspondente ao filtro
+      tags:
+        - mercante
       responses:
         200:
           description: Lista de Conteineres Vazios
@@ -550,6 +690,9 @@ paths:
         - jwt: ['secret']
   /acessoveiculo/{id}:
     get:
+      summary: Retorna objeto
+      tags:
+        - APIRecintos
       parameters:
         - name: id
           in: path
@@ -575,6 +718,8 @@ paths:
   /acessoveiculo:
     post:
       summary: Recebe Evento acessoveiculo
+      tags:
+        - APIRecintos
       operationId: authentication.generate_token
       requestBody:
         description: Conteúdo do Evento
@@ -597,6 +742,8 @@ paths:
         - jwt: ['secret']
   /pesagemveiculo/{id}:
     get:
+      tags:
+        - APIRecintos
       parameters:
         - name: id
           in: path
@@ -622,6 +769,8 @@ paths:
   /pesagemveiculo:
     post:
       summary: Recebe Evento pesagemveiculo
+      tags:
+        - APIRecintos
       operationId: authentication.generate_token
       requestBody:
         description: Conteúdo do Evento
@@ -789,6 +938,7 @@ components:
         listaConteineresUld:
           properties: listaConteineresUld
           type: object
+          $ref: '#components/schemas/listaConteinerUld'
         login:
           type: string
         mercadoria:
@@ -874,6 +1024,7 @@ components:
         listaSemirreboque:
           properties: listaSemirreboque
           type: object
+          $ref: '#components/schemas/Semirreboque'
         numConteinerUld:
           type: string
         pesoBrutoBalanca:
@@ -903,3 +1054,67 @@ components:
           type: string
         tara:
           type: number
+    OVR:
+      ano:
+        type: string
+      cnpj_fiscalizado:
+        type: string
+      create_date:
+        type: string
+      dataentrada:
+        type: string
+      datahora:
+        type: string
+      fase:
+        type: integer
+      flags:
+        properties: flags
+        type: object
+      historico:
+        properties: historico
+        type: object
+      id:
+        properties: id
+        type: object
+      last_modified:
+        type: string
+      numero:
+        type: string
+      numeroCEmercante:
+        type: string
+      numerodeclaracao:
+        type: string
+      observacoes:
+        type: string
+      processos:
+        properties: processos
+        type: object
+      recinto:
+        properties: recinto
+        type: object
+      recinto_id:
+        properties: recinto_id
+        type: object
+      responsavel:
+        properties: responsavel
+        type: object
+      responsavel_cpf:
+        type: string
+      setor:
+        properties: setor
+        type: object
+      setor_id:
+        type: string
+      tgs:
+        properties: tgs
+        type: object
+      tipoevento:
+        properties: tipoevento
+        type: object
+      tipoevento_id:
+        properties: tipoevento_id
+        type: object
+      tipooperacao:
+        type: integer
+      user_name:
+        type: string

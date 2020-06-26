@@ -17,6 +17,7 @@ class Production:
     TESTING = False
     SECRET = SECRET
     db = MongoClient(host=MONGODB_URI).test
+    db_risco = MongoClient(host=MONGODB_URI).risco
     try:
         sql = create_engine(SQL_URI,
                             pool_size=5, max_overflow=5, pool_recycle=3600)
@@ -31,6 +32,7 @@ class Staging:
     TESTING = True
     SECRET = 'fraco'  # nosec
     db = MongoClient(host=MONGODB_URI).unit_test
+    db_risco = MongoClient(host=MONGODB_URI).unit_test
     sql = create_engine('sqlite://')
 
 
@@ -40,4 +42,5 @@ class Testing:
     TESTING = True
     SECRET = 'fraco'  # nosec
     db = MongoClient(host=MONGODB_URI).unit_test
+    db_risco = MongoClient(host=MONGODB_URI).unit_test
     sql = create_engine('sqlite:///:memory:')

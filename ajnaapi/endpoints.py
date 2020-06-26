@@ -193,9 +193,13 @@ def api_summary(ce_mercante):
 
 
 @ajna_api.route('/api/image/<_id>', methods=['GET'])
+@ajna_api.route('/api/image_risco/<_id>', methods=['GET'])
 @jwt_required
 def api_image(_id):
-    db = current_app.config['mongodb']
+    if 'risco' in request.url:
+        db = current_app.config['mongodb_risco']
+    else:
+        db = current_app.config['mongodb']
     _id = mongo_sanitizar(_id)
     try:
         current_app.logger.warning(_id)
