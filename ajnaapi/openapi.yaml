@@ -1161,7 +1161,6 @@ components:
 
     ImagemRVF:
       id:
-        properties: id
         type: integer
       create_date:
         type: string
@@ -1176,7 +1175,6 @@ components:
       ordem:
         type: integer
       rvf_id:
-        properties: rvf_id
         type: integer
       tg_id:
         type: integer
