@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required
 from flask import Blueprint, request, current_app, jsonify
 
 from ajnaapi.utils import select_one_from_class, select_many_from_class, get_filtro, dump_model
-from bhadrasana.models.ovr import OVR
+from bhadrasana.models.ovr import OVR, EventoOVR, TGOVR, ItemTG
 from bhadrasana.models.rvf import RVF, ImagemRVF
 
 
@@ -44,18 +44,40 @@ def rvfs():
     return get_filtro(RVF, request.values)
 
 
+@bhadrasanaapi.route('/api/rvfs/<ovr_id>', methods=['GET'])
+# @jwt_required
+def rvfs_ovr(ovr_id):
+    return select_many_from_class(RVF,
+                                 RVF.ovr_id,
+                                 ovr_id)
+
 @bhadrasanaapi.route('/api/imagens_rvf/<rvf_id>', methods=['GET'])
 # @jwt_required
 def imagensrvf(rvf_id):
-    return select_one_from_class(ImagemRVF,
+    return select_many_from_class(ImagemRVF,
                                  ImagemRVF.rvf_id,
                                  rvf_id)
 
+
+@bhadrasanaapi.route('/api/tg', methods=['GET'])
+# @jwt_required
+def tg():
+    return get_filtro(RVF, request.values)
+
+
+@bhadrasanaapi.route('/api/tgs/<ovr_id>', methods=['GET'])
+# @jwt_required
+def tgs(ovr_id):
+    return select_many_from_class(ItemTG,
+                                 TGOVR.ovr_id,
+                                 ovr_id)
 
 
 
 if __name__ == '__main__':
     from ajnaapi.utils import yaml_from_model
-    print(yaml_from_model(OVR))
-    print(yaml_from_model(RVF))
-    print(yaml_from_model(ImagemRVF))
+    # print(yaml_from_model(OVR))
+    # print(yaml_from_model(RVF))
+    # print(yaml_from_model(ImagemRVF))
+    # print(yaml_from_model(EventoOVR))
+    print(yaml_from_model(ItemTG))

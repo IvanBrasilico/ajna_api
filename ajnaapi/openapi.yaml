@@ -3,6 +3,11 @@ info:
   title: API-AJNA
   description: API para acesso de outras aplicações a dados do AJNA
   version: "1.0b"
+externalDocs:
+  description: Site de acesso ao Sistema e manuais
+  url: https://ajna.labin08.rf08.srf/
+
+
 servers:
   - url: /ajnaapi/api
 tags:
@@ -11,15 +16,18 @@ tags:
   - name: virasana
     description: Módulo de controle das imagens de inspeção não invasiva
     externalDocs:
-      url: https://ajna.labin08.rf08.srf/site
+      description: Site do módulo virasana
+      url: https://ajna.labin08.rf08.srf/site2
   - name: bhadrasana
     description: Módulo de controle de risco e controle de carga, com registro das verificações físicas
     externalDocs:
+      description: Site do módulo bhadransa
       url: https://ajna.labin08.rf08.srf/ficha_site
   - name: mercante
     description: Dados importados dos arquivos XML do Mercante
   - name: API Recintos
     description: Dados importados da API Recintos
+
 paths:
   /login:
     post:
@@ -68,18 +76,23 @@ paths:
               type: object
               properties:
                 query:
-                  type: aplication/json
-                  description: Campos do filtro a aplicar - padrão MongoDB
-                  required: true
+                  type: object
+                  properties:
+                    campo:
+                      type: string
                 projection:
-                  type: aplication/json
-                  description: Campos a retornar - padrão MongoDB
-                  required: true
+                  type: object
+                  properties:
+                    campo:
+                      type: integer
+              required:
+                - query
+              description: Campos do filtro a aplicar - padrão MongoDB
       responses:
         200:
-          description:
+          description: JSON contendo os campos solicitados em projection
           content:
-            application/json:
+            application/json: {}
         400:
           description: Erro
           content: {}
@@ -105,6 +118,9 @@ paths:
           description: Conteúdo em base64
           content:
             image/jpeg:
+              schema:
+                type: string
+                format: binary
         400:
           description: Erro
           content: {}
@@ -129,7 +145,7 @@ paths:
         200:
           description: Lista de contêineres do CE, algumas informações do sistema Mercante, id das imagens do CE
           content:
-            aplication/json:
+            aplication/json: {}
         400:
           description: Erro
           content: {}
@@ -155,6 +171,9 @@ paths:
           description: Conteúdo em base64
           content:
             image/jpeg:
+              schema:
+                type: string
+                format: binary
         400:
           description: Erro
           content: {}
@@ -163,7 +182,7 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
-  /fichas/{id}:
+  /ficha/{id}:
     get:
       summary: Retorna conteúdo da Ficha de Controle de Carga
       tags:
@@ -182,6 +201,248 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OVR'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /fichas:
+    get:
+      summary: Retorna lista de Fichas de Controle de Carga
+      tags:
+        - bhadrasana
+      responses:
+        200:
+          description: OVR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OVR'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /rvf/{id}:
+    get:
+      summary: Retorna conteúdo da Ficha de Controle de Carga
+      tags:
+        - bhadrasana
+      parameters:
+        - name: id
+          in: path
+          description: id da Ficha
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: RVF
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RVF'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /rvfs:
+    get:
+      summary: Retorna lista de Fichas de Controle de Carga
+      tags:
+        - bhadrasana
+      responses:
+        200:
+          description: RVF
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RVF'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /imagens_rvf/{rvf_id}:
+    get:
+      summary: Retorna lista de imagens da RVF
+      tags:
+        - bhadrasana
+      parameters:
+        - name: rvf_id
+          in: path
+          description: id da RVF
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ImagemRVF
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagemRVF'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /imagens_rvf:
+    get:
+      summary: Retorna lista de Imagens do Filtro
+      tags:
+        - bhadrasana
+      responses:
+        200:
+          description: ImagemRVF
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagemRVF'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /tg/{id}:
+    get:
+      summary: Retorna conteúdo da Ficha de Controle de Carga
+      tags:
+        - bhadrasana
+      parameters:
+        - name: id
+          in: path
+          description: id do TG
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: TGOVR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TGOVR'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /tg/{ovr_id}:
+    get:
+      summary: Retorna conteúdo da Ficha de Controle de Carga
+      tags:
+        - bhadrasana
+      parameters:
+        - name: ovr_id
+          in: path
+          description: id da Ficha
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: TGOVR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TGOVR'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /tgs:
+    get:
+      summary: Retorna lista de Fichas de Controle de Carga
+      tags:
+        - bhadrasana
+      responses:
+        200:
+          description: TGOVR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TGOVR'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /itemtg/{id}:
+    get:
+      summary: Retorna conteúdo da Ficha de Controle de Carga
+      tags:
+        - bhadrasana
+      parameters:
+        - name: id
+          in: path
+          description: id do itemtg
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ItemTG
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemTG'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /itenstg/{tg_id}:
+    get:
+      summary: Retorna lista de Fichas de Controle de Carga
+      tags:
+        - bhadrasana
+      parameters:
+        - name: tg_id
+          in: path
+          description: id do tg
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ItemTG
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemTG'
         400:
           description: Erro
           content: {}
@@ -692,7 +953,7 @@ paths:
     get:
       summary: Retorna objeto
       tags:
-        - APIRecintos
+        - API Recintos
       parameters:
         - name: id
           in: path
@@ -719,7 +980,7 @@ paths:
     post:
       summary: Recebe Evento acessoveiculo
       tags:
-        - APIRecintos
+        - API Recintos
       operationId: authentication.generate_token
       requestBody:
         description: Conteúdo do Evento
@@ -743,7 +1004,7 @@ paths:
   /pesagemveiculo/{id}:
     get:
       tags:
-        - APIRecintos
+        - API Recintos
       parameters:
         - name: id
           in: path
@@ -770,7 +1031,7 @@ paths:
     post:
       summary: Recebe Evento pesagemveiculo
       tags:
-        - APIRecintos
+        - API Recintos
       operationId: authentication.generate_token
       requestBody:
         description: Conteúdo do Evento
@@ -1055,129 +1316,202 @@ components:
         tara:
           type: number
     OVR:
-      ano:
-        type: string
-      cnpj_fiscalizado:
-        type: string
-      create_date:
-        type: string
-      dataentrada:
-        type: string
-      datahora:
-        type: string
-      fase:
-        type: integer
-      flags:
-        properties: flags
-        type: object
-      historico:
-        properties: historico
-        type: object
-      id:
-        properties: id
-        type: object
-      last_modified:
-        type: string
-      numero:
-        type: string
-      numeroCEmercante:
-        type: string
-      numerodeclaracao:
-        type: string
-      observacoes:
-        type: string
-      processos:
-        properties: processos
-        type: object
-      recinto:
-        properties: recinto
-        type: object
-      recinto_id:
-        properties: recinto_id
-        type: object
-      responsavel:
-        properties: responsavel
-        type: object
-      responsavel_cpf:
-        type: string
-      setor:
-        properties: setor
-        type: object
-      setor_id:
-        type: string
-      tgs:
-        properties: tgs
-        type: object
-      tipoevento:
-        properties: tipoevento
-        type: object
-      tipoevento_id:
-        properties: tipoevento_id
-        type: object
-      tipooperacao:
-        type: integer
-      user_name:
-        type: string
+      type: object
+      properties:
+        id:
+          type: integer
+        ano:
+          type: string
+        cnpj_fiscalizado:
+          type: string
+        create_date:
+          type: string
+        dataentrada:
+          type: string
+        datahora:
+          type: string
+        fase:
+          type: integer
+        flags:
+          type: array
+          items:
+            type: string
+        historico:
+          type: array
+          items:
+            type: object
+            $ref: '#components/schemas/EventoOVR'
+        last_modified:
+          type: string
+        numero:
+          type: string
+        numeroCEmercante:
+          type: string
+        numerodeclaracao:
+          type: string
+        observacoes:
+          type: string
+        recinto_id:
+          type: integer
+        responsavel_cpf:
+          type: string
+        setor_id:
+          type: string
+        tgs:
+          type: array
+          items:
+            type: object
+            $ref: '#components/schemas/TGOVR'
+        tipoevento_id:
+          type: integer
+        tipooperacao:
+          type: integer
+        user_name:
+          type: string
     RVF:
-      create_date:
-        type: string
-      datahora:
-        type: string
-      descricao:
-        type: string
-      id:
-        properties: id
-        type: object
-      imagens:
-        properties: imagens
-        type: object
-        $ref: '#components/schemas/ImagemRVF'
-      infracoesencontradas:
-        properties: infracoesencontradas
-        type: object
-      lacresverificados:
-        properties: lacresverificados
-        type: object
-      last_modified:
-        type: string
-      marcasencontradas:
-        properties: marcasencontradas
-        type: object
-      numeroCEmercante:
-        type: string
-      numerolote:
-        type: string
-      ovr:
-        properties: ovr
-        type: object
-      ovr_id:
-        type: integer
-      peso:
-        type: number
-      user_name:
-        type: string
-      volume:
-        type: number
-
+      type: object
+      properties:
+        id:
+          type: integer
+        create_date:
+          type: string
+        datahora:
+          type: string
+        descricao:
+          type: string
+        numeroCEmercante:
+          type: string
+        numerolote:
+          type: string
+        ovr_id:
+          type: integer
+        peso:
+          type: number
+        user_name:
+          type: string
+        volume:
+          type: number
+        last_modified:
+          type: string
+        imagens:
+          type: array
+          items:
+            type: object
+            $ref: '#components/schemas/ImagemRVF'
+        infracoesencontradas:
+          type: array
+          items:
+            type: string
+        lacresverificados:
+          type: array
+          items:
+            type: string
+        marcasencontradas:
+          type: array
+          items:
+            type: string
     ImagemRVF:
-      id:
-        type: integer
-      create_date:
-        type: string
-      descricao:
-        type: string
-      imagem:
-        type: string
-      itemtg_id:
-        type: integer
-      marca:
-        type: string
-      ordem:
-        type: integer
-      rvf_id:
-        type: integer
-      tg_id:
-        type: integer
-      user_name:
-        type: string
-
+      type: object
+      properties:
+        id:
+          type: integer
+        create_date:
+          type: string
+        descricao:
+          type: string
+        imagem:
+          type: string
+        itemtg_id:
+          type: integer
+        marca:
+          type: string
+        ordem:
+          type: integer
+        rvf_id:
+          type: integer
+        tg_id:
+          type: integer
+        user_name:
+          type: string
+    EventoOVR:
+      type: object
+      properties:
+        id:
+          type: integer
+        anexo_filename:
+          type: string
+        create_date:
+          type: string
+        fase:
+          type: integer
+        motivo:
+          type: string
+        ovr_id:
+          type: integer
+        tipoevento_id:
+          type: integer
+        user_name:
+          type: string
+    TGOVR:
+      type: object
+      properties:
+        id:
+          type: integer
+        afrfb:
+          type: string
+        create_date:
+          type: string
+        descricao:
+          type: string
+        identificacao:
+          type: string
+        itenstg:
+          type: array
+          items:
+            type: object
+            $ref: '#components/schemas/ItemTGOVR'
+        marcas:
+          type: array
+          items:
+            type: string
+        numerolote:
+          type: string
+        numerotg:
+          type: string
+        observacoes:
+          type: string
+        ovr_id:
+          type: integer
+        qtde:
+          type: number
+        tipomercadoria_id:
+          type: integer
+        unidadedemedida:
+          type: integer
+        user_name:
+          type: string
+        valor:
+          type: number
+    ItemTG:
+      type: object
+      properties:
+        id:
+          type: integer
+        create_date:
+          type: string
+        descricao:
+          type: string
+        marca:
+          type: string
+        ncm:
+          type: string
+        numero:
+          type: integer
+        qtde:
+          type: number
+        unidadedemedida:
+          type: integer
+        user_name:
+          type: string
+        valor:
+          type: number
