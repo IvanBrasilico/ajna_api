@@ -1,35 +1,19 @@
-from flask import Blueprint, request, current_app, jsonify
-from flask_jwt_extended import jwt_required
+from datetime import datetime
 
-from ajnaapi.utils import get_filtro, dump_model, get_filtro_alchemy
+from flask import Blueprint, request, current_app, jsonify
+
+from ajnaapi.utils import get_filtro_alchemy, dump_model
+from ajnaapi.utils import select_one_campo_alchemy, select_many_campo_alchemy
+from bhadrasana.forms.exibicao_ovr import ExibicaoOVR, TipoExibicao
+from bhadrasana.models import get_usuario_telegram
+from bhadrasana.models.laudo import get_empresa, get_sats_cnpj
 from bhadrasana.models.ovr import OVR, TGOVR, ItemTG
+from bhadrasana.models.ovrmanager import get_ovr_responsavel, get_ovr_empresa
+from bhadrasana.models.riscomanager import consulta_container_objects
 from bhadrasana.models.rvf import RVF, ImagemRVF
+from bhadrasana.models.virasana_manager import get_dues_empresa, get_ces_empresa, get_detalhes_mercante
 
 bhadrasanaapi = Blueprint('bhadrasanapi', __name__)
-
-
-def select_one_campo_alchemy(session, model, campo, oid):
-    try:
-        result = session.query(model).filter(campo == oid).one_or_none()
-        if result:
-            return jsonify(result.dump()), 200
-        else:
-            return jsonify({'msg': '%s Não encontrado' % model.__class__.__name__}), 404
-    except Exception as err:
-        current_app.logger.error(err, exc_info=True)
-        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
-
-
-def select_many_campo_alchemy(session, model, campo, valor):
-    try:
-        result = session.query(model).filter(campo == valor).all()
-        if result:
-            return jsonify([dump_model(item) for item in result]), 200
-        else:
-            return jsonify({'msg': '%s Não encontrado' % model.__class__.__name__}), 404
-    except Exception as err:
-        current_app.logger.error(err, exc_info=True)
-        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
 
 
 @bhadrasanaapi.route('/api/ficha/<id>', methods=['GET'])
@@ -76,21 +60,20 @@ def imagensrvf(rvf_id):
 # @jwt_required
 def tg(id):
     session = current_app.config['db_session']
-    return select_one_campo_alchemy(session, RVF, RVF.id, id)
+    return select_one_campo_alchemy(session, TGOVR, TGOVR.id, id)
 
 
 @bhadrasanaapi.route('/api/tgs/<ovr_id>', methods=['GET'])
 # @jwt_required
 def tgs_ovr(ovr_id):
-    return select_many_campo_alchemy(TGOVR,
-                                     TGOVR.ovr_id,
-                                     ovr_id)
+    session = current_app.config['db_session']
+    return select_many_campo_alchemy(session, TGOVR, TGOVR.ovr_id, ovr_id)
 
 
 @bhadrasanaapi.route('/api/tgs', methods=['GET'])
 # @jwt_required
 def tgs():
-    return get_filtro(RVF, request.values)
+    return get_filtro_alchemy(RVF, request.values)
 
 
 @bhadrasanaapi.route('/api/itemtg/<id>', methods=['GET'])
@@ -103,9 +86,106 @@ def iemtg(id):
 @bhadrasanaapi.route('/api/itenstg/<tg_id>', methods=['GET'])
 # @jwt_required
 def itenstg_tg(tg_id):
-    return select_many_campo_alchemy(ItemTG,
-                                     ItemTG.tg_id,
-                                     tg_id)
+    session = current_app.config['db_session']
+    return select_many_campo_alchemy(session, ItemTG, ItemTG.tg_id, tg_id)
+
+
+@bhadrasanaapi.route('/api/get_cpf_telegram/<telegram_user>')
+# @jwt_required
+def get_cpf_telegram(telegram_user):
+    """Exibe o editor Open Source JS (licença MIT) FileRobot."""
+    session = current_app.config['db_session']
+    user = get_usuario_telegram(session, telegram_user)
+    if user is None:
+        return jsonify({'cpf': None}), 404
+    return jsonify({'cpf': user.cpf}), 200
+
+@bhadrasanaapi.route('/api/minhas_fichas/{cpf}', methods=['GET'])
+# @jwt_required
+def minhas_fichas_json(cpf):
+    session = current_app.config['db_session']
+    try:
+        ovrs = get_ovr_responsavel(session, cpf)
+        if len(ovrs) == 0:
+            return jsonify(
+                {'msg': 'Sem Fichas atribuídas para o Usuário {}'.format(cpf)}), 404
+        exibicao = ExibicaoOVR(session, TipoExibicao.Descritivo, cpf)
+        chaves = exibicao.get_titulos()
+        result = []
+        for ovr in ovrs:
+            id, visualizado, linha = exibicao.get_linha(ovr)
+            datahora = datetime.strftime(linha[0], '%d/%m/%Y %H:%M')
+            linha_dict = {chaves[0]: id, chaves[1]: datahora}
+            for key, value in zip(chaves[2:], linha[1:]):
+                linha_dict[key] = value
+            result.append(linha_dict)
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify(
+                {'msg':'Erro! Detalhes no log da aplicação.' + str(err)})
+    return jsonify(result), 200
+
+@bhadrasanaapi.route('/consulta_conteiner', methods=['POST'])
+# @jwt_required
+def consulta_conteiner():
+    """Tela para consulta única de número de contêiner
+
+    Dentro do intervalo de datas, traz lista de ojetos do sistema que contenham
+    alguma referência ao contêiner.
+    """
+    session = current_app.config['db_session']
+    mongodb = current_app.config['mongodb']
+    try:
+        rvfs, ovrs, infoces, dues, eventos = \
+            consulta_container_objects(request, session, mongodb)
+        result = {
+            'rvfs': [rvf.dump(explode=False) for rvf in rvfs],
+            'ovrs': [ovr.dump(explode=False) for ovr in ovrs],
+            'infoces': infoces,
+            'dues': dues,
+            'eventos': eventos
+        }
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify(
+            {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)})
+    return jsonify(result), 200
+
+
+@bhadrasanaapi.route('/consulta_empresa', methods=['POST'])
+# @jwt_required
+def consulta_empresa():
+    """Tela para consulta única de Empresa
+
+    Dentro do intervalo de datas, traz lista de ojetos do sistema que contenham
+    alguma referência ao CNPJ da Empresa. Permite encontrar CNPJ através do nome.
+    """
+    session = current_app.config['db_session']
+    mongodb = current_app.config['mongodb']
+    try:
+        #TODO: Refactor para função e filtrar datas
+        cnpj = request.json['cnpj']
+        empresa = get_empresa(session, cnpj)
+        dues = get_dues_empresa(mongodb,
+                                cnpj)
+        ovrs = get_ovr_empresa(session, cnpj)
+        conhecimentos = get_ces_empresa(session, cnpj)
+        listaCE = [ce.numeroCEmercante for ce in conhecimentos]
+        infoces = get_detalhes_mercante(session, listaCE)
+        sats = get_sats_cnpj(session, cnpj)
+        result = {
+            'empresa': empresa.nome if empresa else '',
+            'ovrs': [ovr.dump(explode=False) for ovr in ovrs],
+            'infoces': infoces,
+            'dues': dues,
+            'sats': [dump_model(sat) for sat in sats]
+        }
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify(
+            {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)})
+    return jsonify(result), 200
+
 
 
 if __name__ == '__main__':

@@ -15,7 +15,6 @@ externalDocs:
   description: Documentação do Sistema
   url: "https://ajna.labin08.rf08.srf/ajna_docs"
 
-
 servers:
   - url: /ajnaapi/api
 tags:
@@ -77,7 +76,7 @@ paths:
       tags:
         - virasana
       requestBody:
-        description: Lista de eventos maiores que um ID ou Data
+        description: Campos do filtro a aplicar - padrão MongoDB
         content:
           application/json:
             schema:
@@ -95,7 +94,6 @@ paths:
                       type: integer
               required:
                 - query
-              description: Campos do filtro a aplicar - padrão MongoDB
       responses:
         200:
           description: JSON contendo os campos solicitados em projection
@@ -153,7 +151,7 @@ paths:
         200:
           description: Lista de contêineres do CE, algumas informações do sistema Mercante, id das imagens do CE
           content:
-            aplication/json: {}
+            application/json: {}
         400:
           description: Erro
           content: {}
@@ -494,6 +492,180 @@ paths:
                 items:
                   type: object
                   $ref: '#/components/schemas/ItemTG'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /minhas_fichas/{cpf}:
+    get:
+      summary: "Retorna lista de fichas atribuídas ao CPF para visualização"
+      tags:
+        - bhadrasana
+      parameters:
+        - name: cpf
+          in: path
+          description: CPF a consultar
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Lista de dicionários contendo campos selecionados da OVR"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /get_cpf_telegram/{telegram_user}:
+    get:
+      summary: "Retorna cpf do usuario se username telegram estiver cadastrado"
+      tags:
+        - bhadrasana
+      parameters:
+        - name: telegram_user
+          in: path
+          description: Username telegram
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: CPF correspondente ao telegram
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cpf:
+                    type: string
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /consulta_conteiner:
+    post:
+      summary: "Retorna resumo de informações para o conteiner {numero}: OVRs, RVFs, CEs, DUEs, Eventos"
+      tags:
+        - bhadrasana
+      requestBody:
+        description: Numero do container, data inicio e datafim
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numero:
+                  type: string
+                datainicio:
+                  type: string
+                datafim:
+                  type: string
+      responses:
+        200:
+          description: "Lista de dicionários contendo campos selecionados dos sistemas"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rvfs:
+                    type: object
+                    properties:
+                      campo:
+                        type: string
+                  ovrs:
+                    type: object
+                    properties:
+                      campo:
+                        type: string
+                  infoces:
+                    type: object
+                    properties:
+                      campo:
+                        type: string
+                  dues:
+                    type: object
+                    properties:
+                      campo:
+                        type: string
+                  eventos:
+                    type: object
+                    properties:
+                      campo:
+                        type: string
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /consulta_empresa:
+    post:
+      summary: "Retorna resumo de informações para a empresa {cnpj}: OVRs, CEs, DUEs, SAT/LABs"
+      tags:
+        - bhadrasana
+      requestBody:
+        description: CNPJ da Empresa, data inicio e data fim
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numero:
+                  type: string
+                datainicio:
+                  type: string
+                datafim:
+                  type: string
+      responses:
+        200:
+          description: "Lista de dicionários contendo campos selecionados dos sistemas"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ovrs:
+                    type: object
+                    properties:
+                      campo:
+                        type: string
+                  infoces:
+                    type: object
+                    properties:
+                      campo:
+                        type: string
+                  dues:
+                    type: object
+                    properties:
+                      campo:
+                        type: string
+                  sats:
+                    type: object
+                    properties:
+                      campo:
+                        type: string
         400:
           description: Erro
           content: {}
@@ -1560,7 +1732,7 @@ components:
           type: array
           items:
             type: object
-            $ref: '#components/schemas/ItemTGOVR'
+            $ref: '#components/schemas/ItemTG'
         marcas:
           type: array
           items:

@@ -70,17 +70,6 @@ def return_many_from_resultproxy(result):
     else:
         return jsonify({'msg': 'Não encontrado'}), 404
 
-def return_many_from_model(result):
-    resultados = None
-    if result:
-        resultados = [dump_model(row) for row in result]
-    if resultados and len(resultados) > 0:
-        print(len(resultados))
-        return jsonify(resultados), 200
-    else:
-        return jsonify({'msg': 'Não encontrado'}), 404
-
-
 def get_datamodificacao_gt(table, datamodificacao):
     engine = current_app.config['sql']
     try:
@@ -116,6 +105,17 @@ def get_filtro(table, uri_query):
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
 
 
+def return_many_from_alchemy(result):
+    resultados = None
+    if result:
+        resultados = [item.dump(explode=False) for item in result]
+    if resultados and len(resultados) > 0:
+        print(len(resultados))
+        return jsonify(resultados), 200
+    else:
+        return jsonify({'msg': 'Não encontrado'}), 404
+
+
 def get_filtro_alchemy(model, uri_query):
     db_session = current_app.config['db_session']
     try:
@@ -125,7 +125,7 @@ def get_filtro_alchemy(model, uri_query):
         print(uri_query.items())
         print(filtro)
         result = db_session.query(model).filter(filtro).all()
-        return return_many_from_model(result)
+        return return_many_from_alchemy(result)
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
@@ -154,3 +154,27 @@ def yaml_from_model(model):
     # print(yaml_dict)
     return yaml.dump({model.__name__: yaml_dict},
                      default_flow_style=False)
+
+
+def select_one_campo_alchemy(session, model, campo, oid):
+    try:
+        result = session.query(model).filter(campo == oid).one_or_none()
+        if result:
+            return jsonify(result.dump()), 200
+        else:
+            return jsonify({'msg': '%s Não encontrado' % model.__name__}), 404
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
+
+
+def select_many_campo_alchemy(session, model, campo, valor):
+    try:
+        result = session.query(model).filter(campo == valor).all()
+        if result:
+            return jsonify([item.dump(explode=False) for item in result]), 200
+        else:
+            return jsonify({'msg': '%s Não encontrado' % model.__name__}), 404
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
