@@ -3,9 +3,17 @@ info:
   title: API-AJNA
   description: API para acesso de outras aplicações a dados do AJNA
   version: "1.0b"
+  termsOfService: "https://ajna.labin08.rf08.srf/"
+  contact:
+    url: "https://ajna.labin08.rf08.srf/"
+    name: "Receita Federal"
+    email: "ivan.brasilico@rfb.gov.br"
+  license:
+    name: Receita Federal C-level site
+    url: "https://ajna.labin08.rf08.srf/site"
 externalDocs:
-  description: Site de acesso ao Sistema e manuais
-  url: https://ajna.labin08.rf08.srf/
+  description: Documentação do Sistema
+  url: "https://ajna.labin08.rf08.srf/ajna_docs"
 
 
 servers:
@@ -14,14 +22,14 @@ tags:
   - name: autenticação
     description: Funções de autenticação de usuário
   - name: virasana
-    description: Módulo de controle das imagens de inspeção não invasiva
+    description: Módulo de controle das imagens de inspeção não invasiva. Contém dados das imagens e da DUE. Integra dados API Recintos e Mercante.
     externalDocs:
       description: Site do módulo virasana
       url: https://ajna.labin08.rf08.srf/site2
   - name: bhadrasana
-    description: Módulo de controle de risco e controle de carga, com registro das verificações físicas
+    description: Módulo de controle de risco e controle de carga, com registro das verificações físicas. Integra dados API Recintos, Laudos e Mercante.
     externalDocs:
-      description: Site do módulo bhadransa
+      description: Site do módulo bhadrasana
       url: https://ajna.labin08.rf08.srf/ficha_site
   - name: mercante
     description: Dados importados dos arquivos XML do Mercante
@@ -103,7 +111,7 @@ paths:
         - jwt: ['secret']
   /image/{id}:
     get:
-      summary: Retorna conteúdo da imagem
+      summary: "Retorna conteúdo da imagem de escaneamento - banco MongoDB principal"
       tags:
         - virasana
       parameters:
@@ -156,7 +164,7 @@ paths:
         - jwt: ['secret']
   /image_risco/{id}:
     get:
-      summary: Retorna conteúdo da imagem
+      summary: "Retorna fotos de verificação física e documentos PDF - Banco risco do MongoDB"
       tags:
         - bhadrasana
       parameters:
@@ -210,10 +218,18 @@ paths:
       security:
         - jwt: ['secret']
   /fichas:
-    get:
+    post:
       summary: Retorna lista de Fichas de Controle de Carga
       tags:
         - bhadrasana
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                $ref: '#/components/schemas/OVRFiltro'
       responses:
         200:
           description: OVR
@@ -231,7 +247,7 @@ paths:
         - jwt: ['secret']
   /rvf/{id}:
     get:
-      summary: Retorna conteúdo da Ficha de Controle de Carga
+      summary: Retorna conteúdo da Verificação Física
       tags:
         - bhadrasana
       parameters:
@@ -256,18 +272,56 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
-  /rvfs:
+  /rvfs/{ovr_id}:
     get:
-      summary: Retorna lista de Fichas de Controle de Carga
+      summary: Retorna conteúdos da Verificações Físicas da OVR
       tags:
         - bhadrasana
+      parameters:
+        - name: ovr_id
+          in: path
+          description: id da Ficha
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: RVF
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RVF'
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/RVF'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /rvfs:
+    post:
+      summary: Retorna lista de Fichas de Controle de Carga
+      tags:
+        - bhadrasana
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RVFFiltro'
+      responses:
+        200:
+          description: RVF
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/RVF'
         400:
           description: Erro
           content: {}
@@ -294,27 +348,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ImagemRVF'
-        400:
-          description: Erro
-          content: {}
-        404:
-          description: Não encontrado para filtro atual.
-          content: {}
-      security:
-        - jwt: ['secret']
-  /imagens_rvf:
-    get:
-      summary: Retorna lista de Imagens do Filtro
-      tags:
-        - bhadrasana
-      responses:
-        200:
-          description: ImagemRVF
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImagemRVF'
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/ImagemRVF'
         400:
           description: Erro
           content: {}
@@ -325,7 +362,7 @@ paths:
         - jwt: ['secret']
   /tg/{id}:
     get:
-      summary: Retorna conteúdo da Ficha de Controle de Carga
+      summary: Retorna conteúdo do TG
       tags:
         - bhadrasana
       parameters:
@@ -350,9 +387,9 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
-  /tg/{ovr_id}:
+  /tgs/{ovr_id}:
     get:
-      summary: Retorna conteúdo da Ficha de Controle de Carga
+      summary: Retorna lista de TGs do OVR
       tags:
         - bhadrasana
       parameters:
@@ -368,7 +405,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TGOVR'
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/TGOVR'
         400:
           description: Erro
           content: {}
@@ -378,17 +418,25 @@ paths:
       security:
         - jwt: ['secret']
   /tgs:
-    get:
-      summary: Retorna lista de Fichas de Controle de Carga
+    post:
+      summary: Retorna lista de TGs conforme o Filtro
       tags:
         - bhadrasana
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TGFiltro'
       responses:
         200:
           description: TGOVR
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TGOVR'
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/TGOVR'
         400:
           description: Erro
           content: {}
@@ -399,7 +447,7 @@ paths:
         - jwt: ['secret']
   /itemtg/{id}:
     get:
-      summary: Retorna conteúdo da Ficha de Controle de Carga
+      summary: Retorna conteúdo do item do TG
       tags:
         - bhadrasana
       parameters:
@@ -426,7 +474,7 @@ paths:
         - jwt: ['secret']
   /itenstg/{tg_id}:
     get:
-      summary: Retorna lista de Fichas de Controle de Carga
+      summary: Retorna lista itens do TG
       tags:
         - bhadrasana
       parameters:
@@ -442,7 +490,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ItemTG'
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/ItemTG'
         400:
           description: Erro
           content: {}
@@ -1368,6 +1419,33 @@ components:
           type: integer
         user_name:
           type: string
+    OVRFiltro:
+      type: object
+      properties:
+        cnpj_fiscalizado:
+          type: string
+        datahora:
+          type: string
+        fase:
+          type: integer
+        numero:
+          type: string
+        numeroCEmercante:
+          type: string
+        numerodeclaracao:
+          type: string
+        recinto_id:
+          type: integer
+        responsavel_cpf:
+          type: string
+        setor_id:
+          type: string
+        tipoevento_id:
+          type: integer
+        tipooperacao:
+          type: integer
+        user_name:
+          type: string
     RVF:
       type: object
       properties:
@@ -1410,6 +1488,19 @@ components:
           type: array
           items:
             type: string
+    RVFFiltro:
+      type: object
+      properties:
+        datahora:
+          type: string
+        descricao:
+          type: string
+        numeroCEmercante:
+          type: string
+        numerolote:
+          type: string
+        user_name:
+          type: string
     ImagemRVF:
       type: object
       properties:
@@ -1492,6 +1583,23 @@ components:
           type: string
         valor:
           type: number
+    TGFiltro:
+      type: object
+      properties:
+        afrfb:
+          type: string
+        descricao:
+          type: string
+        identificacao:
+          type: string
+        numerolote:
+          type: string
+        numerotg:
+          type: string
+        observacoes:
+          type: string
+        tipomercadoria_id:
+          type: integer
     ItemTG:
       type: object
       properties:

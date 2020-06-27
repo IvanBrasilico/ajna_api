@@ -4,7 +4,7 @@ import json
 from base64 import b64encode
 from collections import OrderedDict
 
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, current_app, jsonify, request, Response
 from flask_jwt_extended import jwt_required
 
 from ajna_commons.utils.images import mongo_image
@@ -194,7 +194,7 @@ def api_summary(ce_mercante):
 
 @ajna_api.route('/api/image/<_id>', methods=['GET'])
 @ajna_api.route('/api/image_risco/<_id>', methods=['GET'])
-@jwt_required
+# @jwt_required
 def api_image(_id):
     if 'risco' in request.url:
         db = current_app.config['mongodb_risco']
@@ -205,10 +205,9 @@ def api_image(_id):
         current_app.logger.warning(_id)
         image = mongo_image(db, _id)
         if image:
-            return jsonify(dict(
-                content=b64encode(image).decode(),
-                mimetype='image/jpeg'
-            )), 200
+            # return jsonify(dict(content=b64encode(image).decode(),
+            #                    mimetype='image/jpeg')), 200
+            return Response(response=image, mimetype='image/jpeg')
         return jsonify({}), 404
     except Exception as err:
         current_app.logger.error(err, exc_info=True)

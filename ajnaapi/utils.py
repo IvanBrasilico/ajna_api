@@ -6,19 +6,25 @@ from sqlalchemy.engine import RowProxy
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 
-def exclude_from_dict(dict, exclude:list = None):
+def exclude_from_dict(dict, exclude: list = None):
     if exclude:
         for key in exclude:
             if dict.get(key):
                 dict.pop(key)
 
+
 def dump_rowproxy(rowproxy: RowProxy, exclude: list = None):
     dump = dict([(k, v) for k, v in rowproxy.items() if not k.startswith('_')])
-    return exclude(dump, exclude)
+    exclude_from_dict(dump, exclude)
+    return dump
+
 
 def dump_model(model, exclude: list = None):
     dump = dict([(k, v) for k, v in vars(model).items() if not k.startswith('_')])
-    return exclude(dump, exclude)
+    print(dump)
+    exclude_from_dict(dump, exclude)
+    return dump
+
 
 def select_one_from_class(table, campo, valor):
     engine = current_app.config['sql']
@@ -64,6 +70,16 @@ def return_many_from_resultproxy(result):
     else:
         return jsonify({'msg': 'Não encontrado'}), 404
 
+def return_many_from_model(result):
+    resultados = None
+    if result:
+        resultados = [dump_model(row) for row in result]
+    if resultados and len(resultados) > 0:
+        print(len(resultados))
+        return jsonify(resultados), 200
+    else:
+        return jsonify({'msg': 'Não encontrado'}), 404
+
 
 def get_datamodificacao_gt(table, datamodificacao):
     engine = current_app.config['sql']
@@ -90,9 +106,26 @@ def get_filtro(table, uri_query):
         with engine.begin() as conn:
             lista_condicoes = [table.c[campo] == valor
                                for campo, valor in uri_query.items()]
+            print(uri_query.items())
+            print(lista_condicoes)
             s = select([table]).where(and_(*lista_condicoes))
             result = conn.execute(s)
             return return_many_from_resultproxy(result)
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
+
+
+def get_filtro_alchemy(model, uri_query):
+    db_session = current_app.config['db_session']
+    try:
+        filtro = and_()
+        for campo, valor in uri_query.items():
+            filtro = and_(getattr(model, campo).like(valor + '%'), filtro)
+        print(uri_query.items())
+        print(filtro)
+        result = db_session.query(model).filter(filtro).all()
+        return return_many_from_model(result)
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400

@@ -1,10 +1,13 @@
 # Tescases for mercanteapi blueprint
 import json
 from dateutil import parser
+
+
+from tests.base_api_test import ApiTestCase
+
 from virasana.integracao.mercante.mercantealchemy import metadata
 from virasana.integracao.mercante.mercantealchemy import Conhecimento, Manifesto
 
-from tests.base_api_test import ApiTestCase
 
 
 class MercanteApiTestCase(ApiTestCase):

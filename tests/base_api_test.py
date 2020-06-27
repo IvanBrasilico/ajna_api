@@ -17,6 +17,8 @@ class ApiTestCase(unittest.TestCase):
         self.client = app.test_client()
         self.db = app.config['mongodb']
         self.sql = app.config['sql']
+        self.engine = self.sql
+        self.db_session = app.config['db_session']
         DBUser.dbsession = self.db
         DBUser.add('ajna', 'ajna')
 
