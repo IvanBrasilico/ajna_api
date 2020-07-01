@@ -101,7 +101,7 @@ def get_cpf_telegram(telegram_user):
         return jsonify({'cpf': None}), 404
     return jsonify({'cpf': user.cpf}), 200
 
-@bhadrasanaapi.route('/api/minhas_fichas/{cpf}', methods=['GET'])
+@bhadrasanaapi.route('/api/minhas_fichas/<cpf>', methods=['GET'])
 @jwt_required
 def minhas_fichas_json(cpf):
     session = current_app.config['db_session']
@@ -126,7 +126,7 @@ def minhas_fichas_json(cpf):
                 {'msg':'Erro! Detalhes no log da aplicação.' + str(err)})
     return jsonify(result), 200
 
-@bhadrasanaapi.route('/consulta_conteiner', methods=['POST'])
+@bhadrasanaapi.route('/api/consulta_conteiner', methods=['POST'])
 @jwt_required
 def consulta_conteiner():
     """Tela para consulta única de número de contêiner
@@ -153,7 +153,7 @@ def consulta_conteiner():
     return jsonify(result), 200
 
 
-@bhadrasanaapi.route('/consulta_empresa', methods=['POST'])
+@bhadrasanaapi.route('/api/consulta_empresa', methods=['POST'])
 @jwt_required
 def consulta_empresa():
     """Tela para consulta única de Empresa

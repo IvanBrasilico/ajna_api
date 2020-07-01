@@ -49,12 +49,6 @@ class ApiLoginTestCase(ApiTestCase):
         assert len(r) == 1
         assert r[0]['_id'] == str(_id2)
 
-    def test_unauthorized_image(self):
-        self.unauthorized('/api/image/0')
-
-    def test_invalid_login_image(self):
-        self.invalid_login('/api/image/0')
-
     def test_not_allowed_image(self):
         self.not_allowed('/api/image/0',
                          methods=['PUT', 'DELETE', 'POST'])

@@ -5,12 +5,20 @@ from dateutil import parser
 
 from tests.base_api_test import ApiTestCase
 
-from virasana.integracao.mercante.mercantealchemy import metadata
+from virasana.integracao.mercante.mercantealchemy import Base
 from virasana.integracao.mercante.mercantealchemy import Conhecimento, Manifesto
 
 
 
+
 class MercanteApiTestCase(ApiTestCase):
+
+
+    def setUp(self):
+        super().setUp()
+        Base.query = self.db_session.query_property()
+        Base.metadata.drop_all(self.sql)
+        Base.metadata.create_all(self.sql)
 
     def login(self, username='ajna', password='ajna'):
         rv = self.client.post(
@@ -33,9 +41,9 @@ class MercanteApiTestCase(ApiTestCase):
         self.unauthorized('/api/NCMItem?numero=0')
         self.unauthorized('/api/NCMItem/0/0')
         self.unauthorized('/api/NCMItem/new/0')
-        self.unauthorized('/api/conteineresVazios?manifesto=0')
-        self.unauthorized('/api/conteineresVazios/0')
-        self.unauthorized('/api/conteineresVazios/new/0')
+        self.unauthorized('/api/ConteinerVazio?manifesto=0')
+        self.unauthorized('/api/ConteinerVazio/0')
+        self.unauthorized('/api/ConteinerVazio/new/0')
 
     def test_invalid_login_(self):
         self.invalid_login('/api/conhecimentos?numeroCEmercante=0')
@@ -52,9 +60,9 @@ class MercanteApiTestCase(ApiTestCase):
         self.invalid_login('/api/NCMItem/0/0')
         self.invalid_login('/api/NCMItem/0')
         self.invalid_login('/api/NCMItem/new/0')
-        self.invalid_login('/api/conteineresVazios?manifesto=0')
-        self.invalid_login('/api/conteineresVazios/0')
-        self.invalid_login('/api/conteineresVazios/new/0')
+        self.invalid_login('/api/ConteinerVazio?manifesto=0')
+        self.invalid_login('/api/ConteinerVazio/0')
+        self.invalid_login('/api/ConteinerVazio/new/0')
 
     def test_not_allowed_(self):
         self.not_allowed('/api/conhecimentos?numeroCEmercante=0')
@@ -71,13 +79,12 @@ class MercanteApiTestCase(ApiTestCase):
         self.not_allowed('/api/NCMItem/0/0', methods=['POST', 'PUT', 'DELETE'])
         self.not_allowed('/api/NCMItem/0', methods=['POST', 'PUT', 'DELETE'])
         self.not_allowed('/api/NCMItem/new/0', methods=['POST', 'PUT', 'DELETE'])
-        self.not_allowed('/api/conteineresVazios?manifesto=0')
-        self.not_allowed('/api/conteineresVazios/0', methods=['POST', 'PUT', 'DELETE'])
-        self.not_allowed('/api/conteineresVazios/new/0', methods=['POST', 'PUT', 'DELETE'])
+        self.not_allowed('/api/ConteinerVazio?manifesto=0')
+        self.not_allowed('/api/ConteinerVazio/0', methods=['POST', 'PUT', 'DELETE'])
+        self.not_allowed('/api/ConteinerVazio/new/0', methods=['POST', 'PUT', 'DELETE'])
 
     def test_error_conhecimentos(self):
         self.login()
-        assert rv.status_code == 400
         rv = self.client.get('/api/conhecimentos/new/datainvalida',
                              headers=self.headers)
         assert rv.status_code == 400
@@ -87,24 +94,22 @@ class MercanteApiTestCase(ApiTestCase):
         rv = self.client.get('/api/NCMItem/new/datainvalida',
                              headers=self.headers)
         assert rv.status_code == 400
-        rv = self.client.get('/api/conteineresVazios/new/datainvalida',
+        rv = self.client.get('/api/ConteinerVazio/new/datainvalida',
                              headers=self.headers)
         assert rv.status_code == 400
 
 
     def test_conhecimentos_get(self):
         self.login()
-        metadata.create_all(self.sql)
         self._case('GET', '/api/conhecimentos/000',
                    status_code=404,
                    query_dict={},
                    headers=self.headers)
-        conn = self.sql.connect()
-        ins = Conhecimento.insert()
-        last_modified = '2019-01-01 00:00:00'
-        rp = conn.execute(ins, **{'numeroCEmercante': '000',
-                                  'ID': 1,
-                                  'last_modified': parser.parse(last_modified)})
+        conhecimento = Conhecimento()
+        conhecimento.numeroCEmercante = '000'
+        conhecimento.last_modified = parser.parse('2019-01-01 00:00:00')
+        self.db_session.add(conhecimento)
+        self.db_session.commit()
         r = self._case('GET', '/api/conhecimentos/000',
                        status_code=200,
                        query_dict={},
@@ -113,7 +118,7 @@ class MercanteApiTestCase(ApiTestCase):
                        status_code=200,
                        query_dict={'numeroCEmercante': '000'},
                        headers=self.headers)
-        r = self._case('GET', '/api/conhecimentos/new/%s' % last_modified,
+        r = self._case('GET', '/api/conhecimentos/new/%s' % conhecimento.last_modified,
                        status_code=200,
                        query_dict={},
                        headers=self.headers)
@@ -121,17 +126,16 @@ class MercanteApiTestCase(ApiTestCase):
 
     def test_manifestos(self):
         self.login()
-        metadata.create_all(self.sql)
         self._case('GET', '/api/manifestos/000',
                    status_code=404,
                    query_dict={},
                    headers=self.headers)
         conn = self.sql.connect()
-        ins = Manifesto.insert()
-        last_modified = '2019-01-01 00:00:00'
-        rp = conn.execute(ins, **{'numero': '000',
-                                  'ID': 1,
-                                  'last_modified': parser.parse(last_modified)})
+        manifesto = Manifesto()
+        manifesto.numero = '000'
+        manifesto.last_modified = parser.parse('2019-01-01 00:00:00')
+        self.db_session.add(manifesto)
+        self.db_session.commit()
         r = self._case('GET', '/api/manifestos/000',
                        status_code=200,
                        query_dict={},
@@ -140,7 +144,7 @@ class MercanteApiTestCase(ApiTestCase):
                        status_code=200,
                        query_dict={'numero': '000'},
                        headers=self.headers)
-        r = self._case('GET', '/api/manifestos/new/%s' % last_modified,
+        r = self._case('GET', '/api/manifestos/new/%s' % manifesto.last_modified,
                        status_code=200,
                        query_dict={},
                        headers=self.headers)

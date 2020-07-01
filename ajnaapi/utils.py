@@ -116,9 +116,27 @@ def return_many_from_alchemy(result):
         return jsonify({'msg': 'Não encontrado'}), 404
 
 
+def get_datamodificacao_gt_alchemy(model, datamodificacao):
+    db_session = current_app.config['db_session']
+    try:
+        datamodificacao = parser.parse(datamodificacao)
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': 'Erro no parâmetro: %s' % str(err)}), 400
+    try:
+        result = db_session.query(model).filter(
+            model.last_modified >= datamodificacao).all()
+        return return_many_from_alchemy(result)
+    except Exception as err:
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
+
+
 def get_filtro_alchemy(model, uri_query):
     db_session = current_app.config['db_session']
     try:
+        if uri_query is None or not isinstance(uri_query, dict):
+            raise KeyError('Necessário passar os argumentos da consulta!')
         filtro = and_()
         for campo, valor in uri_query.items():
             filtro = and_(getattr(model, campo).like(valor + '%'), filtro)

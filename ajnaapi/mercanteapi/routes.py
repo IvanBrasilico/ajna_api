@@ -1,12 +1,10 @@
+from flask import Blueprint, request, current_app
 from flask_jwt_extended import jwt_required
 
-from flask import Blueprint, request
-
-from ajnaapi.utils import select_one_from_class, select_many_from_class, \
-    get_datamodificacao_gt, get_filtro
+from ajnaapi.utils import select_one_campo_alchemy, get_filtro_alchemy, get_datamodificacao_gt_alchemy, \
+    select_many_campo_alchemy
 from virasana.integracao.mercante.mercantealchemy import Conhecimento, \
     ConteinerVazio, Item, Manifesto, NCMItem, Escala
-
 
 mercanteapi = Blueprint('mercanteapi', __name__)
 
@@ -14,41 +12,45 @@ mercanteapi = Blueprint('mercanteapi', __name__)
 @mercanteapi.route('/api/conhecimentos/<numeroCEmercante>', methods=['GET'])
 @jwt_required
 def conhecimento_numero(numeroCEmercante):
-    return select_one_from_class(Conhecimento,
-                                 Conhecimento.numeroCEmercante,
-                                 numeroCEmercante)
+    session = current_app.config['db_session']
+    return select_one_campo_alchemy(session,
+                                    Conhecimento,
+                                    Conhecimento.numeroCEmercante,
+                                    numeroCEmercante)
 
 
 @mercanteapi.route('/api/conhecimentos/new/<datamodificacao>', methods=['GET'])
 @jwt_required
 def conhecimento_new(datamodificacao):
-    return get_datamodificacao_gt(Conhecimento, datamodificacao)
+    return get_datamodificacao_gt_alchemy(Conhecimento, datamodificacao)
 
 
 @mercanteapi.route('/api/conhecimentos', methods=['GET', 'POST'])
 @jwt_required
 def conhecimentos_list():
-    return get_filtro(Conhecimento, request.values)
+    return get_filtro_alchemy(Conhecimento, request.values)
 
 
 @mercanteapi.route('/api/manifestos/<numero>', methods=['GET'])
 @jwt_required
 def manifesto_numero(numero):
-    return select_one_from_class(Manifesto,
-                                 Manifesto.numero,
-                                 numero)
+    session = current_app.config['db_session']
+    return select_one_campo_alchemy(session,
+                                    Manifesto,
+                                    Manifesto.numero,
+                                    numero)
 
 
 @mercanteapi.route('/api/manifestos/new/<datamodificacao>', methods=['GET'])
 @jwt_required
 def manifestos_new(datamodificacao):
-    return get_datamodificacao_gt(Manifesto, datamodificacao)
+    return get_datamodificacao_gt_alchemy(Manifesto, datamodificacao)
 
 
 @mercanteapi.route('/api/manifestos', methods=['GET', 'POST'])
 @jwt_required
 def manifestos_list():
-    return get_filtro(Manifesto, request.values)
+    return get_filtro_alchemy(Manifesto, request.values)
 
 
 @mercanteapi.route('/api/itens/<conhecimento>/<sequencial>', methods=['GET'])
@@ -56,27 +58,27 @@ def manifestos_list():
 def itens_numero(conhecimento, sequencial):
     query = {'numeroCEmercante': conhecimento,
              'numeroSequencialItemCarga': sequencial}
-    return get_filtro(Item, query)
+    return get_filtro_alchemy(Item, query)
 
 
 @mercanteapi.route('/api/itens/new/<datamodificacao>', methods=['GET'])
 @jwt_required
 def itens_new(datamodificacao):
-    return get_datamodificacao_gt(Item, datamodificacao)
+    return get_datamodificacao_gt_alchemy(Item, datamodificacao)
 
 
 @mercanteapi.route('/api/itens', methods=['GET', 'POST'])
 @jwt_required
 def itens_list():
-    return get_filtro(Item, request.values)
+    return get_filtro_alchemy(Item, request.values)
 
 
 @mercanteapi.route('/api/itens/<conhecimento>', methods=['GET'])
 @jwt_required
 def itens_conhecimento(conhecimento):
-    return select_many_from_class(Item,
-                                  Item.numeroCEmercante,
-                                  conhecimento)
+    return select_many_campo_alchemy(Item,
+                                     Item.numeroCEmercante,
+                                     conhecimento)
 
 
 @mercanteapi.route('/api/NCMItem/<conhecimento>/<sequencial>', methods=['GET'])
@@ -84,64 +86,64 @@ def itens_conhecimento(conhecimento):
 def NCMItem_numero(conhecimento, sequencial):
     query = {'numeroCEmercante': conhecimento,
              'numeroSequencialItemCarga': sequencial}
-    return get_filtro(NCMItem, query)
+    return get_filtro_alchemy(NCMItem, query)
 
 
 @mercanteapi.route('/api/NCMItem/new/<datamodificacao>', methods=['GET'])
 @jwt_required
 def NCMItem_new(datamodificacao):
-    return get_datamodificacao_gt(NCMItem, datamodificacao)
+    return get_datamodificacao_gt_alchemy(NCMItem, datamodificacao)
 
 
 @mercanteapi.route('/api/NCMItem', methods=['GET', 'POST'])
 @jwt_required
 def NCMItem_list():
-    return get_filtro(NCMItem, request.values)
+    return get_filtro_alchemy(NCMItem, request.values)
 
 
 @mercanteapi.route('/api/NCMItem/<conhecimento>', methods=['GET'])
 @jwt_required
 def NCMItem_conhecimento(conhecimento):
-    return select_many_from_class(NCMItem,
-                                  NCMItem.c.numeroCEmercante,
-                                  conhecimento)
+    return select_many_campo_alchemy(NCMItem,
+                                     NCMItem.numeroCEmercante,
+                                     conhecimento)
 
 
 @mercanteapi.route('/api/ConteinerVazio/new/<datamodificacao>', methods=['GET'])
 @jwt_required
 def ConteinerVazio_new(datamodificacao):
-    return get_datamodificacao_gt(ConteinerVazio, datamodificacao)
+    return get_datamodificacao_gt_alchemy(ConteinerVazio, datamodificacao)
 
 
 @mercanteapi.route('/api/ConteinerVazio', methods=['GET', 'POST'])
 @jwt_required
 def ConteinerVazio_list():
-    return get_filtro(ConteinerVazio, request.values)
+    return get_filtro_alchemy(ConteinerVazio, request.values)
 
 
 @mercanteapi.route('/api/ConteinerVazio/<manifesto>', methods=['GET'])
 @jwt_required
 def ConteinerVazio_manifesto(manifesto):
-    return select_many_from_class(ConteinerVazio,
-                                  ConteinerVazio.c.manifesto,
-                                  manifesto)
+    return select_many_campo_alchemy(ConteinerVazio,
+                                     ConteinerVazio.manifesto,
+                                     manifesto)
 
 
 @mercanteapi.route('/api/escalas/new/<datamodificacao>', methods=['GET'])
 @jwt_required
 def Escala_new(datamodificacao):
-    return get_datamodificacao_gt(Escala, datamodificacao)
+    return get_datamodificacao_gt_alchemy(Escala, datamodificacao)
 
 
 @mercanteapi.route('/api/escalas', methods=['GET', 'POST'])
 @jwt_required
 def Escala_list():
-    return get_filtro(Escala, request.values)
+    return get_filtro_alchemy(Escala, request.values)
 
 
 @mercanteapi.route('/api/escalas/<numeroDaEscala>', methods=['GET'])
-#@jwt_required
+@jwt_required
 def Escala_manifesto(numeroDaEscala):
-    return select_one_from_class(Escala,
-                                 Escala.numeroDaEscala,
-                                 numeroDaEscala)
+    return select_many_campo_alchemy(Escala,
+                                     Escala.numeroDaEscala,
+                                     numeroDaEscala)
