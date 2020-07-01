@@ -1,8 +1,8 @@
 from flask import Blueprint, request, current_app
 from flask_jwt_extended import jwt_required
 
-from ajnaapi.utils import select_one_campo_alchemy, get_filtro_alchemy, get_datamodificacao_gt_alchemy, \
-    select_many_campo_alchemy
+from ajnaapi.utils import select_one_campo_alchemy, get_filtro_alchemy, \
+    get_datamodificacao_gt_alchemy, select_many_campo_alchemy
 from virasana.integracao.mercante.mercantealchemy import Conhecimento, \
     ConteinerVazio, Item, Manifesto, NCMItem, Escala
 

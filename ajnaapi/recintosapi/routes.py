@@ -4,8 +4,6 @@ from flask import Blueprint, jsonify, request, current_app, make_response
 from flask_jwt_extended import jwt_required
 from json2html import json2html
 
-from ajnaapi.utils import select_one_from_class
-from ajnaapi.recintosapi.models import AcessoVeiculo, PesagemVeiculo
 from ajnaapi.recintosapi.usecases import UseCases
 
 recintosapi = Blueprint('recintosapi', __name__)

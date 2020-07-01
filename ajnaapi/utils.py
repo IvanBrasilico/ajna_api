@@ -70,6 +70,7 @@ def return_many_from_resultproxy(result):
     else:
         return jsonify({'msg': 'Não encontrado'}), 404
 
+
 def get_datamodificacao_gt(table, datamodificacao):
     engine = current_app.config['sql']
     try:

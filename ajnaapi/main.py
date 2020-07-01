@@ -1,7 +1,6 @@
 """Arquivo principal da definição da aplicação que roda a API."""
-from flask import Flask, render_template, send_file, url_for, request
+from flask import Flask, render_template, send_file, url_for
 from flask_bootstrap import Bootstrap
-from flask_jwt_extended import get_jwt_identity
 from flask_login import current_user
 from flask_nav import Nav
 from flask_nav.elements import Navbar, View
@@ -12,11 +11,10 @@ from werkzeug.utils import redirect
 
 from ajna_commons.flask import api_login, login
 from ajna_commons.flask.user import DBUser
+from ajnaapi.bhadrasanaapi.routes import bhadrasanaapi
 from ajnaapi.endpoints import ajna_api
 from ajnaapi.mercanteapi.routes import mercanteapi
 from ajnaapi.recintosapi.routes import recintosapi
-from ajnaapi.bhadrasanaapi.routes import bhadrasanaapi
-
 from .config import Production
 
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
@@ -86,7 +84,6 @@ def create_app(config_class=Production):
         db_session = app.config.get('db_session')
         if db_session:
             db_session.remove()
-
 
     return app
 

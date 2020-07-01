@@ -1,7 +1,6 @@
 """Endpoints para integração de clientes e sistemas com os dados do AJNA."""
 import datetime
 import json
-from base64 import b64encode
 from collections import OrderedDict
 
 from flask import Blueprint, current_app, jsonify, request, Response
@@ -218,9 +217,7 @@ def api_image(_id):
 @ajna_api.route('/api/dues/update', methods=['POST'])
 @jwt_required
 def dues_update():
-    """Recebe um JSON no formato [{_id1: due1}, ..., {_idn: duen}] e grava
-
-    """
+    """Recebe um JSON no formato [{_id1: due1}, ..., {_idn: duen}] e grava."""
     db = current_app.config['mongodb']
     if request.method == 'POST':
         due_mongo.update_due(db, request.json)

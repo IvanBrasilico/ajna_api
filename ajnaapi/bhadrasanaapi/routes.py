@@ -12,7 +12,8 @@ from bhadrasana.models.ovr import OVR, TGOVR, ItemTG
 from bhadrasana.models.ovrmanager import get_ovr_responsavel, get_ovr_empresa
 from bhadrasana.models.riscomanager import consulta_container_objects
 from bhadrasana.models.rvf import RVF, ImagemRVF
-from bhadrasana.models.virasana_manager import get_dues_empresa, get_ces_empresa, get_detalhes_mercante
+from bhadrasana.models.virasana_manager import get_dues_empresa, \
+    get_ces_empresa, get_detalhes_mercante
 
 bhadrasanaapi = Blueprint('bhadrasanapi', __name__)
 
@@ -101,6 +102,7 @@ def get_cpf_telegram(telegram_user):
         return jsonify({'cpf': None}), 404
     return jsonify({'cpf': user.cpf}), 200
 
+
 @bhadrasanaapi.route('/api/minhas_fichas/<cpf>', methods=['GET'])
 @jwt_required
 def minhas_fichas_json(cpf):
@@ -123,13 +125,14 @@ def minhas_fichas_json(cpf):
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify(
-                {'msg':'Erro! Detalhes no log da aplicação.' + str(err)})
+            {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)})
     return jsonify(result), 200
+
 
 @bhadrasanaapi.route('/api/consulta_conteiner', methods=['POST'])
 @jwt_required
 def consulta_conteiner():
-    """Tela para consulta única de número de contêiner
+    """Tela para consulta única de número de contêiner.
 
     Dentro do intervalo de datas, traz lista de ojetos do sistema que contenham
     alguma referência ao contêiner.
@@ -156,7 +159,7 @@ def consulta_conteiner():
 @bhadrasanaapi.route('/api/consulta_empresa', methods=['POST'])
 @jwt_required
 def consulta_empresa():
-    """Tela para consulta única de Empresa
+    """Tela para consulta única de Empresa.
 
     Dentro do intervalo de datas, traz lista de ojetos do sistema que contenham
     alguma referência ao CNPJ da Empresa. Permite encontrar CNPJ através do nome.
@@ -164,7 +167,7 @@ def consulta_empresa():
     session = current_app.config['db_session']
     mongodb = current_app.config['mongodb']
     try:
-        #TODO: Refactor para função e filtrar datas
+        # TODO: Refactor para função e filtrar datas
         cnpj = request.json['cnpj']
         empresa = get_empresa(session, cnpj)
         dues = get_dues_empresa(mongodb,
@@ -186,7 +189,6 @@ def consulta_empresa():
         return jsonify(
             {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)})
     return jsonify(result), 200
-
 
 
 if __name__ == '__main__':
