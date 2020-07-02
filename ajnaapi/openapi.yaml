@@ -573,7 +573,7 @@ paths:
             schema:
               type: object
               properties:
-                numero:
+                numerolote:
                   type: string
                 datainicio:
                   type: string
@@ -632,7 +632,7 @@ paths:
             schema:
               type: object
               properties:
-                numero:
+                cnpj:
                   type: string
                 datainicio:
                   type: string

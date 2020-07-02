@@ -141,7 +141,7 @@ def consulta_conteiner():
     mongodb = current_app.config['mongodb']
     try:
         rvfs, ovrs, infoces, dues, eventos = \
-            consulta_container_objects(request, session, mongodb)
+            consulta_container_objects(request.json, session, mongodb)
         result = {
             'rvfs': [rvf.dump(explode=False) for rvf in rvfs],
             'ovrs': [ovr.dump(explode=False) for ovr in ovrs],
