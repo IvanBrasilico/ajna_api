@@ -11,7 +11,7 @@ from ajna_commons.flask.conf import MONGODB_URI, SECRET, SQL_URI
 from ajna_commons.flask.log import logger
 
 
-class Production:
+class Production:  # pragma: no cover
     """Configuração do ambiente Produção."""
 
     TESTING = False
@@ -27,7 +27,7 @@ class Production:
 
 
 class Staging:
-    """Configuração do ambiente de Testes."""
+    """Configuração do ambiente de Staging (Servidor stage)."""
 
     TESTING = True
     SECRET = 'fraco'  # nosec

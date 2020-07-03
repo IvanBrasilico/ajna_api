@@ -70,6 +70,15 @@ class ApiLoginTestCase(ApiTestCase):
                        status_code=200,
                        headers=self.headers)
 
+    def test_image_risco(self):
+        self.login()
+        fs = GridFS(self.db)
+        _id = fs.put(b'Teste 2', filename='teste.txt')
+        # print('/api/image/%s' % _id)
+        r = self._case('GET', '/api/image_risco/%s' % _id,
+                       status_code=200,
+                       headers=self.headers)
+
     def test_unauthorized_due(self):
         self.unauthorized('/api/dues/update', 'POST')
 

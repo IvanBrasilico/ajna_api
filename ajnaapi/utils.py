@@ -140,9 +140,12 @@ def get_filtro_alchemy(model, uri_query):
             raise KeyError('Necessário passar os argumentos da consulta!')
         filtro = and_()
         for campo, valor in uri_query.items():
-            filtro = and_(getattr(model, campo).like(valor + '%'), filtro)
-        print(uri_query.items())
-        print(filtro)
+            if isinstance(valor, str):
+                filtro = and_(getattr(model, campo).like(valor + '%'), filtro)
+            else:
+                filtro = and_(getattr(model, campo) == valor, filtro)
+        # print(dict(uri_query))
+        # print('*********', filtro)
         result = db_session.query(model).filter(filtro).all()
         return return_many_from_alchemy(result)
     except Exception as err:
@@ -159,7 +162,7 @@ TYPES = {
 }
 
 
-def yaml_from_model(model):
+def yaml_from_model(model):  # pragma: no cover
     yaml_dict = {}
     for c in dir(model):
         if not c.startswith('_'):

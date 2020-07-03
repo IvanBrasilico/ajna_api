@@ -3,6 +3,7 @@ import json
 from flask import Blueprint, jsonify, request, current_app, make_response
 from flask_jwt_extended import jwt_required
 from json2html import json2html
+from sqlalchemy.orm.exc import NoResultFound
 
 from ajnaapi.recintosapi.usecases import UseCases
 
@@ -17,6 +18,8 @@ def get_acessoveiculo(id):
         usecases = UseCases(db_session)
         data = usecases.load_acessoveiculo(id=id)
         return jsonify(data), 200
+    except NoResultFound:
+        return jsonify({'msg': 'AcessoVeiculo %s não encontrado' % id}), 404
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': str(err)}), 500
@@ -42,8 +45,10 @@ def get_pesagemveiculo(id):
     db_session = current_app.config['db_session']
     try:
         usecases = UseCases(db_session)
-        data = usecases.load_acessoveiculo(id=id)
+        data = usecases.load_pesagemveiculo(id=id)
         return jsonify(data), 200
+    except NoResultFound:
+        return jsonify({'msg': 'PesagemVeiculo %s não encontrado' % id}), 404
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': str(err)}), 500

@@ -38,7 +38,7 @@ def rvf_id(id):
     return select_one_campo_alchemy(session, RVF, RVF.id, id)
 
 
-@bhadrasanaapi.route('/api/rvf', methods=['POST'])
+@bhadrasanaapi.route('/api/rvfs', methods=['POST'])
 @jwt_required
 def rvfs():
     return get_filtro_alchemy(RVF, request.json)
@@ -72,10 +72,10 @@ def tgs_ovr(ovr_id):
     return select_many_campo_alchemy(session, TGOVR, TGOVR.ovr_id, ovr_id)
 
 
-@bhadrasanaapi.route('/api/tgs', methods=['GET'])
+@bhadrasanaapi.route('/api/tgs', methods=['POST'])
 @jwt_required
 def tgs():
-    return get_filtro_alchemy(RVF, request.values)
+    return get_filtro_alchemy(TGOVR, request.json)
 
 
 @bhadrasanaapi.route('/api/itemtg/<id>', methods=['GET'])
@@ -83,6 +83,12 @@ def tgs():
 def iemtg(id):
     session = current_app.config['db_session']
     return select_one_campo_alchemy(session, ItemTG, ItemTG.id, id)
+
+
+@bhadrasanaapi.route('/api/itenstg', methods=['POST'])
+@jwt_required
+def itenstg():
+    return get_filtro_alchemy(ItemTG, request.json)
 
 
 @bhadrasanaapi.route('/api/itenstg/<tg_id>', methods=['GET'])
@@ -98,6 +104,7 @@ def get_cpf_telegram(telegram_user):
     """Exibe o editor Open Source JS (licença MIT) FileRobot."""
     session = current_app.config['db_session']
     user = get_usuario_telegram(session, telegram_user)
+    print('********', user, telegram_user)
     if user is None:
         return jsonify({'cpf': None}), 404
     return jsonify({'cpf': user.cpf}), 200
@@ -125,7 +132,7 @@ def minhas_fichas_json(cpf):
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify(
-            {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)})
+            {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)}), 400
     return jsonify(result), 200
 
 
@@ -152,7 +159,7 @@ def consulta_conteiner():
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify(
-            {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)})
+            {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)}), 400
     return jsonify(result), 200
 
 
@@ -187,11 +194,11 @@ def consulta_empresa():
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify(
-            {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)})
+            {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)}), 400
     return jsonify(result), 200
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     from ajnaapi.utils import yaml_from_model
 
     # print(yaml_from_model(OVR))

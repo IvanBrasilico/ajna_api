@@ -902,9 +902,9 @@ paths:
       tags:
         - mercante
       parameters:
-        - name: numero
+        - name: conhecimento
           in: path
-          description: Numero do Manifesto no sistema original
+          description: Numero do Conhecimento no sistema original
           required: true
           schema:
             type: string
@@ -923,7 +923,7 @@ paths:
           content: {}
       security:
         - jwt: ['secret']
-  /itens/{conhecimento}/{sequencial}:
+  /item/{conhecimento}/{sequencial}:
     get:
       summary: Retorna objeto
       tags:
@@ -931,7 +931,13 @@ paths:
       parameters:
         - name: numero
           in: path
-          description: Numero do Manifesto no sistema original
+          description: Numero do Conhecimento no sistema original
+          required: true
+          schema:
+            type: string
+        - name: sequencial
+          in: path
+          description: Numero sequencial no sistema original
           required: true
           schema:
             type: string
@@ -1003,9 +1009,9 @@ paths:
       tags:
         - mercante
       parameters:
-        - name: numero
+        - name: conhecimento
           in: path
-          description: Numero do Manifesto no sistema original
+          description: Numero do Conhecimento no sistema original
           required: true
           schema:
             type: string
@@ -1030,9 +1036,15 @@ paths:
       tags:
         - mercante
       parameters:
-        - name: numero
+        - name: conhecimento
           in: path
-          description: Numero do Manifesto no sistema original
+          description: Numero do Conhecimento no sistema original
+          required: true
+          schema:
+            type: string
+        - name: sequencial
+          in: path
+          description: Numero do sequencial no sistema original
           required: true
           schema:
             type: string

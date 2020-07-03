@@ -15,6 +15,7 @@ from ajnaapi.bhadrasanaapi.routes import bhadrasanaapi
 from ajnaapi.endpoints import ajna_api
 from ajnaapi.mercanteapi.routes import mercanteapi
 from ajnaapi.recintosapi.routes import recintosapi
+from ajnaapi.virasanaapi.routes import virasanaapi
 from .config import Production
 
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
@@ -40,18 +41,20 @@ def create_app(config_class=Production):
     app.config['db_session'] = db_session
     app.register_blueprint(ajna_api)
     csrf.exempt(ajna_api)
+    app.register_blueprint(bhadrasanaapi)
+    csrf.exempt(bhadrasanaapi)
+    app.register_blueprint(virasanaapi)
+    csrf.exempt(virasanaapi)
     app.register_blueprint(mercanteapi)
     csrf.exempt(mercanteapi)
     app.register_blueprint(recintosapi)
     csrf.exempt(recintosapi)
-    app.register_blueprint(bhadrasanaapi)
-    csrf.exempt(bhadrasanaapi)
     app.logger.info('Configurando swagger-ui...')
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
     @app.route('/docs/openapi.yaml')
-    def return_yaml():
+    def return_yaml():  # pragma: no cover
         return send_file('openapi.yaml')
 
     app.logger.info('Configurando api login...')
@@ -73,7 +76,7 @@ def create_app(config_class=Production):
         return Navbar('teste', *items)
 
     @app.route('/')
-    def index():
+    def index():  # pragma: no cover
         if current_user.is_authenticated:
             return render_template('index.html')
         else:
@@ -89,6 +92,6 @@ def create_app(config_class=Production):
 
 
 if __name__ == '__main__':  # pragma: no cover
-    app = create_app()  # pragma: no cover
-    print(app.url_map)  # pragma: no cover
+    app = create_app()
+    print(app.url_map)
     app.run(port=5004)

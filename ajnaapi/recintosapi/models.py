@@ -155,7 +155,8 @@ class AcessoVeiculo(EventoBase):
                 self.motorista_cpf = str(kwargs.get('motorista_cpf'))[:11]
         if kwargs.get('motorista_nome'):
             self.motorista_nome = kwargs.get('motorista_nome')[:100]
-        self.codRecintoDestino = int(kwargs.get('codRecintoDestino'))
+        if kwargs.get('codRecintoDestino'):
+            self.codRecintoDestino = int(kwargs.get('codRecintoDestino'))
         self.modal = kwargs.get('modal')
         self.gate = kwargs.get('gate')
         self.listaCameras = []

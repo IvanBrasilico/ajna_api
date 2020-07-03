@@ -53,7 +53,7 @@ def manifestos_list():
     return get_filtro_alchemy(Manifesto, request.values)
 
 
-@mercanteapi.route('/api/itens/<conhecimento>/<sequencial>', methods=['GET'])
+@mercanteapi.route('/api/item/<conhecimento>/<sequencial>', methods=['GET'])
 @jwt_required
 def itens_numero(conhecimento, sequencial):
     query = {'numeroCEmercante': conhecimento,
@@ -76,7 +76,8 @@ def itens_list():
 @mercanteapi.route('/api/itens/<conhecimento>', methods=['GET'])
 @jwt_required
 def itens_conhecimento(conhecimento):
-    return select_many_campo_alchemy(Item,
+    session = current_app.config['db_session']
+    return select_many_campo_alchemy(session, Item,
                                      Item.numeroCEmercante,
                                      conhecimento)
 
@@ -84,7 +85,9 @@ def itens_conhecimento(conhecimento):
 @mercanteapi.route('/api/NCMItem/<conhecimento>/<sequencial>', methods=['GET'])
 @jwt_required
 def NCMItem_numero(conhecimento, sequencial):
-    query = {'numeroCEmercante': conhecimento,
+    # TODO: Refactor NCMItem de numeroCEMercante para numeroCEmercante
+    # Atenção!!! Problema original é no XML de entrada!!!!
+    query = {'numeroCEMercante': conhecimento,
              'numeroSequencialItemCarga': sequencial}
     return get_filtro_alchemy(NCMItem, query)
 
@@ -104,8 +107,9 @@ def NCMItem_list():
 @mercanteapi.route('/api/NCMItem/<conhecimento>', methods=['GET'])
 @jwt_required
 def NCMItem_conhecimento(conhecimento):
-    return select_many_campo_alchemy(NCMItem,
-                                     NCMItem.numeroCEmercante,
+    session = current_app.config['db_session']
+    return select_many_campo_alchemy(session, NCMItem,
+                                     NCMItem.numeroCEMercante,
                                      conhecimento)
 
 
@@ -124,7 +128,8 @@ def ConteinerVazio_list():
 @mercanteapi.route('/api/ConteinerVazio/<manifesto>', methods=['GET'])
 @jwt_required
 def ConteinerVazio_manifesto(manifesto):
-    return select_many_campo_alchemy(ConteinerVazio,
+    session = current_app.config['db_session']
+    return select_many_campo_alchemy(session, ConteinerVazio,
                                      ConteinerVazio.manifesto,
                                      manifesto)
 
@@ -144,6 +149,7 @@ def Escala_list():
 @mercanteapi.route('/api/escalas/<numeroDaEscala>', methods=['GET'])
 @jwt_required
 def Escala_manifesto(numeroDaEscala):
-    return select_many_campo_alchemy(Escala,
+    session = current_app.config['db_session']
+    return select_many_campo_alchemy(session, Escala,
                                      Escala.numeroDaEscala,
                                      numeroDaEscala)
