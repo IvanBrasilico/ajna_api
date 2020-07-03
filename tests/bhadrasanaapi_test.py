@@ -64,11 +64,15 @@ class BhadrasanaApiTestCase(ApiTestCase):
         self.db_session.refresh(ovr)
         return ovr
 
-    def test_1ficha_get(self):
+    def test_1ficha(self):
         self.login()
         self._case('GET', '/api/ficha/0',
                    status_code=404,
                    query_dict={},
+                   headers=self.headers)
+        self._case('POST', '/api/fichas',
+                   status_code=404,
+                   query_dict={'numero': '1'},
                    headers=self.headers)
         ovr1 = self.create_ovr('1')
         r = self._case('GET', '/api/ficha/%s' % ovr1.id,
@@ -76,6 +80,14 @@ class BhadrasanaApiTestCase(ApiTestCase):
                        headers=self.headers)
         assert r['id'] == ovr1.id
         assert r['numero'] == ovr1.numero
+        self._case('POST', '/api/fichas',
+                   status_code=200,
+                   query_dict={'id': str(ovr1.id)},
+                   headers=self.headers)
+        self._case('POST', '/api/fichas',
+                   status_code=200,
+                   query_dict={'numero': ovr1.numero},
+                   headers=self.headers)
 
 
     def create_rvf(self, ovr_id):

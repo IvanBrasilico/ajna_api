@@ -224,17 +224,17 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                type: object
-                $ref: '#/components/schemas/OVRFiltro'
+               $ref: '#/components/schemas/OVRFiltro'
       responses:
         200:
           description: OVR
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OVR'
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/OVR'
         400:
           description: Erro
           content: {}
