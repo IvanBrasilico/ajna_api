@@ -68,11 +68,12 @@ class ApiTestCase(unittest.TestCase):
         assert r.status_code == status_code
         try:
             ljson = r.json
-            if not msg:
-                return ljson
-            print(ljson)
-            if ljson and msg:
-                assert ljson.get('msg') == msg
+            if ljson:
+                if not msg:
+                    return ljson
+                print(ljson)
+                if ljson and msg:
+                    assert ljson.get('msg') == msg
         except json.JSONDecodeError as err:
             print(err)
             assert False

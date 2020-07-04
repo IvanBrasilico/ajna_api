@@ -20,7 +20,7 @@ def get_acessoveiculo(id):
         return jsonify(data), 200
     except NoResultFound:
         return jsonify({'msg': 'AcessoVeiculo %s não encontrado' % id}), 404
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': str(err)}), 500
 
@@ -34,7 +34,7 @@ def insert_acessoveiculo():
         usecases = UseCases(db_session)
         acessoveiculo = usecases.insert_acessoveiculo(evento_json)
         return jsonify({'msg': 'Objeto incluído', 'id': acessoveiculo.id}), 201
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': str(err)}), 500
 
@@ -49,7 +49,7 @@ def get_pesagemveiculo(id):
         return jsonify(data), 200
     except NoResultFound:
         return jsonify({'msg': 'PesagemVeiculo %s não encontrado' % id}), 404
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': str(err)}), 500
 
@@ -63,7 +63,7 @@ def insert_pesagemveiculo():
         usecases = UseCases(db_session)
         pesagemveiculo = usecases.insert_pesagemveiculo(evento_json)
         return jsonify({'msg': 'Objeto incluído', 'id': pesagemveiculo.id}), 201
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': str(err)}), 500
 
@@ -72,6 +72,8 @@ def insert_pesagemveiculo():
 # @jwt_required
 def resumo_evento():
     db_session = current_app.config['db_session']
+    response = make_response('Erro não previsto')
+    code = 500
     try:
         recinto = request.args['recinto']
         tipo = request.args['tipo']
@@ -89,9 +91,10 @@ def resumo_evento():
             data = json.dumps(data, separators=('', ' - '), indent=2). \
                 replace('{', '').replace('}', '').replace('"', '')
         response = make_response(data)
+        code = 200
         response.headers['Access-Control-Allow-Origin'] = '*'
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         current_app.logger.error(err, exc_info=True)
         response = make_response(str(err))
         response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
+    return response, code
