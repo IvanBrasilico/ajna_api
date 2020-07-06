@@ -224,7 +224,7 @@ paths:
         content:
           application/json:
             schema:
-               $ref: '#/components/schemas/OVRFiltro'
+              $ref: '#/components/schemas/OVRFiltro'
       responses:
         200:
           description: OVR
@@ -1305,11 +1305,61 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/Empresa'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+  /empresas/{cnpj}:
+    get:
+      summary: Retorna informações cadastrais das Empresas (CNPJ parcial - filias se hoverem)
+      tags:
+        - cadastros
+      parameters:
+        - name: cnpj
+          in: path
+          description: CNPJ somente numeros - mínimo de 8 digitos
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Empresa
+          content:
+            application/json:
+              schema:
                 type: object
                 array:
                   items:
                     type: object
                     $ref: '#/components/schemas/Empresa'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+  /ncm/{codigo}:
+    get:
+      summary: Retorna descrição da NCM
+      tags:
+        - cadastros
+      parameters:
+        - name: codigo
+          in: path
+          description: Codigo no formato 9999.99.99
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: NCM descrição
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NCM'
         400:
           description: Erro
           content: {}
@@ -1842,4 +1892,11 @@ components:
         cnpj:
           type: string
         nome:
+          type: string
+    NCM:
+      type: object
+      properties:
+        title:
+          type: string
+        contents:
           type: string
