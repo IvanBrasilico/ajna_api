@@ -1287,6 +1287,35 @@ paths:
               schema: {}
       security:
         - jwt: ['secret']
+  /empresa/{cnpj}:
+    get:
+      summary: Retorna informações cadastrais da Empresa
+      tags:
+        - cadastros
+      parameters:
+        - name: cnpj
+          in: path
+          description: CNPJ somente numeros - mínimo de 8 digitos
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Empresa
+          content:
+            application/json:
+              schema:
+                type: object
+                array:
+                  items:
+                    type: object
+                    $ref: '#/components/schemas/Empresa'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
 components:
   securitySchemes:
     jwt:
@@ -1807,3 +1836,10 @@ components:
           type: string
         valor:
           type: number
+    Empresa:
+      type: object
+      properties:
+        cnpj:
+          type: string
+        nome:
+          type: string
