@@ -1,13 +1,19 @@
-import collections
+from datetime import datetime
+from enum import Enum
 
 from dateutil.parser import parse
-from sqlalchemy import Boolean, Column, DateTime, Integer, \
-    String, BigInteger, ForeignKey, Numeric
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, validates
+from sqlalchemy import Column, DateTime, Integer, \
+    String, BigInteger, ForeignKey
+from sqlalchemy.orm import validates, relationship
 
-from ajnaapi.recintosapi.models import Base, EventoBase
 from ajnaapi.config import Production
+from ajnaapi.recintosapi.models import Base, EventoBase, BaseDumpable
+
+
+class TipoAgendamento(Enum):
+    SolicitadoRFB = 1
+    AgendadoRecinto = 2
+    ConfirmadoRFB = 3
 
 
 class AgendamentoConferencia(EventoBase):
@@ -16,8 +22,8 @@ class AgendamentoConferencia(EventoBase):
     id = Column(BigInteger().with_variant(Integer, 'sqlite'),
                 primary_key=True)
     dtHrAgenda = Column(DateTime)
-
-    listaConteineresUld = relationship('ConteinerUld', back_populates='acessoveiculo')
+    tipo = Column(Integer)
+    listaConteineres = []
     listaCameras = []
 
     def __init__(self, **kwargs):
@@ -27,6 +33,11 @@ class AgendamentoConferencia(EventoBase):
         super().__init__(**superkwargs)
         if kwargs.get('dtHrAgenda'):
             self.dtHrAgenda = parse(kwargs.get('dtHrAgenda'))
+
+    def dump(self):
+        result = super().dump()
+        result['dtHrAgenda'] = datetime.strftime(self.dtHrAgenda, '%Y-%m-%dT%M:%H:%S')
+        return result
 
     @validates('nmtransportador', 'motorista_nome', 'mercadoria')
     def validate_code(self, key, value):
@@ -42,21 +53,9 @@ class VerificacaoFisica(EventoBase):
     id = Column(BigInteger().with_variant(Integer, 'sqlite'),
                 primary_key=True)
     listaManifestos = []
-    pesoBrutoManifesto = Column(Numeric(6))
-    placa = Column(String(7))
-    # TODO: tara está duplicada???
-    # tara = Column(Numeric(10))
-    listaSemirreboque = relationship('Semirreboque', back_populates='pesagemveiculo')
-    taraConjunto = Column(Numeric(5))
-    numConteinerUld = Column(String(11))
-    tipoConteinerUld = Column(String(5))
-    taraConteinerUld = Column(Numeric(5))
-    pesoBrutoBalanca = Column(Numeric(6))
-    capturaAutoPeso = Column(Boolean)
-    dutos = Column(String(1))
-    volume = Column(Numeric(5, 2))
-    balanca = Column(String(40))
+    numConteiner = Column(String(11))
     listaCameras = []
+    listaImagens = []
 
     def __init__(self, **kwargs):
         superkwargs = dict([
@@ -64,25 +63,33 @@ class VerificacaoFisica(EventoBase):
         ])
         super().__init__(**superkwargs)
         self.listaManifestos = []
-        self.pesoBrutoManifesto = kwargs.get('pesoBrutoManifesto')
-        self.placa = kwargs.get('placa')
-        self.taraConjunto = kwargs.get('taraConjunto')
-        self.numConteinerUld = kwargs.get('numConteinerUld')
-        self.tipoConteinerUld = kwargs.get('tipoConteinerUld')
-        self.taraConteinerUld = kwargs.get('taraConteinerUld')
-        self.pesoBrutoBalanca = kwargs.get('pesoBrutoBalanca')
-        self.capturaAutoPeso = kwargs.get('capturaAutoPeso')
-        self.dutos = kwargs.get('dutos')
-        self.volume = kwargs.get('volume')
-        self.balanca = kwargs.get('balanca')
+        self.numConteiner = kwargs.get('numConteinerUld')
         self.listaCameras = []
 
-    @validates('placa', 'numConteinerUld', 'tipoConteinerUld', 'dutos')
+    @validates('numConteinerUld')
     def validate_code(self, key, value):
         max_len = getattr(self.__class__, key).prop.columns[0].type.length
         if value and len(value) > max_len:
             return value[:max_len]
         return value
+
+
+class ImagemVerificacaoFisica(BaseDumpable):
+    __tablename__ = 'recinto_imagensverificacao'
+    __table_args__ = {'sqlite_autoincrement': True}
+    id = Column(BigInteger().with_variant(Integer, 'sqlite'),
+                primary_key=True)
+    camera = Column(String(20))
+    verificacaofisica_id = Column(BigInteger().with_variant(Integer, 'sqlite'),
+                                  ForeignKey('recinto_verificacoes.id'))
+    verificacaofisica = relationship(
+        'VerificacaoFisica'
+    )
+
+    def __init__(self, verificacaofisica_id, camera, data):
+        self.verificacaofisica_id = verificacaofisica_id
+        self.camera = camera
+        self.data = data
 
 
 if __name__ == '__main__':

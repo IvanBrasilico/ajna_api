@@ -14,7 +14,7 @@ def empresas_(cnpj):
     except ValueError as err:
         return jsonify(
             {'msg': str(err)}), 400
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         current_app.logger.error(err, exc_info=True)
         return jsonify(
             {'msg': 'Erro inesperado! Detalhes no log da aplicação. ' + str(err)}), 500
@@ -31,7 +31,7 @@ def empresa_(cnpj):
     except ValueError as err:
         return jsonify(
             {'msg': str(err)}), 400
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         current_app.logger.error(err, exc_info=True)
         return jsonify(
             {'msg': 'Erro inesperado! Detalhes no log da aplicação. ' + str(err)}), 500
@@ -48,7 +48,7 @@ def ncm_(codigo):
     except ValueError as err:
         return jsonify(
             {'msg': str(err)}), 400
-    except Exception as err:
+    except Exception as err:  # pragma: no cover
         current_app.logger.error(err, exc_info=True)
         return jsonify(
             {'msg': 'Erro inesperado! Detalhes no log da aplicação. ' + str(err)}), 500

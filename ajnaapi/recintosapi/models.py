@@ -1,4 +1,5 @@
 import collections
+from datetime import datetime
 
 from dateutil.parser import parse
 from sqlalchemy import Boolean, Column, DateTime, Integer, \
@@ -64,6 +65,10 @@ class EventoBase(BaseDumpable):
     def dump(self):
         dump = dict([(k, v) for k, v in vars(self).items() if not k.startswith('_')])
         # dump.pop('ID')
+        dump['dtHrOcorrencia'] = datetime.strftime(self.dtHrOcorrencia,
+                                                   '%Y-%m-%dT%M:%H:%S')
+        dump['dtHrRegistro'] = datetime.strftime(self.dtHrRegistro,
+                                                 '%Y-%m-%dT%M:%H:%S')
         return dump
 
     def __hash__(self):

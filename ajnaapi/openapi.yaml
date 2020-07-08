@@ -1295,7 +1295,7 @@ paths:
       parameters:
         - name: cnpj
           in: path
-          description: CNPJ somente numeros - mínimo de 8 digitos
+          description: CNPJ somente numeros - mínimo 8 digitos -> busca a matriz, ou CNPJ completo.
           required: true
           schema:
             type: string
@@ -1312,9 +1312,9 @@ paths:
         404:
           description: Não encontrado para filtro atual.
           content: {}
-  /empresas/{cnpj}:
+  /empresas_e_filiais/{cnpj}:
     get:
-      summary: Retorna informações cadastrais das Empresas (CNPJ parcial - filias se hoverem)
+      summary: Retorna informações cadastrais das Empresas (CNPJ parcial 8 dígitos- lista filias se existirem)
       tags:
         - cadastros
       parameters:
@@ -1341,6 +1341,34 @@ paths:
         404:
           description: Não encontrado para filtro atual.
           content: {}
+  /empresas:
+    post:
+      summary: Retorna lista de Empresas correspondentes ao filtro
+      tags:
+        - cadastros
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpresaFiltro'
+      responses:
+        200:
+          description: Empresa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/Empresa'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
   /ncm/{codigo}:
     get:
       summary: Retorna descrição da NCM
@@ -1891,6 +1919,11 @@ components:
       properties:
         cnpj:
           type: string
+        nome:
+          type: string
+    EmpresaFiltro:
+      type: object
+      properties:
         nome:
           type: string
     NCM:
