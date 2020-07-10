@@ -17,7 +17,7 @@ class TipoAgendamento(Enum):
 
 
 class AgendamentoConferencia(EventoBase):
-    __tablename__ = 'recinto_agendamentos'
+    __tablename__ = 'recinto_agendamentosconferencia'
     __table_args__ = {'sqlite_autoincrement': True}
     id = Column(BigInteger().with_variant(Integer, 'sqlite'),
                 primary_key=True)
@@ -39,16 +39,9 @@ class AgendamentoConferencia(EventoBase):
         result['dtHrAgenda'] = datetime.strftime(self.dtHrAgenda, '%Y-%m-%dT%M:%H:%S')
         return result
 
-    @validates('nmtransportador', 'motorista_nome', 'mercadoria')
-    def validate_code(self, key, value):
-        max_len = getattr(self.__class__, key).prop.columns[0].type.length
-        if value and len(value) > max_len:
-            return value[:max_len]
-        return value
-
 
 class VerificacaoFisica(EventoBase):
-    __tablename__ = 'recinto_verificacoes'
+    __tablename__ = 'recinto_verificacoesfisicas'
     __table_args__ = {'sqlite_autoincrement': True}
     id = Column(BigInteger().with_variant(Integer, 'sqlite'),
                 primary_key=True)
@@ -80,19 +73,80 @@ class ImagemVerificacaoFisica(BaseDumpable):
     id = Column(BigInteger().with_variant(Integer, 'sqlite'),
                 primary_key=True)
     camera = Column(String(20))
+    dtHrImagem = Column(DateTime)
     verificacaofisica_id = Column(BigInteger().with_variant(Integer, 'sqlite'),
-                                  ForeignKey('recinto_verificacoes.id'))
+                                  ForeignKey('recinto_verificacoesfisicas.id'))
     verificacaofisica = relationship(
         'VerificacaoFisica'
     )
 
-    def __init__(self, verificacaofisica_id, camera, data):
+    def __init__(self, verificacaofisica_id, camera, dtHrImagem):
         self.verificacaofisica_id = verificacaofisica_id
         self.camera = camera
-        self.data = data
+        self.dtHrImagem = parse(dtHrImagem)
+
+    def dump(self):
+        result = super().dump()
+        result['dtHrImagem'] = datetime.strftime(self.dtHrImagem, '%Y-%m-%dT%M:%H:%S')
+        return result
+
+    @validates('numConteinerUld')
+    def validate_code(self, key, value):
+        max_len = getattr(self.__class__, key).prop.columns[0].type.length
+        if value and len(value) > max_len:
+            return value[:max_len]
+        return value
 
 
-if __name__ == '__main__':
+class EmissaoFMA(EventoBase):
+    __tablename__ = 'recinto_emissoesfma'
+    __table_args__ = {'sqlite_autoincrement': True}
+    id = Column(BigInteger().with_variant(Integer, 'sqlite'),
+                primary_key=True)
+    cemercante = Column(String(15))
+
+    def __init__(self, **kwargs):
+        superkwargs = dict([
+            (k, v) for k, v in kwargs.items() if k in vars(EventoBase).keys()
+        ])
+        super().__init__(**superkwargs)
+        self.cemercante = kwargs.get('cemercante')
+        if kwargs.get('dtEntradaRecinto'):
+            self.dtEntradaRecinto = parse(kwargs.get('dtEntradaRecinto'))
+
+    def dump(self):
+        result = super().dump()
+        result['dtEntradaRecinto'] = datetime.strftime(self.dtEntradaRecinto,
+                                                       '%Y-%m-%dT%M:%H:%S')
+        return result
+
+    @validates('numConteinerUld')
+    def validate_code(self, key, value):
+        max_len = getattr(self.__class__, key).prop.columns[0].type.length
+        if value and len(value) > max_len:
+            return value[:max_len]
+        return value
+
+
+if __name__ == '__main__':  # pragma: no cover
+    import sys
+    from ajnaapi.utils import yaml_from_model
+
+    original_stdout = sys.stdout
+    with open('ajnaapi/schemas/models_extra.yaml', 'w') as f:
+        sys.stdout = f
+        print(yaml_from_model(EmissaoFMA))
+        print(yaml_from_model(AgendamentoConferencia))
+        print(yaml_from_model(VerificacaoFisica))
+        print(yaml_from_model(ImagemVerificacaoFisica))
+        sys.stdout = original_stdout
     engine = Production.sql
-    # Base.metadata.drop_all(engine, [])
+    """
+    Base.metadata.drop_all(engine, [
+        Base.metadata.tables['recinto_agendamentosconferencia'],
+        Base.metadata.tables['recinto_verificacoesfisicas'],
+        Base.metadata.tables['recinto_imagensverificacao'],
+        Base.metadata.tables['recinto_emissoesfma'],
+    ])
+    """
     Base.metadata.create_all(engine)

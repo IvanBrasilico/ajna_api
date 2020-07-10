@@ -1267,7 +1267,6 @@ paths:
       summary: Recebe Evento pesagemveiculo
       tags:
         - API Recintos
-      operationId: authentication.generate_token
       requestBody:
         description: Conteúdo do Evento
         content:
@@ -1287,6 +1286,8 @@ paths:
               schema: {}
       security:
         - jwt: ['secret']
+  /emissaofma:
+    $ref: './paths/emisssaofma.yaml'
   /empresa/{cnpj}:
     get:
       summary: Retorna informações cadastrais da Empresa
@@ -1330,11 +1331,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                array:
-                  items:
-                    type: object
-                    $ref: '#/components/schemas/Empresa'
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/Empresa'
         400:
           description: Erro
           content: {}

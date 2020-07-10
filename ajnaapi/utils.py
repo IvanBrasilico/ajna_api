@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from dateutil import parser
 from flask import current_app, jsonify
 from ruamel import yaml
@@ -153,31 +155,6 @@ def get_filtro_alchemy(model, uri_query):
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
 
 
-TYPES = {
-    'str': {'type': 'string'},
-    'datetime': {'type': 'string'},
-    'bool': {'type': 'boolean'},
-    'int': {'type': 'integer'},
-    'Decimal': {'type': 'number'}
-}
-
-
-def yaml_from_model(model):  # pragma: no cover
-    yaml_dict = {}
-    for c in dir(model):
-        if not c.startswith('_'):
-            attr = getattr(model, c)
-            if isinstance(attr, InstrumentedAttribute):
-                try:
-                    yaml_dict[c] = dict(TYPES[attr.type.python_type.__name__])
-                except (AttributeError, NotImplementedError):
-                    yaml_dict[c] = {'type': 'object', 'properties': c}
-                    pass
-    # print(yaml_dict)
-    return yaml.dump({model.__name__: yaml_dict},
-                     default_flow_style=False)
-
-
 def select_one_campo_alchemy(session, model, campo, oid):
     try:
         result = session.query(model).filter(campo == oid).one_or_none()
@@ -200,3 +177,38 @@ def select_many_campo_alchemy(session, model, campo, valor):
     except Exception as err:
         current_app.logger.error(err, exc_info=True)
         return jsonify({'msg': 'Erro inesperado: %s' % str(err)}), 400
+
+
+TYPES = {
+    'str': {'type': 'string'},
+    'datetime': {'type': 'string'},
+    'bool': {'type': 'boolean'},
+    'int': {'type': 'integer'},
+    'Decimal': {'type': 'number'}
+}
+
+
+def yaml_from_model(model):  # pragma: no cover
+    def setup_yaml():
+        """ https://stackoverflow.com/a/8661021 """
+        represent_dict_order = lambda self, data: self.represent_mapping('tag:yaml.org,2002:map', data.items())
+        yaml.add_representer(OrderedDict, represent_dict_order)
+
+    setup_yaml()
+    yaml_dict = OrderedDict()
+    for c in dir(model):
+        if not c.startswith('_'):
+            attr = getattr(model, c)
+            if isinstance(attr, InstrumentedAttribute):
+                try:
+                    yaml_dict[c] = dict(TYPES[attr.type.python_type.__name__])
+                except (AttributeError, NotImplementedError):
+                    if c == 'id':
+                        yaml_dict[c] = {'type': 'integer'}
+                    else:
+                        yaml_dict[c] = {'type': 'string'}
+    # print(yaml_dict)
+    yaml_complete = OrderedDict()
+    yaml_complete['type'] = 'object'
+    yaml_complete['properties'] = yaml_dict
+    return yaml.dump({model.__name__: yaml_complete}, default_flow_style=False)
