@@ -1287,7 +1287,285 @@ paths:
       security:
         - jwt: ['secret']
   /emissaofma:
-    $ref: './paths/emisssaofma.yaml'
+    post:
+      summary: Recebe Evento de emissão de FMA pelo Recinto
+      tags:
+        - API Recintos Xtra
+      requestBody:
+        description: Conteúdo do Evento
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmissaoFMA'
+      responses:
+        201:
+          description: Resposta em caso de sucesso
+          content:
+            application/json:
+              schema: {}
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+  /emissaofma/new/{datamodificacao}:
+    get:
+      summary: Retorna lista de objetos com data de modificacao maior que a data passada
+      tags:
+        - API Recintos Xtra
+      parameters:
+        - name: datamodificacao
+          in: path
+          description: Data inicial de pesquisa
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conteúdo do Evento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmissaoFMA'
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+  /verificacaofisica:
+    post:
+      summary: Recebe Evento de Verificação Física pelo Recinto
+      tags:
+        - API Recintos Xtra
+      requestBody:
+        description: Conteúdo do Evento
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificacaoFisica'
+      responses:
+        201:
+          description: Resposta em caso de sucesso
+          content:
+            application/json:
+              schema: {}
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+  /verificacaofisica/new/{datamodificacao}:
+    get:
+      summary: Retorna lista de objetos com data de modificacao maior que a data passada
+      tags:
+        - API Recintos Xtra
+      parameters:
+        - name: datamodificacao
+          in: path
+          description: Data inicial de pesquisa
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conteúdo do Evento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificacaoFisica'
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+  /imagemverificacaofisica:
+    post:
+      summary: Recebe Evento de Verificação Física pelo Recinto
+      tags:
+        - API Recintos Xtra
+      requestBody:
+        description: Conteúdo do Evento
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImagemVerificacaoFisica'
+      responses:
+        201:
+          description: Resposta em caso de sucesso
+          content:
+            application/json:
+              schema: {}
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+  /imagemverificacaofisica/new/{datamodificacao}:
+    get:
+      summary: Retorna lista de objetos com data de modificacao maior que a data passada
+      tags:
+        - API Recintos Xtra
+      parameters:
+        - name: datamodificacao
+          in: path
+          description: Data inicial de pesquisa
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conteúdo do Evento
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagemVerificacaoFisica'
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+  /agendamentoverificacao:
+    post:
+      summary: Bidirecional - Recinto recebe ou informa Evento de Verificação Física (solicitação RFB ou solicitação Recinto)
+      tags:
+        - API Recintos Xtra
+      requestBody:
+        description: Conteúdo do Evento
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgendamentoConferencia'
+      responses:
+        201:
+          description: Resposta em caso de sucesso
+          content:
+            application/json:
+              schema: {}
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+    get:
+      summary: Retorna lista de Agendamentos correspondentes ao filtro
+      tags:
+        - API Recintos Xtra
+      parameters:
+        - in: query
+          required: true
+          name: dtHrAgenda
+          schema:
+            type: string
+          description: Pesquisar agendamentos maiores que esta data
+        - in: query
+          name: dtHrRegistro
+          schema:
+            type: string
+          description: Pesquisar agendamentos registrados a partir desta data
+        - in: query
+          name: idEvento
+          schema:
+            type: string
+        - in: query
+          name: recinto
+          schema:
+            type: string
+        - in: query
+          name: tipo
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Agendamentos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/components/schemas/AgendamentoVerificacao'
+        400:
+          description: Erro
+          content: {}
+        404:
+          description: Não encontrado para filtro atual.
+          content: {}
+      security:
+        - jwt: ['secret']
+  /agendamentoverificacao/put/confirma_recinto/{id}:
+    post:
+      summary: Bidirecional - Recinto confirma data do Evento de Verificação Física
+      tags:
+        - API Recintos Xtra
+      parameters:
+        - name: id
+          in: path
+          description: id do Evento confirmado
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: Resposta em caso de sucesso
+          content:
+            application/json:
+              schema: {}
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+        404:
+          description: Erro - Evento não encontrado
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+  /agendamentoverificacao/put/confirma_rfb/{id}:
+    post:
+      summary: Bidirecional - RFB confirma data do Evento de Verificação Física
+      tags:
+        - API Recintos Xtra
+      parameters:
+        - name: id
+          in: path
+          description: id do Evento confirmado
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: Resposta em caso de sucesso
+          content:
+            application/json:
+              schema: {}
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+        404:
+          description: Erro - Evento não encontrado
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
   /empresa/{cnpj}:
     get:
       summary: Retorna informações cadastrais da Empresa
@@ -1313,7 +1591,7 @@ paths:
         404:
           description: Não encontrado para filtro atual.
           content: {}
-  /empresas_e_filiais/{cnpj}:
+  /empresa_e_filiais/{cnpj}:
     get:
       summary: Retorna informações cadastrais das Empresas (CNPJ parcial 8 dígitos- lista filias se existirem)
       tags:
@@ -1342,15 +1620,17 @@ paths:
           description: Não encontrado para filtro atual.
           content: {}
   /empresas:
-    post:
-      summary: Retorna lista de Empresas correspondentes ao filtro
+    get:
+      summary: Retorna lista de Empresas correspondentes ao filtro (nome inicia com)
       tags:
         - cadastros
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EmpresaFiltro'
+      parameters:
+        - name: nome
+          in: query
+          description: Nome da Empresa - mínimo de 3 digitos
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: Empresa
@@ -1932,4 +2212,88 @@ components:
         title:
           type: string
         contents:
+          type: string
+    EmissaoFMA:
+      type: object
+      properties:
+        cemercante:
+          type: string
+        contingencia:
+          type: boolean
+        cpfOperOcor:
+          type: string
+        cpfOperReg:
+          type: string
+        dtHrOcorrencia:
+          type: string
+        dtHrRegistro:
+          type: string
+        id:
+          type: integer
+        idEvento:
+          type: string
+        protocoloEventoRetifCanc:
+          type: string
+        recinto:
+          type: string
+    AgendamentoConferencia:
+      type: object
+      properties:
+        contingencia:
+          type: boolean
+        cpfOperOcor:
+          type: string
+        cpfOperReg:
+          type: string
+        dtHrAgenda:
+          type: string
+        dtHrOcorrencia:
+          type: string
+        dtHrRegistro:
+          type: string
+        id:
+          type: integer
+        idEvento:
+          type: string
+        protocoloEventoRetifCanc:
+          type: string
+        recinto:
+          type: string
+        tipo:
+          type: integer
+    VerificacaoFisica:
+      type: object
+      properties:
+        contingencia:
+          type: boolean
+        cpfOperOcor:
+          type: string
+        cpfOperReg:
+          type: string
+        dtHrOcorrencia:
+          type: string
+        dtHrRegistro:
+          type: string
+        id:
+          type: integer
+        idEvento:
+          type: string
+        numConteiner:
+          type: string
+        protocoloEventoRetifCanc:
+          type: string
+        recinto:
+          type: string
+    ImagemVerificacaoFisica:
+      type: object
+      properties:
+        camera:
+          type: string
+        dtHrImagem:
+          type: string
+        id:
+          type: integer
+        verificacaofisica:
+          type: string
+        verificacaofisica_id:
           type: string
