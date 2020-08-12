@@ -1,6 +1,7 @@
 from flask import Blueprint, current_app, jsonify, request
 
-from bhadrasana.models.laudo import get_empresas, get_ncm, get_empresa, get_empresas_nome
+from bhadrasana.models.laudo import get_empresas, get_ncm, get_empresa, \
+    get_empresas_nome
 
 cadastrosapi = Blueprint('cadastrosapi', __name__)
 
@@ -46,7 +47,8 @@ def empresas_():
         empresas = get_empresas_nome(db_session, nome)
         result = [empresa.dump() for empresa in empresas]
         if len(result) == 0:
-            return jsonify({'msg': 'Empresas não encontradas com filtro %s ' % request.args}), 404
+            return jsonify(
+                {'msg': 'Empresas não encontradas com filtro %s ' % request.args}), 404
     except ValueError as err:
         return jsonify(
             {'msg': str(err)}), 400

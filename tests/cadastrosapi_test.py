@@ -26,10 +26,12 @@ class CadastrosApiTestCase(ApiTestCase):
         rv = self._case('GET', '/api/empresa/0',  # minimo 8 digitos
                         status_code=400)
         assert '8' in rv['msg']
-        self.not_allowed('/api/empresas/0', methods=['POST', 'PUT', 'DELETE'])
-        rv = self._case('GET', '/api/empresas/0',  # minimo 8 digitos
+
+    def test_empresas_erros(self):
+        self.not_allowed('/api/empresas', methods=['POST', 'PUT', 'DELETE'])
+        rv = self._case('GET', '/api/empresas', query_dict={'nome': 'B'},  # minimo 3 digitos
                         status_code=400)
-        assert '8' in rv['msg']
+        assert '3' in rv['msg']
 
     def test_empresa(self):
         self._case('GET', '/api/empresa/00000000',
@@ -43,14 +45,14 @@ class CadastrosApiTestCase(ApiTestCase):
                    status_code=200)
 
     def test_empresas(self):
-        self._case('GET', '/api/empresas/00000001',
+        self._case('GET', '/api/empresas', query_dict={'nome': 'teste'},
                    status_code=404)
         empresa = Empresa()
         empresa.cnpj = '00000001'
         empresa.nome = 'teste2'
         self.db_session.add(empresa)
         self.db_session.commit()
-        self._case('GET', '/api/empresas/00000001',
+        self._case('GET', '/api/empresas', query_dict={'nome': 'teste'},
                    status_code=200)
 
     def test_ncm_erros(self):
