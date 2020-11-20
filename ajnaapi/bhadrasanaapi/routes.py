@@ -3,8 +3,8 @@ from datetime import datetime
 from flask import Blueprint, request, current_app, jsonify
 from flask_jwt_extended import jwt_required
 
-from ajnaapi.utils import get_filtro_alchemy, dump_model
-from ajnaapi.utils import select_one_campo_alchemy, select_many_campo_alchemy
+from ajna_commons.utils.api_utils import get_filtro_alchemy, dump_model
+from ajna_commons.utils.api_utils import select_one_campo_alchemy, select_many_campo_alchemy
 from bhadrasana.forms.exibicao_ovr import ExibicaoOVR, TipoExibicao
 from bhadrasana.models import get_usuario_telegram
 from bhadrasana.models.laudo import get_empresa, get_sats_cnpj
@@ -199,7 +199,7 @@ def consulta_empresa():
 
 
 if __name__ == '__main__':  # pragma: no cover
-    from ajnaapi.utils import yaml_from_model
+    from ajna_commons.utils.api_utils import yaml_from_model
 
     # print(yaml_from_model(OVR))
     # print(yaml_from_model(RVF))

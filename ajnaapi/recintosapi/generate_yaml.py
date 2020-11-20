@@ -1,5 +1,5 @@
 from ajnaapi.recintosapi import models
-from ajnaapi.utils import yaml_from_model
+from ajna_commons.utils.api_utils import yaml_from_model
 
 if __name__ == '__main__':  # pragma: no cover
     # print(yaml_from_model(models.AcessoVeiculo))

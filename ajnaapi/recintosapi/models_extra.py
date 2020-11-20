@@ -130,7 +130,7 @@ class EmissaoFMA(EventoBase):
 
 if __name__ == '__main__':  # pragma: no cover
     import sys
-    from ajnaapi.utils import yaml_from_model
+    from ajna_commons.utils.api_utils import yaml_from_model
 
     original_stdout = sys.stdout
     with open('ajnaapi/schemas/models_extra.yaml', 'w') as f:
