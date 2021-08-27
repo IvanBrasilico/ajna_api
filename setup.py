@@ -30,7 +30,7 @@ setup(
         'python-dateutil',
         'redis',
         'requests',
-        'sqlalchemy'
+        'sqlalchemy==1.3.24'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
