@@ -10,6 +10,7 @@ setup(
     author_email='brasilico.ivan@gmail.com',
     packages=find_packages(),
     install_requires=[
+        'chardet',
         'defusedxml',
         'dominate',
         'Flask',
@@ -25,6 +26,7 @@ setup(
         'marshmallow-sqlalchemy',
         'pandas',
         'Pillow',
+        'plotly',
         'PyMongo',
         'pymysql',
         'python-dateutil',
