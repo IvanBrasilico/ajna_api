@@ -16,7 +16,7 @@ setup(
         'flask_bootstrap',
         'flask_nav',
         'flask_login',
-        'flask_jwt_extended',
+        'flask_jwt_extended==3.25.1',
         'flask-swagger-ui',
         'flask_wtf',
         'gunicorn',
