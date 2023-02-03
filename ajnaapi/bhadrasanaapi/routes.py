@@ -150,7 +150,8 @@ def insert_processoovr():
         processo.atualiza_numerolimpo(processo.numero)
         db_session.add(processo)
         db_session.commit()
-        return jsonify({'msg': 'Objeto incluído', 'id': acessoveiculo.id}), 201
+        db_session.refresh(processo)
+        return jsonify({'msg': 'Objeto incluído', 'id': processo.id}), 201
     except Exception as err:  # pragma: no cover
         db_session.rollback()
         current_app.logger.error(err, exc_info=True)
