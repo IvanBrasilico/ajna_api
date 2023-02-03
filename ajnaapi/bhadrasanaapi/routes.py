@@ -8,6 +8,7 @@ from ajna_commons.utils.api_utils import select_one_campo_alchemy, select_many_c
 from bhadrasana.forms.exibicao_ovr import ExibicaoOVR, TipoExibicao
 from bhadrasana.models import get_usuario_telegram
 from bhadrasana.models.laudo import get_empresa, get_sats_cnpj
+from bhadrasana.models.ovr import ProcessoOVR
 from bhadrasana.models.ovr import OVR, TGOVR, ItemTG
 from bhadrasana.models.ovrmanager import get_ovr_responsavel, get_ovr_empresa
 from bhadrasana.models.riscomanager import consulta_container_objects
@@ -134,6 +135,26 @@ def minhas_fichas_json(cpf):
         return jsonify(
             {'msg': 'Erro! Detalhes no log da aplicação.' + str(err)}), 400
     return jsonify(result), 200
+
+
+@bhadrasanaapi.route('/api/processoovr', methods=['POST'])
+@jwt_required
+def insert_processoovr():
+    db_session = current_app.config['db_session']
+    try:
+        evento_json = request.json
+        processo = ProcessoOVR()
+        processo.ovr_id = evento_json['ovr_id']
+        processo.tipoprocesso_id = evento_json['tipoprocesso_id']
+        processo.numero = evento_json['numero']
+        processo.atualiza_numerolimpo(processo.numero)
+        db_session.add(processo)
+        db_session.commit()
+        return jsonify({'msg': 'Objeto incluído', 'id': acessoveiculo.id}), 201
+    except Exception as err:  # pragma: no cover
+        db_session.rollback()
+        current_app.logger.error(err, exc_info=True)
+        return jsonify({'msg': str(err)}), 500
 
 
 @bhadrasanaapi.route('/api/consulta_conteiner', methods=['POST'])
