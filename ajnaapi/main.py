@@ -17,6 +17,7 @@ from ajnaapi.endpoints import ajna_api
 from ajnaapi.mercanteapi.routes import mercanteapi
 from ajnaapi.recintosapi.routes import recintosapi
 from ajnaapi.virasanaapi.routes import virasanaapi
+from bhadrasana.models import Usuario
 from .config import Production
 
 SWAGGER_URL = '/docs'  # URL for exposing Swagger UI (without trailing '/')
@@ -66,7 +67,9 @@ def create_app(config_class=Production):
 
     app.logger.info('Configurando login...')
     login.configure(app)
-    DBUser.dbsession = config_class.db
+    # Para usar MySQL como base de Usuários ativar as variáveis abaixo
+    DBUser.dbsession = db_session
+    DBUser.alchemy_class = Usuario
 
     app.logger.info('Configurando / e redirects')
 
