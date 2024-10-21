@@ -1,3 +1,10 @@
+import sys
+
+sys.path.append('.')
+sys.path.insert(0, '../ajna_docs/commons')
+sys.path.insert(0, '../ajna_api')
+sys.path.insert(0, '../virasana')
+sys.path.insert(0, '../bhadrasana2')
 import logging
 from werkzeug.serving import run_simple
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -8,7 +15,7 @@ from ajna_commons.flask.user import DBUser
 from ajnaapi.config import Staging
 
 app = create_app(Staging)  # pragma: no cover Testing = SQLite
-DBUser.dbsession = None  # Aceita autenticação fake (qqer username==password)
+# DBUser.dbsession = None  # Aceita autenticação fake (qqer username==password)
 
 gunicorn_logger = logging.getLogger('gunicorn.debug')
 app.logger.handlers = gunicorn_logger.handlers

@@ -31,6 +31,7 @@ setup(
         'python-dateutil',
         'redis',
         'requests',
+        'ruamel.yaml',
         'sqlalchemy==1.3.24'
     ],
     setup_requires=['pytest-runner'],
