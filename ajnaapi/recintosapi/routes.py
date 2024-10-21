@@ -3,6 +3,7 @@ import json
 from flask import Blueprint, jsonify, request, current_app, make_response
 from flask_jwt_extended import jwt_required
 from json2html import json2html
+from flask_login import login_required
 from sqlalchemy.orm.exc import NoResultFound
 
 from ajnaapi.recintosapi.usecases import UseCases
@@ -69,7 +70,7 @@ def insert_pesagemveiculo():
 
 
 @recintosapi.route('/api/resumo_evento', methods=['GET'])
-# @jwt_required
+@jwt_required
 def resumo_evento():
     db_session = current_app.config['db_session']
     response = make_response('Erro não previsto')
@@ -98,3 +99,23 @@ def resumo_evento():
         response = make_response(str(err))
         response.headers['Access-Control-Allow-Origin'] = '*'
     return response, code
+
+
+
+
+@recintosapi.route('/api/upload_arquivo_json_api', methods=['POST'])
+@jwt_required
+#@login_required
+def upload_arquivo_json_api_api():
+    # Upload de arquivo API Recintos - JSON API Friendly
+    session = app.config.get('dbsession')
+    try:
+        file = request.files.get('file')
+        validfile, mensagem = valid_file(file, extensions=['zip'])
+        if not validfile:
+            return jsonify({'msg': 'Arquivo "file" vazio ou não incluído no POST'}, 404)
+        processa_zip(file, session)
+    except Exception as err:
+        logger.error(err, exc_info=True)
+        return jsonify({'msg:': str(err)}, 500)
+    return jsonify({'msg': 'Arquivo integrado com sucesso!!'}, 200)

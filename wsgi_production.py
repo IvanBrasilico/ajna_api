@@ -1,7 +1,14 @@
+import sys
+sys.path.append('.')
+sys.path.insert(0, '../ajna_docs/commons')
+sys.path.insert(0, '../ajna_api')
+sys.path.insert(0, '../virasana')
+sys.path.insert(0, '../bhadrasana2')
 import logging
 from werkzeug.serving import run_simple
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from ajnaapi.main import create_app
+
 
 app = create_app()  # pragma: no cover
 print(app.url_map)  # pragma: no cover

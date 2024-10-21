@@ -1286,6 +1286,37 @@ paths:
               schema: {}
       security:
         - jwt: ['secret']
+
+  /upload_arquivo_json_api:
+    post:
+      summary: Recebe carga de eventos do api recintos
+      tags:
+        - API Recintos
+      
+      requestBody:
+        description: Conteúdo dos Eventos - arquivo json
+        content:
+          application/zip:
+            schema:
+              type: string
+              format: binary
+      
+      
+      responses:
+        201:
+          description: Resposta em caso de sucesso
+          content:
+            application/json:
+              schema: {}
+        500:
+          description: Erro
+          content:
+            application/json:
+              schema: {}
+      security:
+        - jwt: ['secret']
+
+
   /emissaofma:
     post:
       summary: Recebe Evento de emissão de FMA pelo Recinto
