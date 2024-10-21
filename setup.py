@@ -13,7 +13,7 @@ setup(
         'chardet',
         'defusedxml',
         'dominate',
-        'Flask==1.1.4',
+        'Flask==2.2.5',
         'flask_bootstrap',
         'flask_nav',
         'flask_login',
