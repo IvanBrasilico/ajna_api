@@ -73,8 +73,7 @@ paths:
   /grid_data:
     post:
       summary: Consulta GridFS do MongoDB das imagens de escaneamento
-      tags:
-        - virasana
+      
       requestBody:
         description: Campos do filtro a aplicar - padrão MongoDB
         content:
