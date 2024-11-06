@@ -3,10 +3,11 @@ import json
 from flask import Blueprint, jsonify, request, current_app, make_response
 from flask_jwt_extended import jwt_required
 from json2html import json2html
-from flask_login import login_required
 from sqlalchemy.orm.exc import NoResultFound
 
 from ajnaapi.recintosapi.usecases import UseCases
+from bhadrasana.routes.apirecintos import processa_zip
+from bhadrasana.views import valid_file
 
 recintosapi = Blueprint('recintosapi', __name__)
 
@@ -108,7 +109,7 @@ def resumo_evento():
 #@login_required
 def upload_arquivo_json_api_api():
     # Upload de arquivo API Recintos - JSON API Friendly
-    session = app.config.get('dbsession')
+    session = current_app.config.get('dbsession')
     try:
         file = request.files.get('file')
         validfile, mensagem = valid_file(file, extensions=['zip'])
@@ -116,6 +117,6 @@ def upload_arquivo_json_api_api():
             return jsonify({'msg': 'Arquivo "file" vazio ou não incluído no POST'}, 404)
         processa_zip(file, session)
     except Exception as err:
-        logger.error(err, exc_info=True)
+        current_app.logger.error(err, exc_info=True)
         return jsonify({'msg:': str(err)}, 500)
     return jsonify({'msg': 'Arquivo integrado com sucesso!!'}, 200)
