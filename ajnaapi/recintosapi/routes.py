@@ -92,7 +92,7 @@ def resumo_evento():
         instance = db_session.query(classe).filter(classe.id == id).one_or_none()
         if instance is None:
             return make_response(f'{tipo} id {id} não encontrado'), 404
-        data = instance.dump()
+        data = instance.dump(converte=True)
         if format == 'html':
             data = json2html.convert(data)
         elif format == 'text':
