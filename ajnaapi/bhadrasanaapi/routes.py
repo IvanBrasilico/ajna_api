@@ -13,8 +13,8 @@ from bhadrasana.models.ovr import OVR, TGOVR, ItemTG
 from bhadrasana.models.ovrmanager import get_ovr_responsavel, get_ovr_empresa
 from bhadrasana.models.riscomanager import consulta_container_objects
 from bhadrasana.models.rvf import RVF, ImagemRVF
-from bhadrasana.models.virasana_manager import get_dues_empresa, \
-    get_ces_empresa, get_detalhes_mercante
+from bhadrasana.models.virasana_manager import get_ces_empresa, get_detalhes_mercante
+from virasana.integracao.due.due_manager import  get_dues_empresa
 
 bhadrasanaapi = Blueprint('bhadrasanapi', __name__)
 
