@@ -16,7 +16,7 @@ recintosapi = Blueprint('recintosapi', __name__)
 
 
 @recintosapi.route('/api/acessoveiculo/<id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def get_acessoveiculo(id):
     db_session = current_app.config['db_session']
     try:
@@ -31,7 +31,7 @@ def get_acessoveiculo(id):
 
 
 @recintosapi.route('/api/acessoveiculo', methods=['POST'])
-@jwt_required
+@jwt_required()
 def insert_acessoveiculo():
     db_session = current_app.config['db_session']
     try:
@@ -45,7 +45,7 @@ def insert_acessoveiculo():
 
 
 @recintosapi.route('/api/pesagemveiculo/<id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def get_pesagemveiculo(id):
     db_session = current_app.config['db_session']
     try:
@@ -60,7 +60,7 @@ def get_pesagemveiculo(id):
 
 
 @recintosapi.route('/api/pesagemveiculo', methods=['POST'])
-@jwt_required
+@jwt_required()
 def insert_pesagemveiculo():
     db_session = current_app.config['db_session']
     try:
@@ -74,7 +74,7 @@ def insert_pesagemveiculo():
 
 
 @recintosapi.route('/api/resumo_evento', methods=['GET'])
-#@jwt_required
+#@jwt_required()
 def resumo_evento():
     classes_evento = {'AcessoVeiculo': AcessoVeiculo,
                     'InspecaoNaoInvasiva': InspecaoNaoInvasiva,
@@ -112,7 +112,7 @@ def resumo_evento():
 
 
 @recintosapi.route('/api/upload_arquivo_json_api', methods=['POST'])
-@jwt_required
+@jwt_required()
 #@login_required
 def upload_arquivo_json_api_api():
     # Upload de arquivo API Recintos - JSON API Friendly

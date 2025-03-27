@@ -20,87 +20,87 @@ bhadrasanaapi = Blueprint('bhadrasanapi', __name__)
 
 
 @bhadrasanaapi.route('/api/ficha/<id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def ficha_id(id):
     session = current_app.config['db_session']
     return select_one_campo_alchemy(session, OVR, OVR.id, id)
 
 
 @bhadrasanaapi.route('/api/fichas', methods=['POST'])
-@jwt_required
+@jwt_required()
 def fichas():
     return get_filtro_alchemy(OVR, request.json)
 
 
 @bhadrasanaapi.route('/api/rvf/<id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def rvf_id(id):
     session = current_app.config['db_session']
     return select_one_campo_alchemy(session, RVF, RVF.id, id)
 
 
 @bhadrasanaapi.route('/api/rvfs', methods=['POST'])
-@jwt_required
+@jwt_required()
 def rvfs():
     return get_filtro_alchemy(RVF, request.json)
 
 
 @bhadrasanaapi.route('/api/rvfs/<ovr_id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def rvfs_ovr(ovr_id):
     session = current_app.config['db_session']
     return select_many_campo_alchemy(session, RVF, RVF.ovr_id, ovr_id)
 
 
 @bhadrasanaapi.route('/api/imagens_rvf/<rvf_id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def imagensrvf(rvf_id):
     session = current_app.config['db_session']
     return select_many_campo_alchemy(session, ImagemRVF, ImagemRVF.rvf_id, rvf_id)
 
 
 @bhadrasanaapi.route('/api/tg/<id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def tg(id):
     session = current_app.config['db_session']
     return select_one_campo_alchemy(session, TGOVR, TGOVR.id, id)
 
 
 @bhadrasanaapi.route('/api/tgs/<ovr_id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def tgs_ovr(ovr_id):
     session = current_app.config['db_session']
     return select_many_campo_alchemy(session, TGOVR, TGOVR.ovr_id, ovr_id)
 
 
 @bhadrasanaapi.route('/api/tgs', methods=['POST'])
-@jwt_required
+@jwt_required()
 def tgs():
     return get_filtro_alchemy(TGOVR, request.json)
 
 
 @bhadrasanaapi.route('/api/itemtg/<id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def iemtg(id):
     session = current_app.config['db_session']
     return select_one_campo_alchemy(session, ItemTG, ItemTG.id, id)
 
 
 @bhadrasanaapi.route('/api/itenstg', methods=['POST'])
-@jwt_required
+@jwt_required()
 def itenstg():
     return get_filtro_alchemy(ItemTG, request.json)
 
 
 @bhadrasanaapi.route('/api/itenstg/<tg_id>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def itenstg_tg(tg_id):
     session = current_app.config['db_session']
     return select_many_campo_alchemy(session, ItemTG, ItemTG.tg_id, tg_id)
 
 
 @bhadrasanaapi.route('/api/get_cpf_telegram/<telegram_user>')
-@jwt_required
+@jwt_required()
 def get_cpf_telegram(telegram_user):
     """Exibe o editor Open Source JS (licença MIT) FileRobot."""
     session = current_app.config['db_session']
@@ -112,7 +112,7 @@ def get_cpf_telegram(telegram_user):
 
 
 @bhadrasanaapi.route('/api/minhas_fichas/<cpf>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def minhas_fichas_json(cpf):
     session = current_app.config['db_session']
     try:
@@ -138,7 +138,7 @@ def minhas_fichas_json(cpf):
 
 
 @bhadrasanaapi.route('/api/processoovr', methods=['POST'])
-@jwt_required
+@jwt_required()
 def insert_processoovr():
     db_session = current_app.config['db_session']
     try:
@@ -159,7 +159,7 @@ def insert_processoovr():
 
 
 @bhadrasanaapi.route('/api/consulta_conteiner', methods=['POST'])
-@jwt_required
+@jwt_required()
 def consulta_conteiner():
     """Tela para consulta única de número de contêiner.
 
@@ -186,7 +186,7 @@ def consulta_conteiner():
 
 
 @bhadrasanaapi.route('/api/consulta_empresa', methods=['POST'])
-@jwt_required
+@jwt_required()
 def consulta_empresa():
     """Tela para consulta única de Empresa.
 

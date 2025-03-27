@@ -28,7 +28,7 @@ def converte_ids(adict: dict):
 
 
 @virasanaapi.route('/api/grid_data', methods=['POST', 'GET'])
-@jwt_required
+@jwt_required()
 def api_grid_data():
     """Executa uma consulta no banco.
 
@@ -117,7 +117,7 @@ def api_grid_data():
 
 
 @virasanaapi.route('/api/summary_aniita/<ce_mercante>', methods=['GET'])
-@jwt_required
+@jwt_required()
 def api_summary(ce_mercante):
     """Fornece um sumário dos dados para visualização."""
     db = current_app.config['mongodb']

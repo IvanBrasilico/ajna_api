@@ -12,7 +12,7 @@ ajna_api = Blueprint('ajnaapi', __name__)
 
 @ajna_api.route('/api/image/<_id>', methods=['GET'])
 @ajna_api.route('/api/image_risco/<_id>', methods=['GET'])
-# @jwt_required
+# @jwt_required()
 def api_image(_id):
     if 'risco' in request.url:
         db = current_app.config['mongodb_risco']
@@ -33,7 +33,7 @@ def api_image(_id):
 
 
 @ajna_api.route('/api/dues/update', methods=['POST'])
-@jwt_required
+@jwt_required()
 def dues_update():
     """Recebe um JSON no formato [{_id1: due1}, ..., {_idn: duen}] e grava."""
     db = current_app.config['mongodb']
