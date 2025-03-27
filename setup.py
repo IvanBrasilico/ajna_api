@@ -29,6 +29,7 @@ setup(
         'PyMongo',
         'pymysql',
         'python-dateutil',
+        'python-dotenv',
         'redis',
         'requests',
         'ruamel.yaml',
