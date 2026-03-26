@@ -8,7 +8,6 @@ from sqlalchemy.orm.exc import NoResultFound
 from ajnaapi.recintosapi.usecases import UseCases
 
 from bhadrasana.models.apirecintos import AcessoVeiculo, InspecaoNaoInvasiva, PesagemVeiculo, EmbarqueDesembarque
-from bhadrasana.routes.apirecintos import processa_zip
 from bhadrasana.views import valid_file
 
 
@@ -107,23 +106,3 @@ def resumo_evento():
         response = make_response(str(err))
         response.headers['Access-Control-Allow-Origin'] = '*'
     return response, code
-
-
-
-
-@recintosapi.route('/api/upload_arquivo_json_api', methods=['POST'])
-@jwt_required()
-#@login_required
-def upload_arquivo_json_api_api():
-    # Upload de arquivo API Recintos - JSON API Friendly
-    session = current_app.config.get('dbsession')
-    try:
-        file = request.files.get('file')
-        validfile, mensagem = valid_file(file, extensions=['zip'])
-        if not validfile:
-            return jsonify({'msg': 'Arquivo "file" vazio ou não incluído no POST'}, 404)
-        processa_zip(file, session)
-    except Exception as err:
-        current_app.logger.error(err, exc_info=True)
-        return jsonify({'msg:': str(err)}, 500)
-    return jsonify({'msg': 'Arquivo integrado com sucesso!!'}, 200)

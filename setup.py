@@ -30,7 +30,6 @@ setup(
         'pymysql',
         'python-dateutil',
         'python-dotenv',
-        'redis',
         'requests',
         'ruamel.yaml',
         'sqlalchemy==1.4.54'
