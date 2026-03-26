@@ -16,3 +16,4 @@ venv/*
 /notebooks/mercante.zip
 /notebooks/ivan.p12
 /build/*
+/ajna-api-venv/*
