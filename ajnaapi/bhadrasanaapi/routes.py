@@ -4,17 +4,18 @@ from flask import Blueprint, request, current_app, jsonify
 from flask_jwt_extended import jwt_required
 
 from ajna_commons.utils.api_utils import get_filtro_alchemy, dump_model
-from ajna_commons.utils.api_utils import select_one_campo_alchemy, select_many_campo_alchemy
+from ajna_commons.utils.api_utils import (select_one_campo_alchemy,
+                                          select_many_campo_alchemy)
 from bhadrasana.forms.exibicao_ovr import ExibicaoOVR, TipoExibicao
 from bhadrasana.models import get_usuario_telegram
 from bhadrasana.models.laudo import get_empresa, get_sats_cnpj
-from bhadrasana.models.ovr import ProcessoOVR
 from bhadrasana.models.ovr import OVR, TGOVR, ItemTG
+from bhadrasana.models.ovr import ProcessoOVR
 from bhadrasana.models.ovrmanager import get_ovr_responsavel, get_ovr_empresa
 from bhadrasana.models.riscomanager import consulta_container_objects
 from bhadrasana.models.rvf import RVF, ImagemRVF
 from bhadrasana.models.virasana_manager import get_ces_empresa, get_detalhes_mercante
-from virasana.integracao.due.due_manager import  get_dues_empresa
+from virasana.integracao.due.due_manager import get_dues_empresa
 
 bhadrasanaapi = Blueprint('bhadrasanapi', __name__)
 

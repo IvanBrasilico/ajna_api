@@ -1,11 +1,12 @@
-"""DUE API Routes - Declaração Única de Exportação endpoints."""
+'''DUE API Routes - Declaração Única de Exportação endpoints.'''
 
 from flask import Blueprint, current_app, jsonify, request
 from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from ajna_commons.utils.sanitiza import mongo_sanitizar
-from virasana.integracao.due.due_alchemy import Due, DueItem, DueConteiner
+from virasana.integracao.due.due_alchemy import (Due, DueItem,
+                                                 DueConteiner)
 
 dueapi = Blueprint('dueapi', __name__)
 
@@ -32,8 +33,10 @@ def api_get_due(numero_due):
 
         due_dict = {
             'numero_due': due.numero_due,
-            'data_criacao_due': due.data_criacao_due.isoformat() if due.data_criacao_due else None,
-            'data_registro_due': due.data_registro_due.isoformat() if due.data_registro_due else None,
+            'data_criacao_due': due.data_criacao_due.isoformat()
+            if due.data_criacao_due else None,
+            'data_registro_due': due.data_registro_due.isoformat()
+            if due.data_registro_due else None,
             'ni_declarante': due.ni_declarante,
             'cnpj_estabelecimento_exportador': due.cnpj_estabelecimento_exportador,
             'telefone_contato': due.telefone_contato,
@@ -46,7 +49,8 @@ def api_get_due(numero_due):
             'codigo_recinto_despacho': due.codigo_recinto_despacho,
             'codigo_recinto_embarque': due.codigo_recinto_embarque,
             'codigo_unidade_embarque': due.codigo_unidade_embarque,
-            'conteiners': due.get_lista_conteiners() if due.lista_id_conteiner else [],
+            'conteiners': due.get_lista_conteiners()
+            if due.lista_id_conteiner else [],
         }
 
         return jsonify(due_dict), 200
@@ -115,9 +119,7 @@ def api_dues():
 
             filtro = {mongo_sanitizar(key): mongo_sanitizar(value)
                       for key, value in request.args.items()}
-
             query = db_session.query(Due)
-
             if 'ni_declarante' in filtro:
                 query = query.filter(Due.ni_declarante == filtro['ni_declarante'])
             if 'cnpj_estabelecimento_exportador' in filtro:

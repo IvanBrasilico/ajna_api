@@ -6,10 +6,8 @@ from json2html import json2html
 from sqlalchemy.orm.exc import NoResultFound
 
 from ajnaapi.recintosapi.usecases import UseCases
-
-from bhadrasana.models.apirecintos import AcessoVeiculo, InspecaoNaoInvasiva, PesagemVeiculo, EmbarqueDesembarque
-from bhadrasana.views import valid_file
-
+from bhadrasana.models.apirecintos import (AcessoVeiculo, InspecaoNaoInvasiva,
+                                           PesagemVeiculo, EmbarqueDesembarque)
 
 recintosapi = Blueprint('recintosapi', __name__)
 
@@ -73,13 +71,13 @@ def insert_pesagemveiculo():
 
 
 @recintosapi.route('/api/resumo_evento', methods=['GET'])
-#@jwt_required()
+# @jwt_required()
 def resumo_evento():
     classes_evento = {'AcessoVeiculo': AcessoVeiculo,
-                    'InspecaoNaoInvasiva': InspecaoNaoInvasiva,
-                    'PesagemVeiculo': PesagemVeiculo,
-                    'EmbarqueDesembarque': EmbarqueDesembarque
-                    }
+                      'InspecaoNaoInvasiva': InspecaoNaoInvasiva,
+                      'PesagemVeiculo': PesagemVeiculo,
+                      'EmbarqueDesembarque': EmbarqueDesembarque
+                      }
     db_session = current_app.config['db_session']
     response = make_response('Erro não previsto')
     code = 500
