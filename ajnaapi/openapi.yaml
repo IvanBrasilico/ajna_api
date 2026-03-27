@@ -1705,6 +1705,395 @@ paths:
         404:
           description: Não encontrado para filtro atual.
           content: {}
+  /api/processoovr:
+    post:
+      tags:
+        - Process
+      summary: Process an overview
+      description: This endpoint processes an overview of the data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                value:
+                  type: string
+      responses:
+        '200':
+          description: Successful processing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /api/empresa/{cnpj}:
+    get:
+      tags:
+        - Company
+      summary: Retrieve a company by CNPJ
+      description: This endpoint retrieves the details of a company using its CNPJ.
+      parameters:
+        - name: cnpj
+          in: path
+          required: true
+          description: The CNPJ of the company to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A company object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  cnpj:
+                    type: string
+  /api/empresa_e_filiais/{cnpj}:
+    get:
+      tags:
+        - Company
+      summary: Retrieve a company and its branches by CNPJ
+      description: This endpoint retrieves the details of a company and its branches using its CNPJ.
+      parameters:
+        - name: cnpj
+          in: path
+          required: true
+          description: The CNPJ of the company to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A company and its branches object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/empresas:
+    get:
+      tags:
+        - Company
+      summary: List all companies
+      description: This endpoint returns a list of all companies.
+      responses:
+        '200':
+          description: A list of companies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    cnpj:
+                      type: string
+  /api/ncm/{codigo}:
+    get:
+      tags:
+        - NCM
+      summary: Retrieve NCM details
+      description: This endpoint retrieves NCM details by code.
+      parameters:
+        - name: codigo
+          in: path
+          required: true
+          description: The NCM code to retrieve details for.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: NCM details object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/resumo_evento:
+    get:
+      tags:
+        - Event
+      summary: Retrieve event summary
+      description: This endpoint retrieves a summary of events.
+      responses:
+        '200':
+          description: Event summary object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/dues/update:
+    post:
+      tags:
+        - Dues
+      summary: Update dues
+      description: This endpoint updates dues information.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dueId:
+                  type: string
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /due/{numero_due}:
+    get:
+      summary: Retorna informações de uma Declaração Única de Exportação (DUE)
+      tags:
+        - due
+      parameters:
+        - name: numero_due
+          in: path
+          required: true
+          description: Número da DUE (14 caracteres)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados da DUE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Due'
+        '404':
+          description: DUE não encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        '400':
+          description: Erro ao buscar DUE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+      security:
+        - jwt: ['secret']
+
+  /dues:
+    get:
+      summary: Lista DUEs conforme filtro
+      tags:
+        - due
+      parameters:
+        - name: ni_declarante
+          in: query
+          required: false
+          description: Filtrar por NI do declarante
+          schema:
+            type: string
+        - name: cnpj_estabelecimento_exportador
+          in: query
+          required: false
+          description: Filtrar por CNPJ do estabelecimento exportador
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de DUEs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DueResumido'
+        '404':
+          description: Nenhuma DUE encontrada
+          content: {}
+        '400':
+          description: Erro ao buscar DUEs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+      security:
+        - jwt: ['secret']
+
+    post:
+      summary: Cria ou atualiza uma DUE
+      tags:
+        - due
+      requestBody:
+        required: true
+        description: Dados da DUE
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DueInput'
+      responses:
+        '201':
+          description: DUE criada/atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                  numero_due:
+                    type: string
+        '400':
+          description: Erro ao processar DUE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        '409':
+          description: Número de DUE já existe
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+      security:
+        - jwt: ['secret']
+
+  /due/{numero_due}/itens:
+    get:
+      summary: Retorna os itens de uma DUE
+      tags:
+        - due
+      parameters:
+        - name: numero_due
+          in: path
+          required: true
+          description: Número da DUE (14 caracteres)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de itens da DUE
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DueItem'
+        '404':
+          description: Nenhum item encontrado para a DUE
+          content: {}
+        '400':
+          description: Erro ao buscar itens da DUE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+      security:
+        - jwt: ['secret']
+
+  /due/{numero_due}/conteiners:
+    get:
+      summary: Retorna os contêineres associados a uma DUE
+      tags:
+        - due
+      parameters:
+        - name: numero_due
+          in: path
+          required: true
+          description: Número da DUE (14 caracteres)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de contêineres da DUE
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DueConteiner'
+        '404':
+          description: Nenhum contêiner encontrado para a DUE
+          content: {}
+        '400':
+          description: Erro ao buscar contêineres da DUE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+      security:
+        - jwt: ['secret']
+
+  /conteiner/{numero_conteiner}/due:
+    get:
+      summary: Retorna a DUE associada a um contêiner
+      tags:
+        - due
+      parameters:
+        - name: numero_conteiner
+          in: path
+          required: true
+          description: Número do contêiner (11 caracteres)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dados da DUE associada ao contêiner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Due'
+        '404':
+          description: Contêiner não encontrado ou não associado a DUE
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        '400':
+          description: Erro ao buscar DUE do contêiner
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+      security:
+        - jwt: ['secret']
 components:
   securitySchemes:
     jwt:
@@ -2328,3 +2717,179 @@ components:
           type: string
         verificacaofisica_id:
           type: string
+    Due:
+      type: object
+      properties:
+        numero_due:
+          type: string
+          description: Número da Declaração Única de Exportação (14 caracteres)
+        data_criacao_due:
+          type: string
+          format: date-time
+          description: Data de criação da DUE
+        data_registro_due:
+          type: string
+          format: date-time
+          description: Data de registro da DUE
+        ni_declarante:
+          type: string
+          description: NI do declarante (14 caracteres)
+        cnpj_estabelecimento_exportador:
+          type: string
+          description: CNPJ do estabelecimento exportador (14 caracteres)
+        telefone_contato:
+          type: string
+          description: Telefone de contato
+        email_contato:
+          type: string
+          description: Email de contato
+        nome_contato:
+          type: string
+          description: Nome do contato
+        codigo_iso3_pais_importador:
+          type: string
+          description: Código ISO3 do país importador
+        nome_pais_importador:
+          type: string
+          description: Nome do país importador
+        duev_nm_tp_doc_fiscal_c:
+          type: string
+          description: Tipo de documento fiscal
+        duev_cetp_nm_c:
+          type: string
+          description: CETP da DUE
+        codigo_recinto_despacho:
+          type: string
+          description: Código do recinto de despacho (7 caracteres)
+        codigo_recinto_embarque:
+          type: string
+          description: Código do recinto de embarque (7 caracteres)
+        codigo_unidade_embarque:
+          type: string
+          description: Código da unidade de embarque (7 caracteres)
+        conteiners:
+          type: array
+          items:
+            type: string
+          description: Lista de números de contêineres associados
+
+    DueResumido:
+      type: object
+      properties:
+        numero_due:
+          type: string
+          description: Número da DUE (14 caracteres)
+        data_criacao_due:
+          type: string
+          format: date-time
+          description: Data de criação da DUE
+        ni_declarante:
+          type: string
+          description: NI do declarante
+        cnpj_estabelecimento_exportador:
+          type: string
+          description: CNPJ do estabelecimento exportador
+        nome_pais_importador:
+          type: string
+          description: Nome do país importador
+
+    DueInput:
+      type: object
+      required:
+        - numero_due
+      properties:
+        numero_due:
+          type: string
+          description: Número da DUE (14 caracteres)
+        ni_declarante:
+          type: string
+          description: NI do declarante
+        cnpj_estabelecimento_exportador:
+          type: string
+          description: CNPJ do estabelecimento exportador
+        telefone_contato:
+          type: string
+          description: Telefone de contato
+        email_contato:
+          type: string
+          description: Email de contato
+        nome_contato:
+          type: string
+          description: Nome do contato
+        codigo_iso3_pais_importador:
+          type: string
+          description: Código ISO3 do país importador
+        nome_pais_importador:
+          type: string
+          description: Nome do país importador
+        duev_nm_tp_doc_fiscal_c:
+          type: string
+          description: Tipo de documento fiscal
+        duev_cetp_nm_c:
+          type: string
+          description: CETP da DUE
+        codigo_recinto_despacho:
+          type: string
+          description: Código do recinto de despacho
+        codigo_recinto_embarque:
+          type: string
+          description: Código do recinto de embarque
+        codigo_unidade_embarque:
+          type: string
+          description: Código da unidade de embarque
+        lista_id_conteiner:
+          type: string
+          description: Lista de contêineres separados por vírgula
+
+    DueItem:
+      type: object
+      properties:
+        nr_due:
+          type: string
+          description: Número da DUE (14 caracteres)
+        due_nr_item:
+          type: integer
+          description: Número sequencial do item na DUE
+        descricao_item:
+          type: string
+          description: Descrição do item
+        descricao_complementar_item:
+          type: string
+          description: Descrição complementar do item
+        nfe_nr_item:
+          type: integer
+          description: Número do item na Nota Fiscal Eletrônica
+        nfe_ncm:
+          type: string
+          description: NCM (Nomenclatura Comum do Mercosul)
+        unidade_comercial:
+          type: string
+          description: Unidade comercial do item
+        qt_unidade_comercial:
+          type: number
+          format: float
+          description: Quantidade em unidade comercial
+        valor_total_due_itens:
+          type: number
+          format: float
+          description: Valor total do item na DUE
+        nfe_nm_importador:
+          type: string
+          description: Nome do importador (da NFe)
+        pais_destino_item:
+          type: string
+          description: País de destino do item
+
+    DueConteiner:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador único do registro
+        numero_due:
+          type: string
+          description: Número da DUE (14 caracteres)
+        numero_conteiner:
+          type: string
+          description: Número do contêiner (11 caracteres)

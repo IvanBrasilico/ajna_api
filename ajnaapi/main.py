@@ -13,6 +13,7 @@ from ajna_commons.flask import api_login, login
 from ajna_commons.flask.user import DBUser
 from ajnaapi.bhadrasanaapi.routes import bhadrasanaapi
 from ajnaapi.cadastrosapi.routes import cadastrosapi
+from ajnaapi.dueapi.routes import dueapi
 from ajnaapi.endpoints import ajna_api
 from ajnaapi.mercanteapi.routes import mercanteapi
 from ajnaapi.recintosapi.routes import recintosapi
@@ -53,6 +54,8 @@ def create_app(config_class=Production):
     csrf.exempt(recintosapi)
     app.register_blueprint(cadastrosapi)
     csrf.exempt(cadastrosapi)
+    app.register_blueprint(dueapi)
+    csrf.exempt(dueapi)
     app.logger.info('Configurando swagger-ui...')
     swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL)
     app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
