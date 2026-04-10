@@ -1,5 +1,5 @@
 """Opções de configuração da aplicação."""
-
+import mongomock
 # import sys
 # COMMONS_PATH = os.path.join('..', 'ajna_docs', 'commons')
 # sys.path.insert(0, COMMONS_PATH)
@@ -41,6 +41,7 @@ class Testing:
 
     TESTING = True
     SECRET = 'fraco'  # nosec
-    db = MongoClient(host=MONGODB_URI).unit_test
-    db_risco = MongoClient(host=MONGODB_URI).unit_test
+    client = mongomock.MongoClient()
+    db = client.unit_test
+    db_risco = client.unit_test_risco
     sql = create_engine('sqlite:///:memory:')

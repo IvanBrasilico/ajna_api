@@ -2094,6 +2094,136 @@ paths:
                     type: string
       security:
         - jwt: ['secret']
+  /api/dues/bulk:
+    post:
+      summary: Processa várias DUEs em lote com itens
+      tags:
+        - due
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DueBulkRequest'
+      responses:
+        '201':
+          description: Lote processado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DueBulkResponse'
+        '207':
+          description: Lote processado com sucesso parcial
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DueBulkResponse'
+        '400':
+          description: Erro ao processar lote de DUEs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+        '413':
+          description: Lote excede o limite permitido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+      security:
+        - jwt: ['secret']
+
+  /api/due-itens:
+    get:
+      summary: Lista itens de DUE conforme filtro
+      tags:
+        - due-item
+      parameters:
+        - name: nr_due
+          in: query
+          required: false
+          description: Número da DUE
+          schema:
+            type: string
+        - name: due_nr_item
+          in: query
+          required: false
+          description: Número do item da DUE
+          schema:
+            type: integer
+        - name: nfe_ncm
+          in: query
+          required: false
+          description: NCM do item
+          schema:
+            type: string
+        - name: pais_destino_item
+          in: query
+          required: false
+          description: País de destino do item
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de itens de DUE
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DueItem'
+        '404':
+          description: Nenhum item de DUE encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+        '400':
+          description: Erro ao consultar itens de DUE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+      security:
+        - jwt: ['secret']
+
+    post:
+      summary: Cria ou atualiza um item de DUE
+      tags:
+        - due-item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DueItemPost'
+      responses:
+        '201':
+          description: Item de DUE criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DueItemPostResponse'
+        '200':
+          description: Item de DUE atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DueItemPostResponse'
+        '409':
+          description: Erro de integridade ao processar item de DUE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+        '400':
+          description: Erro ao processar item de DUE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mensagem'
+      security:
+        - jwt: ['secret']
 components:
   securitySchemes:
     jwt:
@@ -2893,3 +3023,299 @@ components:
         numero_conteiner:
           type: string
           description: Número do contêiner (11 caracteres)
+    DueResumo:
+      type: object
+      properties:
+        numero_due:
+          type: string
+          example: "12345678901234"
+        data_criacao_due:
+          type: string
+          format: date
+          nullable: true
+          example: "2026-04-07"
+        ni_declarante:
+          type: string
+          nullable: true
+          example: "12345678901234"
+        cnpj_estabelecimento_exportador:
+          type: string
+          nullable: true
+          example: "12345678000199"
+        nome_pais_importador:
+          type: string
+          nullable: true
+          example: "Argentina"
+
+    DuePost:
+      type: object
+      required:
+        - numero_due
+      properties:
+        numero_due:
+          type: string
+          example: "12345678901234"
+        ni_declarante:
+          type: string
+          nullable: true
+        cnpj_estabelecimento_exportador:
+          type: string
+          nullable: true
+        telefone_contato:
+          type: string
+          nullable: true
+        email_contato:
+          type: string
+          nullable: true
+        nome_contato:
+          type: string
+          nullable: true
+        codigo_iso3_pais_importador:
+          type: string
+          nullable: true
+        nome_pais_importador:
+          type: string
+          nullable: true
+        duev_nm_tp_doc_fiscal_c:
+          type: string
+          nullable: true
+        duev_cetp_nm_c:
+          type: string
+          nullable: true
+        codigo_recinto_despacho:
+          type: string
+          nullable: true
+        codigo_recinto_embarque:
+          type: string
+          nullable: true
+        codigo_unidade_embarque:
+          type: string
+          nullable: true
+        lista_id_conteiner:
+          type: string
+          nullable: true
+          example: "MSCU1234567, TGHU7654321"
+
+    DuePostResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: DUE criada com sucesso
+        numero_due:
+          type: string
+          example: "12345678901234"
+    DueItemPost:
+      type: object
+      required:
+        - nr_due
+        - due_nr_item
+      properties:
+        nr_due:
+          type: string
+          example: "12345678901234"
+        due_nr_item:
+          type: integer
+          example: 1
+        descricao_item:
+          type: string
+          nullable: true
+        descricao_complementar_item:
+          type: string
+          nullable: true
+        nfe_nr_item:
+          type: integer
+          nullable: true
+        nfe_ncm:
+          type: string
+          nullable: true
+        unidade_comercial:
+          type: string
+          nullable: true
+        qt_unidade_comercial:
+          type: number
+          format: double
+          nullable: true
+        valor_total_due_itens:
+          type: number
+          format: double
+          nullable: true
+        nfe_nm_importador:
+          type: string
+          nullable: true
+        pais_destino_item:
+          type: string
+          nullable: true
+
+    DueItemPostResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Item de DUE criado com sucesso
+        nr_due:
+          type: string
+          example: "12345678901234"
+        due_nr_item:
+          type: integer
+          example: 1
+
+    DueWithItems:
+      type: object
+      properties:
+        numero_due:
+          type: string
+          example: "12345678901234"
+        ni_declarante:
+          type: string
+          nullable: true
+        cnpj_estabelecimento_exportador:
+          type: string
+          nullable: true
+        telefone_contato:
+          type: string
+          nullable: true
+        email_contato:
+          type: string
+          nullable: true
+        nome_contato:
+          type: string
+          nullable: true
+        codigo_iso3_pais_importador:
+          type: string
+          nullable: true
+        nome_pais_importador:
+          type: string
+          nullable: true
+        duev_nm_tp_doc_fiscal_c:
+          type: string
+          nullable: true
+        duev_cetp_nm_c:
+          type: string
+          nullable: true
+        codigo_recinto_despacho:
+          type: string
+          nullable: true
+        codigo_recinto_embarque:
+          type: string
+          nullable: true
+        codigo_unidade_embarque:
+          type: string
+          nullable: true
+        lista_id_conteiner:
+          type: string
+          nullable: true
+        itens:
+          type: array
+          items:
+            $ref: '#/components/schemas/DueItemPayload'
+
+    DueItemPayload:
+      type: object
+      required:
+        - due_nr_item
+      properties:
+        due_nr_item:
+          type: integer
+          example: 1
+        descricao_item:
+          type: string
+          nullable: true
+        descricao_complementar_item:
+          type: string
+          nullable: true
+        nfe_nr_item:
+          type: integer
+          nullable: true
+        nfe_ncm:
+          type: string
+          nullable: true
+        unidade_comercial:
+          type: string
+          nullable: true
+        qt_unidade_comercial:
+          type: number
+          format: double
+          nullable: true
+        valor_total_due_itens:
+          type: number
+          format: double
+          nullable: true
+        nfe_nm_importador:
+          type: string
+          nullable: true
+        pais_destino_item:
+          type: string
+          nullable: true
+
+    DueBulkRequest:
+      type: object
+      required:
+        - items
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DueWithItems'
+
+    DueBulkItemResult:
+      type: object
+      properties:
+        index:
+          type: integer
+          example: 0
+        numero_due:
+          type: string
+          nullable: true
+          example: "12345678901234"
+        status:
+          type: string
+          example: success
+        operation:
+          type: string
+          nullable: true
+          example: created
+        error_type:
+          type: string
+          nullable: true
+          example: processing_error
+        msg:
+          type: string
+          nullable: true
+          example: numero_due é obrigatório
+        itens:
+          type: object
+          nullable: true
+          properties:
+            created:
+              type: integer
+              example: 2
+            updated:
+              type: integer
+              example: 1
+            deleted:
+              type: integer
+              example: 0
+
+    DueBulkResponse:
+      type: object
+      properties:
+        summary:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 10
+            created:
+              type: integer
+              example: 6
+            updated:
+              type: integer
+              example: 3
+            failed:
+              type: integer
+              example: 1
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DueBulkItemResult'

@@ -16,7 +16,6 @@ from ajnaapi.cadastrosapi.routes import cadastrosapi
 from ajnaapi.dueapi.routes import dueapi
 from ajnaapi.endpoints import ajna_api
 from ajnaapi.mercanteapi.routes import mercanteapi
-from ajnaapi.recintosapi.routes import recintosapi
 from ajnaapi.virasanaapi.routes import virasanaapi
 from bhadrasana.models import Usuario
 from .config import Production
@@ -50,8 +49,8 @@ def create_app(config_class=Production):
     csrf.exempt(virasanaapi)
     app.register_blueprint(mercanteapi)
     csrf.exempt(mercanteapi)
-    app.register_blueprint(recintosapi)
-    csrf.exempt(recintosapi)
+    # app.register_blueprint(recintosapi)
+    # csrf.exempt(recintosapi)
     app.register_blueprint(cadastrosapi)
     csrf.exempt(cadastrosapi)
     app.register_blueprint(dueapi)

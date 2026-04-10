@@ -2,11 +2,13 @@
 import json
 import unittest
 
+from sqlalchemy.orm import declarative_base
 from werkzeug.exceptions import BadRequest
 
-from ajna_commons.flask.user import DBUser
+from ajna_commons.flask.user import DBUser, DBType
 from ajnaapi.main import create_app
 from ajnaapi.config import Testing
+from bhadrasana.models import Base, Usuario
 
 
 class ApiTestCase(unittest.TestCase):
@@ -19,11 +21,16 @@ class ApiTestCase(unittest.TestCase):
         self.sql = app.config['sql']
         self.engine = self.sql
         self.db_session = app.config['db_session']
-        DBUser.dbsession = self.db
+        DBUser.dbsession = self.db_session
+        DBUser.alchemy_class = Usuario
+        # DBUser.dbtype = DBType.mongo
+        Base.metadata.create_all(self.sql, [
+            Base.metadata.tables['ovr_usuarios']
+        ])
         DBUser.add('ajna', 'ajna')
 
     def tearDown(self):
-        self.db.drop_collection('users')
+        # self.db.drop_collection('users')
         self.db.drop_collection('fs.files')
 
     def app_test(self, method, url, query_dict, headers={}):

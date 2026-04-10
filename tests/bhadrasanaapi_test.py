@@ -2,14 +2,12 @@
 import json
 from datetime import datetime
 
-from tests.base_api_test import ApiTestCase
-
 import virasana.integracao.mercante.mercantealchemy as mercante
-from ajnaapi.recintosapi import models as recintosapi_models
+from bhadrasana.models import laudo
 from bhadrasana.models import ovr, Usuario
 from bhadrasana.models.ovr import OVR, TGOVR, ItemTG
 from bhadrasana.models.rvf import RVF, ImagemRVF
-from bhadrasana.models import laudo
+from tests.base_api_test import ApiTestCase
 
 
 class BhadrasanaApiTestCase(ApiTestCase):
@@ -22,7 +20,6 @@ class BhadrasanaApiTestCase(ApiTestCase):
             mercante.metadata.tables['ncmitemresumo'],
             mercante.metadata.tables['conhecimentosresumo']
         ])
-        recintosapi_models.Base.metadata.create_all(self.sql)
         laudo.Base.metadata.create_all(self.sql)
 
     def login(self, username='ajna', password='ajna'):

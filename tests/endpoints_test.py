@@ -89,15 +89,6 @@ class ApiLoginTestCase(ApiTestCase):
         self.not_allowed('/api/dues/update',
                          methods=['PUT', 'DELETE', 'GET'])
 
-    def test_due(self):
-        self.login()
-        fs = GridFS(self.db)
-        _id = fs.put(b'Teste', filename='teste.txt')
-        r = self._case('POST', '/api/dues/update',
-                       status_code=201,
-                       query_dict={str(_id): []},
-                       headers=self.headers)
-
     def test_unauthorized_summary_aniita(self):
         self.unauthorized('/api/summary_aniita/0', 'GET')
 

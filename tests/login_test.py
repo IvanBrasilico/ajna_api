@@ -13,6 +13,7 @@ import ajna_commons.flask.login as login
 from ajna_commons.flask.user import DBUser
 from ajnaapi.config import Testing
 from ajnaapi.main import create_app
+from bhadrasana.models import Base, Usuario
 
 class FlaskTestCase(unittest.TestCase):
     def setUp(self):
@@ -20,7 +21,14 @@ class FlaskTestCase(unittest.TestCase):
         app.testing = True
         self.client = app.test_client()
         self.db = app.config['mongodb']
-        DBUser.dbsession = self.db
+        self.db_session = app.config['db_session']
+        self.sql = app.config['sql']
+        self.engine = self.sql
+        DBUser.dbsession = self.db_session
+        DBUser.alchemy_class = Usuario
+        Base.metadata.create_all(self.sql, [
+            Base.metadata.tables['ovr_usuarios']
+        ])
         DBUser.add('ajna', 'ajna')
 
     def tearDown(self):

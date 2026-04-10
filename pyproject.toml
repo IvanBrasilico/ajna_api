@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools >= 61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ajna_api"
+version = "0.0.1"
+description = "APIs do AJNA"
+license = {text = "GPL"}
+authors = [
+  {name = "Ivan Brasilico", email = "brasilico.ivan@gmail.com"},
+]
+readme = "README.md"
+requires-python = ">=3.5"
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Operating System :: POSIX",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS :: MacOS X",
+  "Topic :: Software Development :: User Interfaces",
+  "Topic :: Utilities",
+  "Programming Language :: Python :: 3.5",
+]
+dependencies = [
+  "chardet",
+  "defusedxml",
+  "dominate",
+  "Flask==2.3.3",
+  "flask_bootstrap",
+  "flask_nav",
+  "flask_login",
+  "flask_jwt_extended",
+  "flask-swagger-ui",
+  "flask_wtf",
+  "gunicorn",
+  "json2html",
+  "marshmallow-sqlalchemy",
+  "pandas==2.2.3",
+  "Pillow",
+  "plotly",
+  "PyMongo",
+  "pymysql",
+  "python-dateutil",
+  "python-dotenv",
+  "requests",
+  "ruamel.yaml",
+  "sqlalchemy==1.4.54"
+]
+
+[project.optional-dependencies]
+dev = [
+  "bandit",
+  "coverage",
+  "flake8",
+  "flake8-docstrings",
+  "flake8-todo",
+  "flake8-quotes",
+  "isort",
+  "pylint",
+  "pytest",
+  "pytest-cov",
+  "pytest-mock",
+  "radon",
+  "tox"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ajnaapi*"]
+
+[tool.pytest.ini_options]
+pythonpath = [".", "../ajna_docs/commons", "../bhadrasana2", "../virasana" ]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers"]
+
+[tool.tox]
+env_list = ["py37", "py38", "py39", "py310", "py311"]
+
+[[tool.tox.env]]
+setenv = {PYTHONPATH = "{toxinidir}"}
+deps = ["pytest"]
+commands = ["python -m pytest {posargs:-v ajna_api/tests/}"]

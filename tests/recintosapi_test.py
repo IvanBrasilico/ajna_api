@@ -1,4 +1,5 @@
-# Tescases for mercanteapi blueprint
+# Tescases for recintosapi blueprint
+""" Recintos API terá que mudar para o novo formato. Aqui é o formato antigo
 import json
 
 from ajnaapi.recintosapi import maschemas
@@ -133,3 +134,4 @@ if __name__ == '__main__':
     db_session.add(acessoveiculo)
     db_session.add(pesagemveiculo)
     db_session.commit()
+"""
