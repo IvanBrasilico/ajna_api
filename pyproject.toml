@@ -41,6 +41,7 @@ dependencies = [
   "Pillow",
   "plotly",
   "PyMongo",
+  "mongomock",
   "pymysql",
   "python-dateutil",
   "python-dotenv",
